@@ -170,6 +170,7 @@ export default function App() {
     return localStorage.getItem("BYOK_GEMINI_API_KEY") || "";
   });
   const [tempKey, setTempKey] = useState("");
+  const [showByokForm, setShowByokForm] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [isAiSearch, setIsAiSearch] = useState<boolean>(() => {
     return !!(localStorage.getItem("BYOK_GEMINI_API_KEY"));
@@ -217,6 +218,7 @@ export default function App() {
     setValidationError(null);
     localStorage.setItem("BYOK_GEMINI_API_KEY", trimmed);
     setByokKey(trimmed);
+    setShowByokForm(false);
   };
 
   // Debounce and trigger server-side Gemini Intelligent Search with cancel request (AbortController) and length limitation
@@ -592,8 +594,8 @@ export default function App() {
 
                       {!byokKey ? (
                         /* If we don't have a custom key, but if the system has no key or user wants custom entry */
-                        (!hasSystemKey || tempKey) ? (
-                          <div className="bg-amber-500/10 border border-amber-500/25 rounded-xl p-3 space-y-2.5 text-[11px] animate-fade-in">
+                        (!hasSystemKey || showByokForm) ? (
+                          <div className="bg-amber-500/10 border border-amber-500/25 rounded-md p-3 space-y-2.5 text-[11px] animate-fade-in">
                             <div className="flex items-start justify-between">
                               <div className="space-y-0.5">
                                 <p className="text-amber-200 font-sans font-semibold">
@@ -608,7 +610,7 @@ export default function App() {
                             </div>
 
                             {/* How-to helper prompt */}
-                            <div className="bg-black/40 border border-white/5 rounded-lg p-2.5 text-[10px] space-y-1.5 text-white/70">
+                            <div className="bg-black/40 border border-white/5 rounded-lg p-2.5 text-[10px] space-y-1.5 text-white/70 pb-3">
                               <div className="flex items-center justify-between font-bold text-white/90">
                                 <span>Hogyan szerezhetsz kulcsot?</span>
                                 <a
@@ -624,27 +626,27 @@ export default function App() {
                               <ol className="list-decimal pl-3.5 font-sans space-y-0.5 text-white/60">
                                 <li>Kattints a fenti Google AI Studio linkre (ingyenes)</li>
                                 <li>Nyomj a <strong className="text-white/85">"Get API key"</strong> gombra</li>
-                                <li>Másold ki a kulcsot (<code className="text-amber-300 font-mono">AIzaSy...</code>) és illeszd be ide:</li>
+                                <li>Másold ki a kulcsot (<code className="text-amber-300 font-mono text-[9px]">AIzaSy...</code>) és illeszd be ide:</li>
                               </ol>
                             </div>
 
-                            <div className="flex gap-1.5">
+                            <div className="flex gap-1.5 items-center">
                               <input
-                                type="password"
+                                type="text"
                                 placeholder="Kezdődjön ezzel: AIzaSy..."
                                 value={tempKey}
                                 onChange={(e) => {
                                   setTempKey(e.target.value);
                                   if (validationError) setValidationError(null);
                                 }}
-                                className="flex-1 bg-black/50 border border-amber-500/20 rounded-lg px-2.5 py-1 text-xs text-white placeholder-white/20 focus:outline-none focus:border-amber-400 font-mono"
+                                className="flex-1 bg-black/50 border border-amber-500/20 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-amber-400 font-mono min-w-0"
                               />
                               <button
                                 onClick={handleSaveKey}
-                                className="bg-amber-400 hover:bg-amber-300 text-black font-extrabold font-sans text-[10px] uppercase tracking-wider px-3 py-1 rounded-lg active:scale-95 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1"
+                                title="Kulcs mentése"
+                                className="bg-amber-400 hover:bg-amber-300 text-black w-8 h-8 rounded-lg active:scale-95 transition-all cursor-pointer flex items-center justify-center shrink-0"
                               >
-                                <Save className="w-2.5 h-2.5" />
-                                Mentés
+                                <Save className="w-3.5 h-3.5" />
                               </button>
                             </div>
 
@@ -656,16 +658,33 @@ export default function App() {
                               </div>
                             )}
 
-                            <p className="text-[9px] text-white/30 font-mono italic">
-                              A kulcs biztonságban van, kizárólag a te böngésződben (localStorage) tárolódik.
-                            </p>
+                            <div className="flex items-center justify-between">
+                              <p className="text-[9px] text-white/30 font-mono italic">
+                                A kulcs a böngésződben tárolódik.
+                              </p>
+                              {hasSystemKey && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setShowByokForm(false);
+                                    setValidationError(null);
+                                  }}
+                                  className="text-amber-400/60 hover:text-amber-300 text-[10px] underline font-sans font-medium"
+                                >
+                                  Mégse
+                                </button>
+                              )}
+                            </div>
                           </div>
                         ) : (
                           /* If has private server-side key but no custom user override entered yet, provide a toggle button to show form */
                           <div className="bg-white/3 border border-white/5 rounded-xl p-2.5 text-[10px] flex items-center justify-between font-sans">
                             <span className="text-white/45">Egyéni API kulcs felülbírálás megadása:</span>
                             <button
-                              onClick={() => setTempKey("AIzaSy")}
+                              onClick={() => {
+                                setTempKey("");
+                                setShowByokForm(true);
+                              }}
                               className="text-amber-400 hover:text-amber-300 font-bold underline cursor-pointer text-[10px]"
                             >
                               Kulcs beírása
