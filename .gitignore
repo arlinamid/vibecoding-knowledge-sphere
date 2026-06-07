@@ -7,3 +7,5 @@ coverage/
 .env*
 !.env.example
 start-dev.ps1
+test-results/.last-run.json
+e2e/generate-og-image.ts
