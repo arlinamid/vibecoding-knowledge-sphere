@@ -15,6 +15,10 @@ A **Vibekóding Tudásgömb** egy interaktív, 3D hangulatalapú (Vibe Coding) s
 *   **Intelligens Level of Detail (LOD) & Depth-2 renderelés:** Sávszélesség-takarékos és processzor-kímélő rendering pipeline. Ha nincs kiválasztott szó, a gömb optimalizált "Chaos" nézetben lebeg. Amikor rákattintasz egy szóra:
     *   Az adott szó automatikusan fókuszba lép.
     *   **Maximum 2 mélységig (depth-2)** minden hozzá kapcsolódó szó és reláció azonnal, hiánytalanul kirajzolódik a térben.
+*   **Intelligens AI Keresés (Gemini BYOK):** Gépi tanulással kiegészített, szemantikus kulcsszókereső motor:
+    *   **Auto-Aktív Kulcsok:** Ha az alkalmazásban már be van állítva egy központi AI kulcs, a rendszer azonnal működésbe lép.
+    *   **Egyéni Kulcs Integráció (BYOK):** Lehetőség van saját Gemini API kulcs használatára is. A beírt kulcs biztonságos, és kizárólag a saját készülékeden (`localStorage`) tárolódik.
+    *   **Aktív Kezdőkarakter-Vizsgálat:** A beviteli mező automatikusan ellenőrzi a formátumot (`AIzaSy` kezdet) és a hosszúságot, segítve a hibák megelőzését.
 *   **Egyenként másolható Mintamondatok:** A prompt-mérnöki kifejezések dobozában a mintamondatok mellett elhelyezett **Másolás gomb** segítségével a másolás egyetlen kattintással elérhető.
 *   **Együttesen másolható Útmutatók:** A *Megvalósítási lépések* és az *Anti-Patternök* teljes anyaga egyetlen gombnyomással a vágólapra helyezhető, strukturált, kész listaként.
 *   **Valós idejű Helyi Óra:** A fejlécben elhelyezett óra pontosan és dinamikusan frissítve mutatja a helyi időt.
@@ -75,9 +79,3 @@ npm run build
 ```
 
 ---
-
-## 👤 Fejlesztő
-
-*   **Név:** Rózsavölgyi János
-*   **GitHub profil:** [@arlinamid](https://github.com/arlinamid)
-*   **Kapcsolat:** janos.rozsavolgyi2@gmail.com

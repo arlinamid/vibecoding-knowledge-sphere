@@ -1,7 +1,22 @@
 # 📋 Változásnapló — Vibekóding Tudásgömb
 
-[![Changelog Badge](https://img.shields.io/badge/changelog-v1.0.0-FD7E14.svg?style=flat-square)]()
+[![Changelog Badge](https://img.shields.io/badge/changelog-v1.1.1-FD7E14.svg?style=flat-square)]()
 [![Build](https://img.shields.io/badge/build-passing-brightgreen.svg?style=flat-square)]()
+
+---
+
+## [1.1.1] - 2026-06-07 (Gemini BYOK & Intelligens Keresés Frissítés)
+
+### 🔑 Bring Your Own Key (BYOK) & Biztonság
+-   **Valós Idejű Rendszerkulcs-Ellenőrzés:** Az alkalmazás indításakor automatikusan lekérdezi a fejlesztői konténer `/api/health` állapotát. Ha van szerveroldali, titkosított `GEMINI_API_KEY` definiálva, az AI keresés zökkenőmentesen és azonnal használatra kész (nem kér plusz kulcsot tőled).
+-   **Könnyített Kulcsbeírás:** Ha nincs titkos kulcs a szerveren, vagy ha egyéni kulcsot szeretnél használni, egy letisztult BYOK űrlapon adhatod meg azt. A biztonság kedvéért a korábbi csillagozott password mezőt kicseréltük **teljesen látható szövegdobozra (`type="text"`)**, hogy a kezdők kényelmesen láthassák és ellenőrizhessék, mit másolnak be.
+-   **Integrált Google AI Studio Útmutató:** Beágyaztunk egy részletes, közvetlen útmutatót az ingyenes API kulcs megszerzéséhez egyenesen a [Google AI Studio](https://aistudio.google.com/) felületről, megkönnyítve az első lépéseket.
+-   **Biztonságos Helyi Tárolás (localStorage):** A megadott kulcsod sosem kerül tárolásra a szerveroldalon, teljesen privát marad, kizárólag a te saját böngésződben (`localStorage`) tárolódik biztonságban.
+
+### 🛡️ Formátumellenőrzés & Hibakezelés (BYOK Validation)
+-   **Aktív Kezdőkarakter-Vizsgálat:** A beviteli mező folyamatosan validálja a kulcsot. Nem enged üresen menteni, és figyelmeztet, ha nem `AIzaSy` mintájú Gemini előtaggal kezdődik, vagy ha hossza nem éri el a minimális 35 karaktert.
+-   **Elegáns és Stabil UI Viselkedés:** Kijavítottuk azt a hibát, ahol a mező kiürítésekor (például ha törölték az addigi kulcsot) az egész konfigurációs kártya eltűnt a képernyőről, ellehetetlenítve az új kulcs másolását. Mostantól üres állapotban is a háttérben stabilan ott marad a mező a placeholder szöveggel.
+-   **Kompakt és Finomhangolt Dizájn:** A mentés gombot letisztultabbá tettük: a felesleges "Mentés" felirat helyett egy **ultramini, helytakarékos és precíz `Save` ikon** felel az elmentésért, hogy tökéletesen illeszkedjen még a legkeskenyebb oldalsávokba is.
 
 ---
 
