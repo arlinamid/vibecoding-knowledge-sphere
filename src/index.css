@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Custom Atmospheric Effects */
+.sphere-gradient {
+  background: radial-gradient(circle at 50% 50%, rgba(66, 30, 114, 0.15) 0%, transparent 70%);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.scrolling-mask {
+  mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+}
+
+/* Glowing text shadows based on category name styles */
+.node-glow-auth {
+  text-shadow: 0 0 10px rgba(255, 107, 107, 0.6);
+  color: #FF6B6B;
+}
+
+.node-glow-frontend {
+  text-shadow: 0 0 10px rgba(77, 171, 247, 0.6);
+  color: #4DABF7;
+}
+
+.node-glow-ai {
+  text-shadow: 0 0 10px rgba(255, 212, 59, 0.6);
+  color: #FFD43B;
+}
+
+.node-glow-vibe {
+  text-shadow: 0 0 10px rgba(253, 126, 20, 0.6);
+  color: #FD7E14;
+}
+
+.node-glow-devops {
+  text-shadow: 0 0 10px rgba(186, 104, 200, 0.6);
+  color: #BA68C8;
+}
+
+.node-glow-database {
+  text-shadow: 0 0 10px rgba(32, 201, 151, 0.6);
+  color: #20C997;
+}
+
+/* Base custom resets */
+body {
+  background-color: #050508;
+  color: #E0D8D0;
+}

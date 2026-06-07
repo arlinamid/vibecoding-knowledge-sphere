@@ -1,0 +1,6 @@
+{
+  "name": "Vibekóding Tudásgömb",
+  "description": "AI fejlesztői tudásgömb - an interactive 3D knowledge map of developer keywords.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
