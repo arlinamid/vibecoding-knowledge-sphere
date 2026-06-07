@@ -1,7 +1,7 @@
 # 🌐 Vibekóding Tudásgömb — AI Fejlesztői Tudástérkép
 
 [![Status](https://img.shields.io/badge/status-stable-emerald.svg?style=flat-square)]()
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?style=flat-square)]()
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg?style=flat-square)]()
 [![Engine](https://img.shields.io/badge/engine-Three.js-orange.svg?style=flat-square)]()
 [![Author](https://img.shields.io/badge/author-Rózsavölgyi%20János-ff69b4.svg?style=flat-square)]()
 
@@ -56,6 +56,15 @@ A **Vibekóding Tudásgömb** egy interaktív, 3D hangulatalapú (Vibe Coding) s
 │   ├── App.tsx                      # Fő alkalmazás logikája, óra és az Infó Modal
 │   ├── main.tsx                     # React belépési pont
 │   └── index.css                    # Globális Tailwind CSS beállítások és betűtípusok
+├── public/                          # Statikus assetek és favicon fájlok
+│   ├── favicon.png                  # Nagy felbontású alap favicon (512x512)
+│   ├── favicon-16x16.png            # Kis méretű favicon (16x16)
+│   ├── favicon-32x32.png            # Standard favicon (32x32)
+│   ├── apple-touch-icon.png         # Apple Touch ikon (180x180)
+│   └── og-image.png                 # Playwright segítségével generált Open Graph borítókép (1200x630)
+├── e2e/                             # Playwright E2E tesztek és automatizáció
+│   ├── knowledgeSphere.spec.ts      # Fő E2E tesztfájl
+│   └── generate-og-image.ts         # Playwright screenshot generáló script
 ├── metadata.json                    # Alkalmazás metaadatai (Név: Vibekóding Tudásgömb)
 └── package.json                     # Projekt függőségek és futtató scriptek
 ```
@@ -82,6 +91,19 @@ npm run dev
 ### 3. Statikus build készítése
 ```bash
 npm run build
+```
+
+### 4. Open Graph Kép Generálása (Playwright)
+Az alkalmazás automatikus Open Graph pillanatképének frissítéséhez futtasd az alábbi parancsot (miközben a dev szerver fut):
+```bash
+npx tsx e2e/generate-og-image.ts
+```
+Ez a script elindít egy headless króm böngészőt, betölti az alkalmazást, bezárja a fejléc szalagot, és egy tökéletes `1200x630` képarányú screenshotot ment a `/public/og-image.png` útvonalra.
+
+### 5. E2E Tesztek futtatása (Playwright)
+A tesztek futtatásához futtasd:
+```bash
+npx playwright test
 ```
 
 ---

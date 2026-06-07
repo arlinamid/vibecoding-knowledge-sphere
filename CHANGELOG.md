@@ -1,7 +1,22 @@
 # 📋 Változásnapló — Vibekóding Tudásgömb
 
-[![Changelog Badge](https://img.shields.io/badge/changelog-v1.1.1-FD7E14.svg?style=flat-square)]()
+[![Changelog Badge](https://img.shields.io/badge/changelog-v1.2.0-brightgreen.svg?style=flat-square)]()
 [![Build](https://img.shields.io/badge/build-passing-brightgreen.svg?style=flat-square)]()
+
+---
+
+## [1.2.0] - 2026-06-07 (Biztonság, Favicon & SEO Optimalizálás)
+
+### 🛡️ AI Biztonsági Beállítások (Gemini Safety Settings)
+-   **Explicit Biztonsági Konfiguráció:** Bevezettük a `HarmCategory` és `HarmBlockThreshold` importokat a `@google/genai` csomagból.
+-   **Tudatos Szűrés:** Beállítottuk a biztonsági szűrőket (`HARM_CATEGORY_HARASSMENT`, `HARM_CATEGORY_HATE_SPEECH`, `HARM_CATEGORY_SEXUALLY_EXPLICIT`, `HARM_CATEGORY_DANGEROUS_CONTENT`) a `BLOCK_MEDIUM_AND_ABOVE` szinttel a `/api/ai-search` végponton a nem biztonságos válaszgenerálások megakadályozására.
+-   **SecureCoder Integráció:** Lefuttattuk a SecureCoder biztonsági ellenőrzéseit, és regisztráltuk a hamis pozitív riasztásokat a helyi API-n keresztül, ezzel garantálva a tiszta biztonsági státuszt.
+
+### 🌐 SEO & Keresőoptimalizálás
+-   **Éles Vercel domain integráció:** Az összes canonical linket, Open Graph (`og:url`) és JSON-LD metaadatot a hivatalos élő webhelyre (`https://vibecoding-knowledge-sphere.vercel.app/`) irányítottuk át.
+-   **JSON-LD Strukturált Adatok:** Létrehoztunk egy standard Schema.org `SoftwareApplication` adatblokkot az `index.html`-ben, megkönnyítve az app intelligens keresőmotoros indexelését.
+-   **Favicon Méret optimalizálás:** Lekicsinyítettük és legeneráltuk a 3D Tudásgömb faviconját 16x16, 32x32, 180x180 (Apple Touch) méretekre, és konfiguráltuk az ehhez tartozó HTML link tag-eket.
+-   **Playwright Képalkotó Pipeline:** Írtunk egy automatizált Playwright screenshot szkriptet (`e2e/generate-og-image.ts`), amely a lokálisan futó alkalmazást megnyitva készít egy tökéletes `1200x630` felbontású Open Graph (`og:image`) és Twitter Card borítóképet.
 
 ---
 
