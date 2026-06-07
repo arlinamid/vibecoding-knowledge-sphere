@@ -29,6 +29,8 @@ interface DetailPanelProps {
   links: KeywordLink[];
   onSelectNode: (id: string | null) => void;
   onClose: () => void;
+  onTourAction?: (actionType: "copy" | "related") => void;
+  onStartTour?: () => void;
 }
 
 export const DetailPanel: React.FC<DetailPanelProps> = ({
@@ -37,6 +39,8 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
   links,
   onSelectNode,
   onClose,
+  onTourAction,
+  onStartTour,
 }) => {
   // Collapsible accordion states
   const [showPrompts, setShowPrompts] = useState(false);
@@ -51,7 +55,45 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
   // Fetch customized junior content
   const beginnerData = selectedNode ? getBeginnerExplanation(selectedNode) : null;
 
-  // Reset collapse views when node changes
+  // Onboarding "Első 5 perc" flow state
+  const [onboardingSteps, setOnboardingSteps] = useState<{ [key: string]: boolean }>(() => {
+    try {
+      const saved = localStorage.getItem("ONBOARDING_5MIN_FLOW");
+      return saved ? JSON.parse(saved) : { step1: false, step2: false, step3: false, step4: false, step5: false };
+    } catch {
+      return { step1: false, step2: false, step3: false, step4: false, step5: false };
+    }
+  });
+
+  const toggleOnboardingStep = (stepKey: string) => {
+    const nextSteps = { ...onboardingSteps, [stepKey]: !onboardingSteps[stepKey] };
+    setOnboardingSteps(nextSteps);
+    try {
+      localStorage.setItem("ONBOARDING_5MIN_FLOW", JSON.stringify(nextSteps));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const autoCompleteStep = (stepKey: string) => {
+    try {
+      const saved = localStorage.getItem("ONBOARDING_5MIN_FLOW");
+      let current = { step1: false, step2: false, step3: false, step4: false, step5: false };
+      if (saved) current = JSON.parse(saved);
+      if (current[stepKey as keyof typeof current]) return;
+      
+      const nextSteps = { ...current, [stepKey]: true };
+      if (nextSteps.step1 && nextSteps.step2 && nextSteps.step3 && nextSteps.step4) {
+        nextSteps.step5 = true;
+      }
+      setOnboardingSteps(nextSteps);
+      localStorage.setItem("ONBOARDING_5MIN_FLOW", JSON.stringify(nextSteps));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  // Reset collapse views when node changes & auto-progress onboarding
   useEffect(() => {
     setShowPrompts(false);
     setShowAntiPatterns(false);
@@ -59,12 +101,19 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
     setCopiedPhraseIdx(null);
     setCopiedSteps(false);
     setCopiedAnti(false);
+
+    if (selectedNode) {
+      autoCompleteStep("step1");
+      autoCompleteStep("step2");
+    }
   }, [selectedNode]);
 
   // Copy helper functions
   const copyPhrase = (text: string, index: number) => {
     navigator.clipboard.writeText(text);
     setCopiedPhraseIdx(index);
+    autoCompleteStep("step3");
+    onTourAction?.("copy");
     setTimeout(() => setCopiedPhraseIdx(null), 1500);
   };
 
@@ -74,6 +123,8 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
       selectedNode.checklist.map((item, idx) => `${idx + 1}. ${item}`).join("\n");
     navigator.clipboard.writeText(text);
     setCopiedSteps(true);
+    autoCompleteStep("step3");
+    onTourAction?.("copy");
     setTimeout(() => setCopiedSteps(false), 1500);
   };
 
@@ -88,10 +139,14 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
       }).join("\n");
     navigator.clipboard.writeText(text);
     setCopiedAnti(true);
+    autoCompleteStep("step3");
+    onTourAction?.("copy");
     setTimeout(() => setCopiedAnti(false), 1500);
   };
 
   if (!selectedNode) {
+    const progressCount = Object.values(onboardingSteps).filter(Boolean).length;
+
     // Show high-end Atmospheric / Immersive Media "Exploring / Instructions" guide
     return (
       <div 
@@ -114,15 +169,22 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
             </p>
           </div>
 
-          {/* Core User Request Onboarding highlight card */}
-          <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl space-y-1.5 animate-pulse-slow">
+          {/* „Első 5 perc” interaktív vezetett túra indító */}
+          <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl space-y-3">
             <div className="flex items-center gap-1.5 text-amber-400 font-sans text-[10px] font-semibold uppercase tracking-wider">
-              <Lightbulb className="w-3.5 h-3.5" />
-              <span>Gyorstanulás indítása</span>
+              <Lightbulb className="w-3.5 h-3.5 animate-pulse" />
+              <span>Gyorstanuló Útmutató</span>
             </div>
-            <p className="text-xs text-white/95 font-medium leading-relaxed">
-              „Kattints egy fogalomra, és megmutatom, mire való, mikor használd, milyen promptban jelenik meg, és mihez kapcsolódik.”
+            <p className="text-xs text-[#E0D8D0] opacity-80 leading-relaxed font-sans">
+              Ismerd meg a 3D tudásgráf alapfunkcióit a beépített vezetett túrával! Megmutatja, hogyan tudsz keresni, szűrni, és hogyan instruálhatod az AI-t.
             </p>
+            <button
+              onClick={onStartTour}
+              className="w-full py-2 bg-amber-500 hover:bg-amber-400 text-black text-xs font-sans font-bold rounded-lg tracking-wider uppercase transition-all cursor-pointer shadow-md shadow-amber-500/10 flex items-center justify-center gap-1.5"
+            >
+              <Compass className="w-4 h-4" />
+              Vezetett Túra Indítása
+            </button>
           </div>
 
           <div className="space-y-3 pt-3 border-t border-white/5">
@@ -273,7 +335,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
 
         {/* Floating Related Connections Links on structure diagram */}
         {relatedNodes.length > 0 && (
-          <div className="space-y-2 pt-1 border-t border-white/5">
+          <div id="related-nodes-section" className="space-y-2 pt-1 border-t border-white/5">
             <h4 className="text-[9px] uppercase tracking-[0.2em] opacity-40 font-sans font-semibold flex items-center gap-1.5">
               <Network className="w-3 h-3" style={{ color: accentColor }} />
               Kapcsolati Háló ({relatedNodes.length})
@@ -283,7 +345,11 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
                 <button
                   key={rn.id}
                   id={`jump-node-${rn.id}`}
-                  onClick={() => onSelectNode(rn.id)}
+                  onClick={() => {
+                    autoCompleteStep("step4"); // Auto-complete step 4: clicked related node
+                    onTourAction?.("related");
+                    onSelectNode(rn.id);
+                  }}
                   className="px-2.5 py-1 text-[10px] font-mono rounded-lg border hover:bg-white/5 hover:text-white transition-all cursor-pointer font-medium"
                   style={{
                     backgroundColor: "rgba(15,23,42,0.45)",

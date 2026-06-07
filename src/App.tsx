@@ -15,6 +15,7 @@ import { calculateChaosLayout, calculateStructuredLayout } from "./three/layouts
 import { ThreeKnowledgeSphere } from "./components/ThreeKnowledgeSphere";
 import { GroupFilter } from "./components/GroupFilter";
 import { DetailPanel } from "./components/DetailPanel";
+import { OnboardingTour } from "./components/OnboardingTour";
 import {
   Search,
   Sparkles,
@@ -304,6 +305,22 @@ export default function App() {
   const [activeBeginnerProblemId, setActiveBeginnerProblemId] = useState<string | null>(null);
   const [activeRoadmapStepIndex, setActiveRoadmapStepIndex] = useState<number | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(true);
+  const [tourStep, setTourStep] = useState(0); // Onboarding Guided Tour active step (0 = off, 1-5 = active step)
+
+  // Auto-advance guided tour Step 1 to Step 2 if any filter or search is active
+  useEffect(() => {
+    if (tourStep === 1 && (searchQuery || activeGroup || activeBeginnerProblemId)) {
+      setTourStep(2);
+    }
+  }, [searchQuery, activeGroup, activeBeginnerProblemId, tourStep]);
+
+  const handleTourAction = (actionType: "copy" | "related") => {
+    if (actionType === "copy" && tourStep === 3) {
+      setTourStep(4);
+    } else if (actionType === "related" && tourStep === 4) {
+      setTourStep(5);
+    }
+  };
 
   // Modal system states
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -332,6 +349,11 @@ export default function App() {
   // 5. Layout Transition dispatching
   const handleSelectNode = (nodeId: string | null) => {
     setSelectedNodeId(nodeId);
+    
+    // Auto-advance onboarding tour if user selects a node
+    if (nodeId && tourStep === 2) {
+      setTourStep(3);
+    }
     
     // Recalculate target positions
     const nextNodes = [...nodes];
@@ -439,17 +461,29 @@ export default function App() {
               <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
             </div>
             <p className="text-xs text-[#E0D8D0] leading-relaxed">
-              <span className="text-amber-400 font-sans font-bold uppercase tracking-wider text-[9px] mr-2">Iránytű kezdőknek:</span>
-              <strong>„Kattints egy fogalomra, és megmutatom, mire való, mikor használd, milyen promptban jelenik meg, és mihez kapcsolódik.”</strong>
+              <span className="text-amber-400 font-sans font-bold uppercase tracking-wider text-[9px] mr-2">Interaktív Bemutató:</span>
+              <strong>Ismerd meg az alkalmazást az interaktív vezetett túrával 5 lépésben!</strong>
             </p>
           </div>
-          <button
-            id="dismiss-onboarding-btn"
-            onClick={() => setShowOnboarding(false)}
-            className="px-3.5 py-1 bg-white/5 hover:bg-white/10 text-[9px] font-mono font-bold text-white/60 hover:text-white rounded-full border border-white/10 transition-all cursor-pointer self-start sm:self-auto"
-          >
-            [ Értem ]
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              id="start-tour-btn"
+              onClick={() => {
+                setTourStep(1);
+                setShowOnboarding(false);
+              }}
+              className="px-3.5 py-1 bg-amber-500 hover:bg-amber-400 text-black text-[9px] font-mono font-bold rounded-full transition-all cursor-pointer shadow-md shadow-amber-500/10"
+            >
+              [ TÚRA INDÍTÁSA ]
+            </button>
+            <button
+              id="dismiss-onboarding-btn"
+              onClick={() => setShowOnboarding(false)}
+              className="px-3.5 py-1 bg-white/5 hover:bg-white/10 text-[9px] font-mono font-bold text-white/60 hover:text-white rounded-full border border-white/10 transition-all cursor-pointer"
+            >
+              [ Bezárás ]
+            </button>
+          </div>
         </div>
       )}
 
@@ -1142,6 +1176,8 @@ export default function App() {
             links={links}
             onSelectNode={handleSelectNode}
             onClose={() => handleSelectNode(null)}
+            onTourAction={handleTourAction}
+            onStartTour={() => setTourStep(1)}
           />
         </section>
 
@@ -1309,6 +1345,15 @@ export default function App() {
             </div>
           </div>
         </div>
+      )}
+      
+      {/* Onboarding Tour Overlay Component */}
+      {tourStep > 0 && (
+        <OnboardingTour
+          step={tourStep}
+          onSetStep={setTourStep}
+          onClose={() => setTourStep(0)}
+        />
       )}
     </div>
   );

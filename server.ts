@@ -232,6 +232,7 @@ async function startServer() {
 
       const headerApiKey = req.headers["x-api-key"];
       const requestApiKey = Array.isArray(headerApiKey) ? headerApiKey[0] : headerApiKey;
+      // Supported for backward compatibility with legacy clients sending keys in the request body
       const bodyApiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
       const apiKey = requestApiKey || bodyApiKey || process.env.GEMINI_API_KEY;
       if (!apiKey || typeof apiKey !== "string" || !apiKey.trim()) {

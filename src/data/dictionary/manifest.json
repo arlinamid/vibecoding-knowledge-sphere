@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "AI fejlesztői varázsszavak szótára",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "language": "hu",
     "schema_note": "Minden fő csoport tartalmazza a description, keywords, prompt_phrases, anti_patterns és checklist mezőket.",
     "purpose": "Kulcsszavak, magyarázatok, prompt-kifejezések, anti-patternök és ellenőrzőlisták gyűjteménye vibe codinghoz, UI/UX-hez, frontendhez, backendhez, authhoz, hibakereséshez, teszteléshez, DevOpshoz, dokumentációhoz és AI-agent fejlesztéshez.",

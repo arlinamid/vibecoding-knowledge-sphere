@@ -13,7 +13,7 @@ test.describe("Keyword Sphere / AI fejlesztői tudásgömb E2E Tests", () => {
 
   test("should load the landing page successfully and render the knowledge sphere core components", async ({ page }) => {
     // 1. Verify page titles
-    await expect(page.locator("h1")).toContainText("Keyword Sphere");
+    await expect(page.locator("h1")).toContainText("Vibekóding Tudásgömb");
     
     // 2. Locate left sidebar controls
     await expect(page.locator("#left-control-sidebar")).toBeVisible();
@@ -59,8 +59,8 @@ test.describe("Keyword Sphere / AI fejlesztői tudásgömb E2E Tests", () => {
   });
 
   test("should change layouts from chaos to structured upon clicking any keyword node label", async ({ page }) => {
-    // 1. Find a keyword label (e.g., jwt label or vibe_coding)
-    const label = page.locator("div[id^='label-']").first();
+    // 1. Find a visible keyword label (e.g., tailwind_css label which is visible on landing)
+    const label = page.locator("div[id='label-frontend_ui.tailwind_css']");
     await expect(label).toBeVisible();
     
     // 2. Click it to select
@@ -71,7 +71,7 @@ test.describe("Keyword Sphere / AI fejlesztői tudásgömb E2E Tests", () => {
     await expect(detailRoot).toBeVisible();
     
     // 4. Verify detail content structure
-    await expect(detailRoot).toContainText("Magyarázat / Fogalom");
+    await expect(detailRoot).toContainText("Mi ez a fogalom?");
 
     // 5. Accordion sections should be present
     const promptHeader = page.locator("#prompt-section-header");
