@@ -22,6 +22,37 @@
   mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
 }
 
+@layer utilities {
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: var(--tw-scrollbar-track, transparent);
+    border-radius: 999px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: var(--tw-scrollbar-thumb, rgba(255, 255, 255, 0.12));
+    background-clip: padding-box;
+    border: 1px solid transparent;
+    border-radius: 999px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(
+      in oklab,
+      var(--tw-scrollbar-thumb, rgba(255, 255, 255, 0.12)) 70%,
+      white
+    );
+  }
+}
+
 /* Glowing text shadows based on category name styles */
 .node-glow-auth {
   text-shadow: 0 0 10px rgba(255, 107, 107, 0.6);
