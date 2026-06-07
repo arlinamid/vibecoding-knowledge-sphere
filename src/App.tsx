@@ -10,7 +10,6 @@ import {
   buildLinks,
   initializeNodePositions,
   GROUPS,
-  META,
 } from "./data/dictionaryService";
 import { calculateChaosLayout, calculateStructuredLayout } from "./three/layouts";
 import { ThreeKnowledgeSphere } from "./components/ThreeKnowledgeSphere";
@@ -24,19 +23,20 @@ import {
   Zap,
   Layers,
   HelpCircle,
-  Maximize2,
-  Minimize2,
   Info,
-  Calendar,
-  Settings,
   Github,
   Brain,
   Key,
   Save,
-  Check,
   ExternalLink,
   AlertTriangle
 } from "lucide-react";
+
+const AI_SEARCH_MAX_QUERY_LENGTH = 120;
+
+type AiSearchMatch = { id: string; matchReason: string };
+type AiSearchResponse = { matches?: AiSearchMatch[]; aiSummary?: string };
+type AiSearchErrorResponse = { error?: string };
 
 // Beginner Mode Problems config dataset
 const BEGINNER_PROBLEMS = [
@@ -175,7 +175,7 @@ export default function App() {
   const [isAiSearch, setIsAiSearch] = useState<boolean>(() => {
     return !!(localStorage.getItem("BYOK_GEMINI_API_KEY"));
   });
-  const [aiSearchMatches, setAiSearchMatches] = useState<{ id: string; matchReason: string }[] | null>(null);
+  const [aiSearchMatches, setAiSearchMatches] = useState<AiSearchMatch[] | null>(null);
   const [aiSearchSummary, setAiSearchSummary] = useState<string | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
@@ -223,7 +223,9 @@ export default function App() {
 
   // Debounce and trigger server-side Gemini Intelligent Search with cancel request (AbortController) and length limitation
   useEffect(() => {
-    if (!searchQuery || searchQuery.trim().length < 2) {
+    const trimmedQuery = searchQuery.trim();
+
+    if (!trimmedQuery || trimmedQuery.length < 2) {
       setAiSearchMatches(null);
       setAiSearchSummary(null);
       setAiError(null);
@@ -231,10 +233,10 @@ export default function App() {
       return;
     }
 
-    if (searchQuery.trim().length > 20) {
+    if (trimmedQuery.length > AI_SEARCH_MAX_QUERY_LENGTH) {
       setAiSearchMatches(null);
       setAiSearchSummary(null);
-      setAiError("Az intelligens (AI) keresés legfeljebb 20 karakter hosszúságú lehet.");
+      setAiError(`Az intelligens (AI) keresés legfeljebb ${AI_SEARCH_MAX_QUERY_LENGTH} karakter hosszúságú lehet.`);
       setIsAiLoading(false);
       return;
     }
@@ -266,36 +268,36 @@ export default function App() {
         const response = await fetch("/api/ai-search", {
           method: "POST",
           headers,
-          body: JSON.stringify({ q: searchQuery, apiKey: byokKey.trim() || undefined }),
+          body: JSON.stringify({ q: trimmedQuery }),
           signal,
         });
 
         if (!response.ok) {
-          const errData = await response.json().catch(() => ({}));
+          const errData = (await response.json().catch(() => ({}))) as AiSearchErrorResponse;
           throw new Error(errData.error || "Hiba történt az intelligens keresés során.");
         }
 
-        const data = await response.json();
-        setAiSearchMatches(data.matches || []);
+        const data = (await response.json()) as AiSearchResponse;
+        setAiSearchMatches(data.matches ?? []);
         setAiSearchSummary(data.aiSummary || null);
         setIsAiLoading(false);
-      } catch (err: any) {
-        if (err.name === "AbortError") {
+      } catch (err: unknown) {
+        if (err instanceof DOMException && err.name === "AbortError") {
           // Silent catch for cancelled request
           return;
         }
         console.error("AI Search HTTP error:", err);
-        setAiError(err.message || "Szerver kapcsolódási hiba.");
+        setAiError(err instanceof Error ? err.message : "Szerver kapcsolódási hiba.");
         setAiSearchMatches([]);
         setIsAiLoading(false);
       }
-    }, 3500); // 3-4 másodperc türelmi idő (3.5 ms debounce)
+    }, 3500); // 3-4 másodperc türelmi idő (3.5 s debounce)
 
     return () => {
       clearTimeout(handler);
       controller.abort();
     };
-  }, [searchQuery, isAiSearch, byokKey]);
+  }, [searchQuery, isAiSearch, hasSystemKey, byokKey]);
 
   // New Beginner-Focused Interactive States
   const [sidebarTab, setSidebarTab] = useState<"explore" | "beginner" | "roadmap">("explore");
@@ -303,35 +305,9 @@ export default function App() {
   const [activeRoadmapStepIndex, setActiveRoadmapStepIndex] = useState<number | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(true);
 
-  // Real-time ticking clock state & Modal system states
-  const [currentTime, setCurrentTime] = useState(new Date());
+  // Modal system states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTab, setModalTab] = useState<"about" | "howto" | "dev">("about");
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const formattedTime = useMemo(() => {
-    const y = currentTime.getFullYear();
-    const m = String(currentTime.getMonth() + 1).padStart(2, "0");
-    const d = String(currentTime.getDate()).padStart(2, "0");
-    const hh = String(currentTime.getHours()).padStart(2, "0");
-    const mm = String(currentTime.getMinutes()).padStart(2, "0");
-    const ss = String(currentTime.getSeconds()).padStart(2, "0");
-    return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
-  }, [currentTime]);
-
-  const groupCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    nodes.forEach((n) => {
-      counts[n.group] = (counts[n.group] || 0) + 1;
-    });
-    return counts;
-  }, [nodes]);
 
   // 4. Fetch Active Selected Node info
   const selectedNode = useMemo(() => {
@@ -436,8 +412,6 @@ export default function App() {
     <div className="relative h-screen bg-[#050508] text-[#E0D8D0] flex flex-col overflow-hidden font-sans select-none selection:bg-white/10 selection:text-white">
       {/* Background radial starry gradient overlays - Cinematic Atmospheric */}
       <div className="absolute inset-0 sphere-gradient pointer-events-none z-0" />
-      <div className="absolute top-[-10%] left-[-10%] w-[45%] h-[45%] bg-blue-950/15 rounded-full blur-[140px] pointer-events-none z-0" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[45%] h-[45%] bg-purple-950/15 rounded-full blur-[140px] pointer-events-none z-0" />
 
       {/* Primary Top Header Board */}
       <header className="relative z-10 shrink-0 border-b border-white/5 bg-[#050508]/40 backdrop-blur-md px-6 py-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -455,19 +429,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* Real-time system monitoring panel */}
-        <div className="hidden lg:flex items-center gap-4 text-[9px] tracking-widest uppercase text-white/40 font-mono">
-          <div className="flex items-center gap-2 bg-white/3 border border-white/5 px-4 py-2 rounded-full">
-            <Calendar className="w-3.5 h-3.5 text-white/50" />
-            <span>Pontos Idő:</span>
-            <span className="text-white font-semibold">{formattedTime}</span>
-          </div>
-          <div className="flex items-center gap-2 bg-white/3 border border-white/5 px-4 py-2 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>System:</span>
-            <span className="text-emerald-400 font-semibold">Stable</span>
-          </div>
-        </div>
       </header>
 
       {/* Core Onboarding Highlight Banner Ribbon */}
@@ -603,7 +564,7 @@ export default function App() {
                                 </p>
                                 <p className="text-[10px] text-white/50 leading-relaxed font-sans">
                                   {hasSystemKey 
-                                    ? "Megadhatsz saját API kulcsot is az alapértelmezetten felül:" 
+                                    ? "Megadhatsz saját API kulcsot is az alapértelmezetten felül:"
                                     : "Adj meg egy saját kulcsot az intelligens AI keresés feloldásához:"}
                                 </p>
                               </div>
@@ -660,7 +621,7 @@ export default function App() {
 
                             <div className="flex items-center justify-between">
                               <p className="text-[9px] text-white/30 font-mono italic">
-                                A kulcs a böngésződben tárolódik.
+                                A kulcs a böngésződben tárolódik; AI kereséskor a saját backendnek elküldjük, adatbázisba nem mentjük.
                               </p>
                               {hasSystemKey && (
                                 <button
@@ -694,10 +655,15 @@ export default function App() {
                       ) : (
                         /* If custom key is specified and validated */
                         <div className="flex items-center justify-between text-[11px] bg-sky-950/20 border border-sky-500/15 rounded-xl px-3 py-2 font-mono">
-                          <span className="text-sky-300 flex items-center gap-1.5">
-                            <Key className="w-3.5 h-3.5 text-sky-400 font-normal" />
-                            <span>Egyedi kulcs: <strong className="text-white">••••••••{byokKey.slice(-4)}</strong></span>
-                          </span>
+                          <div className="text-sky-300 flex flex-col gap-1">
+                            <span className="flex items-center gap-1.5">
+                              <Key className="w-3.5 h-3.5 text-sky-400 font-normal" />
+                              <span>Egyedi kulcs: <strong className="text-white">••••••••{byokKey.slice(-4)}</strong></span>
+                            </span>
+                            <span className="text-[9px] text-white/35 font-sans">
+                              Kereséskor a backendnek továbbítva, mentés nélkül.
+                            </span>
+                          </div>
                           <button
                             onClick={() => {
                               localStorage.removeItem("BYOK_GEMINI_API_KEY");
@@ -724,11 +690,12 @@ export default function App() {
                       placeholder={
                         isAiSearch
                           ? (hasSystemKey || byokKey)
-                            ? "Próbáld: biztonság, gyors, animáció..."
+                            ? "Próbáld: nem működik a bejelentkezés, hogyan mentsek adatot..."
                             : "Adjon meg egy API kulcsot feljebb..."
                           : "Search knowledge..."
                       }
                       disabled={isAiSearch && !hasSystemKey && !byokKey}
+                      maxLength={AI_SEARCH_MAX_QUERY_LENGTH}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className={`w-full bg-black/40 border border-white/10 rounded-full pl-9 pr-9 py-2.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-all font-mono ${
@@ -804,7 +771,7 @@ export default function App() {
                                 {fullNode.label}
                               </span>
                               <span
-                                className="text-[9px] uppercase tracking-wider px-1.5 py-0.2 rounded bg-white/5 font-mono"
+                                className="text-[9px] uppercase tracking-wider px-1.5 py-px rounded bg-white/5 font-mono"
                                 style={{ color: fullNode.color }}
                               >
                                 {GROUPS[fullNode.group]?.name || fullNode.group}
@@ -825,7 +792,7 @@ export default function App() {
                 {/* Module B: Quick Simplified Tags */}
                 <div className="bg-white/3 border border-white/5 rounded-2xl p-4 space-y-2.5 backdrop-blur-xl glass-panel">
                   <h3 className="font-sans text-[10px] font-semibold text-white/50 uppercase tracking-[0.2em] flex items-center gap-1.5">
-                    <Sparkles className="w-3 h-3 text-sky-450" />
+                    <Sparkles className="w-3 h-3 text-sky-400" />
                     Gyorsszűrő Címkék
                   </h3>
                   <div className="flex flex-wrap gap-1.5">
@@ -879,7 +846,7 @@ export default function App() {
                         key={prob.id}
                         className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none ${
                           isSelected
-                            ? "bg-amber-500/10 border-amber-450 shadow-lg"
+                            ? "bg-amber-500/10 border-amber-400 shadow-lg"
                             : "bg-black/30 border-white/5 hover:border-white/20"
                         }`}
                         onClick={() => {
@@ -898,7 +865,7 @@ export default function App() {
                           <span className="font-serif text-xs font-semibold text-white tracking-wide">
                             {prob.title}
                           </span>
-                          <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-amber-450 animate-pulse" : "bg-white/20"}`} />
+                          <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-amber-400 animate-pulse" : "bg-white/20"}`} />
                         </div>
                         
                         <p className="text-[11px] leading-relaxed text-[#E0D8D0]/70 mt-1.5 font-sans pl-2 border-l border-white/10">
@@ -906,7 +873,7 @@ export default function App() {
                         </p>
 
                         {isSelected && (
-                          <div className="mt-3 pt-2.5 border-t border-amber-550/20 space-y-1.5">
+                          <div className="mt-3 pt-2.5 border-t border-amber-500/20 space-y-1.5">
                             <div className="text-[9px] uppercase tracking-wider text-amber-400/80 font-mono font-bold">
                               Alapvető megoldások itt:
                             </div>
@@ -948,7 +915,7 @@ export default function App() {
                 {/* Vertical connected timeline */}
                 <div className="relative pl-4 space-y-3 pt-2 pb-6">
                   {/* Connected Line overlay */}
-                  <div className="absolute left-1.5 top-0 bottom-8 w-0.5 bg-gradient-to-b from-sky-400/40 via-sky-450/20 to-transparent pointer-events-none" />
+                  <div className="absolute left-1.5 top-0 bottom-8 w-0.5 bg-gradient-to-b from-sky-400/40 via-sky-400/20 to-transparent pointer-events-none" />
 
                   {ROADMAP_STEPS.map((step, idx) => {
                     const isSelected = activeRoadmapStepIndex === idx;
@@ -972,7 +939,7 @@ export default function App() {
                         }}
                       >
                         {/* Connection bullet */}
-                        <div className="absolute left-[-21px] top-4.5 w-3 h-3 rounded-full border-2 border-[#050508] flex items-center justify-center transition-all bg-sky-950"
+                        <div className="absolute left-[-21px] top-[18px] w-3 h-3 rounded-full border-2 border-[#050508] flex items-center justify-center transition-all bg-sky-950"
                           style={{
                             borderColor: isSelected ? "#38bdf8" : "#1e293b",
                             backgroundColor: isSelected ? "#38bdf8" : "transparent"
@@ -996,7 +963,7 @@ export default function App() {
 
                         {isSelected && (
                           <div className="mt-2.5 pt-2 border-t border-sky-500/15 flex items-center justify-between text-[9px] font-mono">
-                            <span className="text-sky-450">Fókuszban:</span>
+                            <span className="text-sky-400">Fókuszban:</span>
                             <span className="font-bold underline text-white uppercase">{step.keyId.split(".")[1]}</span>
                           </div>
                         )}
@@ -1012,7 +979,7 @@ export default function App() {
           <div className="bg-white/3 border border-white/5 rounded-2xl p-4 space-y-4 backdrop-blur-xl glass-panel shrink-0">
             <div>
               <h3 id="layout-title" className="text-[10px] font-semibold text-white/50 uppercase tracking-[0.2em]">
-                Vizuális Állapotgép
+                Nézet és mozgás
               </h3>
               <p className="text-[10px] text-white/40 font-mono mt-1">
                 Aktuális nézet: <span className="text-sky-400 capitalize font-medium">{viewMode}</span>
@@ -1185,7 +1152,6 @@ export default function App() {
         <div className="flex space-x-8 mb-2 md:mb-0">
           <span>Nodes: {nodes.length}</span>
           <span>Relations: {links.length}</span>
-          <span>System: Stable</span>
         </div>
         <div className="flex flex-wrap justify-center gap-4 text-[9px] tracking-widest">
           <span className="text-[#FF6B6B]">● Auth & Sec</span>

@@ -17,11 +17,11 @@ A **Vibekóding Tudásgömb** egy interaktív, 3D hangulatalapú (Vibe Coding) s
     *   **Maximum 2 mélységig (depth-2)** minden hozzá kapcsolódó szó és reláció azonnal, hiánytalanul kirajzolódik a térben.
 *   **Intelligens AI Keresés (Gemini BYOK):** Gépi tanulással kiegészített, szemantikus kulcsszókereső motor:
     *   **Auto-Aktív Kulcsok:** Ha az alkalmazásban már be van állítva egy központi AI kulcs, a rendszer azonnal működésbe lép.
-    *   **Egyéni Kulcs Integráció (BYOK):** Lehetőség van saját Gemini API kulcs használatára is. A beírt kulcs biztonságos, és kizárólag a saját készülékeden (`localStorage`) tárolódik.
+    *   **Egyéni Kulcs Integráció (BYOK):** Lehetőség van saját Gemini API kulcs használatára is. A kulcs a böngészőben (`localStorage`) tárolódik, adatbázisba nem kerül, de az AI keresés futtatásakor a saját backendnek továbbítjuk, mert a szerver hívja meg a Gemini API-t.
     *   **Aktív Kezdőkarakter-Vizsgálat:** A beviteli mező automatikusan ellenőrzi a formátumot (`AIzaSy` kezdet) és a hosszúságot, segítve a hibák megelőzését.
 *   **Egyenként másolható Mintamondatok:** A prompt-mérnöki kifejezések dobozában a mintamondatok mellett elhelyezett **Másolás gomb** segítségével a másolás egyetlen kattintással elérhető.
 *   **Együttesen másolható Útmutatók:** A *Megvalósítási lépések* és az *Anti-Patternök* teljes anyaga egyetlen gombnyomással a vágólapra helyezhető, strukturált, kész listaként.
-*   **Valós idejű Helyi Óra:** A fejlécben elhelyezett óra pontosan és dinamikusan frissítve mutatja a helyi időt.
+*   **Letisztított tanulói felület:** A fejléc és státuszsáv a tanulási fókuszt támogatja, a részletesebb nézet- és mozgásvezérlők a bal oldali panelen maradnak.
 *   **Bootstrapped Infobox Portal (bal alsó sarok):**
     *   **ABOUT:** Átfogó leírás a tudástérről és kategóriáiról.
     *   **HOWTO:** Részletes, pontokba szedett használati útmutató.
@@ -31,7 +31,7 @@ A **Vibekóding Tudásgömb** egy interaktív, 3D hangulatalapú (Vibe Coding) s
 
 ## 🛠️ Alkalmazott Technológiák
 
-*   **Keretrendszer:** [React 18+](https://react.dev/) + [Vite](https://vitejs.dev/)
+*   **Keretrendszer:** [React 19.0.1](https://react.dev/) + [Vite](https://vitejs.dev/)
 *   **3D Renderelés:** [Three.js](https://threejs.org/) + custom HTML Label vetítés (Level of Detail)
 *   **Dizájn & Styling:** [Tailwind CSS](https://tailwindcss.com/) szigorú Space-age Dark, nagy kontrasztú arany-szürke hangulattal
 *   **Ikonkészlet:** [Lucide React](https://lucide.dev/) (egységesen betöltve)
@@ -47,9 +47,11 @@ A **Vibekóding Tudásgömb** egy interaktív, 3D hangulatalapú (Vibe Coding) s
 │   ├── components/
 │   │   ├── ThreeKnowledgeSphere.tsx # A 3D-s WebGL gömb és a LOD / kapcsolat kirajzolás lelke
 │   │   ├── DetailPanel.tsx          # Jobb oldali részletes elemző kártya (Copy funkciókkal)
-│   │   └── CategoryFilter.tsx       # Bal oldali kategóriaszűrők
+│   │   └── GroupFilter.tsx          # Bal oldali kategóriaszűrők
 │   ├── data/
-│   │   ├── dictionary.json          # A teljes tudásbázis strukturált adata
+│   │   ├── dictionary/
+│   │   │   ├── manifest.json        # Metaadatok, fő csoportok és kategóriafájlok listája
+│   │   │   └── *.json               # Kategóriánként bontott kulcsszavak
 │   │   └── dictionaryService.ts     # Kapcsolatgenerátor és adatszolgáltató
 │   ├── App.tsx                      # Fő alkalmazás logikája, óra és az Infó Modal
 │   ├── main.tsx                     # React belépési pont
@@ -57,6 +59,10 @@ A **Vibekóding Tudásgömb** egy interaktív, 3D hangulatalapú (Vibe Coding) s
 ├── metadata.json                    # Alkalmazás metaadatai (Név: Vibekóding Tudásgömb)
 └── package.json                     # Projekt függőségek és futtató scriptek
 ```
+
+### Szótárbetöltés
+
+Az alkalmazás build közben az új, kategóriánként bontott `src/data/dictionary/*.json` fájlokat használja. Ha egy kategória split fájlja hiányzik vagy nem tartalmaz érvényes `keywords` listát, a loader ugyanazt a kategóriát a régi `src/data/user_dictionary.json` sémából építi fel. Ugyanez a fallback működik a szerveroldali AI kereső indexnél is.
 
 ---
 

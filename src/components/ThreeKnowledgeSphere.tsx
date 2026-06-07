@@ -57,7 +57,6 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
   const showRelationsRef = useRef(showRelations);
   const viewModeRef = useRef(viewMode);
   const linksRef = useRef(links);
-  const cameraModeRef = useRef(cameraMode);
   const reducedMotionRef = useRef(reducedMotion);
   const sidebarTabRef = useRef(sidebarTab);
   const aiSearchActiveMatchesRef = useRef<string[] | null>(aiSearchActiveMatches);
@@ -70,7 +69,6 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
   useEffect(() => { showRelationsRef.current = showRelations; }, [showRelations]);
   useEffect(() => { viewModeRef.current = viewMode; }, [viewMode]);
   useEffect(() => { linksRef.current = links; }, [links]);
-  useEffect(() => { cameraModeRef.current = cameraMode; }, [cameraMode]);
   useEffect(() => { reducedMotionRef.current = reducedMotion; }, [reducedMotion]);
   useEffect(() => { sidebarTabRef.current = sidebarTab; }, [sidebarTab]);
   useEffect(() => { aiSearchActiveMatchesRef.current = aiSearchActiveMatches; }, [aiSearchActiveMatches]);
@@ -101,10 +99,9 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
   const linesGeometryRef = useRef<THREE.BufferGeometry | null>(null);
-  const particlesRef = useRef<THREE.Points | null>(null);
 
-  const cameraTweenRef = useRef<any>(null);
-  const controlsTargetTweenRef = useRef<any>(null);
+  const cameraTweenRef = useRef<gsap.core.Tween | null>(null);
+  const controlsTargetTweenRef = useRef<gsap.core.Tween | null>(null);
 
   // Cache label element references to bypass expensive DOM queries in tick loop
   const labelRefs = useRef<Record<string, HTMLDivElement>>({});
@@ -199,7 +196,6 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
 
     const particles = new THREE.Points(particleGeometry, particleMaterial);
     scene.add(particles);
-    particlesRef.current = particles;
 
     // 6. Relationship Lines Geometry
     const linesGeometry = new THREE.BufferGeometry();
@@ -230,8 +226,8 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
     controls.maxDistance = 75;
     controls.enablePan = true;
     controls.zoomSpeed = 1.2;
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = 0.6;
+    controls.autoRotate = !reducedMotionRef.current;
+    controls.autoRotateSpeed = reducedMotionRef.current ? 0 : 0.6;
     controlsRef.current = controls;
 
     // 8. Robust Resize Observer that passes updateStyle=false to block layout updates loop feedback
@@ -273,6 +269,7 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
 
       const activeSceneCamera = cameraRef.current;
       const currentNodes = nodesRef.current;
+      const nodeById = new Map(currentNodes.map((node) => [node.id, node]));
 
       // Access high level ref values
       const currentViewMode = viewModeRef.current;
@@ -283,20 +280,22 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
       const currentShowRelations = showRelationsRef.current;
       const currentLinks = linksRef.current;
       const currentAiSearchActiveMatches = aiSearchActiveMatchesRef.current;
+      const currentReducedMotion = reducedMotionRef.current;
+      const aiMatchSet = currentAiSearchActiveMatches ? new Set(currentAiSearchActiveMatches) : null;
 
       // 1. Organic wave drift relative to targeting anchors in chaos mode
       if (currentViewMode === "chaos") {
         currentNodes.forEach((node, i) => {
-          const waveX = Math.sin(elapsedTime * 0.5 + i * 2.3) * 0.45;
-          const waveY = Math.cos(elapsedTime * 0.4 + i * 1.7) * 0.45;
-          const waveZ = Math.sin(elapsedTime * 0.6 + i * 3.1) * 0.45;
+          const waveX = currentReducedMotion ? 0 : Math.sin(elapsedTime * 0.5 + i * 2.3) * 0.45;
+          const waveY = currentReducedMotion ? 0 : Math.cos(elapsedTime * 0.4 + i * 1.7) * 0.45;
+          const waveZ = currentReducedMotion ? 0 : Math.sin(elapsedTime * 0.6 + i * 3.1) * 0.45;
 
           node.x = node.tx + waveX;
           node.y = node.ty + waveY;
           node.z = node.tz + waveZ;
         });
 
-        if (particles) {
+        if (particles && !currentReducedMotion) {
           particles.rotation.y = elapsedTime * 0.012;
           particles.rotation.x = elapsedTime * 0.006;
         }
@@ -309,13 +308,13 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
             node.z = node.tz;
             return; // parent anchor stays locked
           }
-          const hoverWave = Math.sin(elapsedTime * 0.8 + i * 0.5) * 0.18;
+          const hoverWave = currentReducedMotion ? 0 : Math.sin(elapsedTime * 0.8 + i * 0.5) * 0.18;
           node.x = node.tx;
           node.y = node.ty + hoverWave;
           node.z = node.tz;
         });
 
-        if (particles) {
+        if (particles && !currentReducedMotion) {
           particles.rotation.y = elapsedTime * 0.003;
         }
       }
@@ -330,8 +329,8 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
         currentLinks.forEach((link) => {
           if (lineIdx >= maxLineSegments) return;
 
-          const sNode = currentNodes.find((n) => n.id === link.source);
-          const tNode = currentNodes.find((n) => n.id === link.target);
+          const sNode = nodeById.get(link.source);
+          const tNode = nodeById.get(link.target);
 
           if (!sNode || !tNode) return;
 
@@ -357,9 +356,9 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
             colorStrength = Math.max(colorStrength, 0.45);
           }
 
-          if (currentAiSearchActiveMatches) {
-            const sMatch = currentAiSearchActiveMatches.includes(sNode.id);
-            const tMatch = currentAiSearchActiveMatches.includes(tNode.id);
+          if (aiMatchSet) {
+            const sMatch = aiMatchSet.has(sNode.id);
+            const tMatch = aiMatchSet.has(tNode.id);
             if (!sMatch || !tMatch) {
               colorStrength *= 0.15;
             }
@@ -376,10 +375,10 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
             linePosAttr.setXYZ(lineIdx * 2 + 1, tNode.x, tNode.y, tNode.z);
 
             const cSrc = new THREE.Color(sNode.color);
-            const _cTr = new THREE.Color(tNode.color);
+            const cTarget = new THREE.Color(tNode.color);
 
             lineColAttr.setXYZ(lineIdx * 2, cSrc.r * colorStrength, cSrc.g * colorStrength, cSrc.b * colorStrength);
-            lineColAttr.setXYZ(lineIdx * 2 + 1, _cTr.r * colorStrength, _cTr.g * colorStrength, _cTr.b * colorStrength);
+            lineColAttr.setXYZ(lineIdx * 2 + 1, cTarget.r * colorStrength, cTarget.g * colorStrength, cTarget.b * colorStrength);
 
             lineIdx++;
           }
@@ -428,8 +427,8 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
             alwaysShow = true;
           }
 
-          if (currentAiSearchActiveMatches) {
-            if (currentAiSearchActiveMatches.includes(node.id)) {
+          if (aiMatchSet) {
+            if (aiMatchSet.has(node.id)) {
               alwaysShow = true;
             }
           } else if (currentSearchQuery) {
@@ -466,6 +465,7 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
 
         // Split candidates to apply dynamic visibility limits
         const frontCandidates = candidates.filter((c) => !c.alwaysShow && c.proj > -5.0);
+        const candidateById = new Map(candidates.map((candidate) => [candidate.node.id, candidate]));
 
         // Sort front Candidates sorted by proximity (closest nodes first) to maximize FPS
         frontCandidates.sort((a, b) => a.distance - b.distance);
@@ -475,24 +475,24 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
 
         const hasSelection = currentSelectedNodeId !== null;
         const connectedAtDepth2 = new Set<string>();
+        const directRelationIds = new Set<string>();
 
         if (hasSelection && currentSelectedNodeId !== null) {
           connectedAtDepth2.add(currentSelectedNodeId);
-          const depth1 = new Set<string>();
           currentLinks.forEach((link) => {
             if (link.source === currentSelectedNodeId) {
-              depth1.add(link.target);
+              directRelationIds.add(link.target);
               connectedAtDepth2.add(link.target);
             } else if (link.target === currentSelectedNodeId) {
-              depth1.add(link.source);
+              directRelationIds.add(link.source);
               connectedAtDepth2.add(link.source);
             }
           });
           currentLinks.forEach((link) => {
-            if (depth1.has(link.source)) {
+            if (directRelationIds.has(link.source)) {
               connectedAtDepth2.add(link.target);
             }
-            if (depth1.has(link.target)) {
+            if (directRelationIds.has(link.target)) {
               connectedAtDepth2.add(link.source);
             }
           });
@@ -515,7 +515,7 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
           const maxLazyLabels = 75;
           const visibleFrontCount = Math.min(maxLazyLabels, frontCandidates.length);
           for (let i = 0; i < visibleFrontCount; i++) {
-            visibleNodeIds.add(frontCandidates[i][i % 1 === 0 ? "node" : "node"].id);
+            visibleNodeIds.add(frontCandidates[i].node.id);
           }
         }
 
@@ -543,7 +543,10 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
           const posX = (tempV.x * 0.5 + 0.5) * w;
           const posY = (-(tempV.y * 0.5) + 0.5) * h;
 
-          const distance = activeSceneCamera.position.distanceTo(new THREE.Vector3(node.x, node.y, node.z));
+          const distX = node.x - activeSceneCamera.position.x;
+          const distY = node.y - activeSceneCamera.position.y;
+          const distZ = node.z - activeSceneCamera.position.z;
+          const distance = Math.sqrt(distX * distX + distY * distY + distZ * distZ);
           const scale = Math.max(0.48, Math.min(1.4, 28 / distance));
           const zIndex = Math.round((100 - distance) * 10);
 
@@ -553,11 +556,7 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
 
           if (currentViewMode === "focused" && currentSelectedNodeId) {
             const isSelf = node.id === currentSelectedNodeId;
-            const isDirectRelation = currentLinks.some(
-              (l) =>
-                (l.source === currentSelectedNodeId && l.target === node.id) ||
-                (l.target === currentSelectedNodeId && l.source === node.id)
-            );
+            const isDirectRelation = directRelationIds.has(node.id);
 
             if (isSelf) {
               opacity = 1.0;
@@ -581,8 +580,8 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
             }
           }
 
-          if (currentAiSearchActiveMatches) {
-            const matchesQuery = currentAiSearchActiveMatches.includes(node.id);
+          if (aiMatchSet) {
+            const matchesQuery = aiMatchSet.has(node.id);
 
             if (!matchesQuery) {
               opacity = isDimmed ? opacity * 0.25 : 0.2;
@@ -609,7 +608,7 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
           }
 
           // Edge of sphere horizon fading for beautiful spherical scroll feeling
-          const candidateData = candidates.find((c) => c.node.id === node.id);
+          const candidateData = candidateById.get(node.id);
           if (candidateData && !candidateData.alwaysShow) {
             const fadeStart = -2.5;
             const fadeEnd = -6.5;
@@ -711,8 +710,7 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
     if (!camera || !controls) return;
 
     if (viewMode === "focused" && selectedNodeId) {
-      const selectedNode = nodes.find((n) => n.id === selectedNodeId);
-      if (selectedNode) {
+      if (nodes.some((n) => n.id === selectedNodeId)) {
         const duration = reducedMotion ? 0.1 : 1.25;
         gsap.to(controls.target, {
           x: 0,
@@ -741,13 +739,15 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
     const controls = controlsRef.current;
     if (!controls) return;
 
-    // Reset controls auto-rotation active parameters
-    controls.autoRotate = true;
-
     if (reducedMotion) {
-      controls.autoRotateSpeed = 0.5;
+      gsap.killTweensOf(controls);
+      controls.autoRotate = false;
+      controls.autoRotateSpeed = 0;
       return;
     }
+
+    // Reset controls auto-rotation active parameters
+    controls.autoRotate = true;
 
     // Determine random new rotation direction and push high initial spin speed
     const direction = Math.random() > 0.5 ? 1 : -1;

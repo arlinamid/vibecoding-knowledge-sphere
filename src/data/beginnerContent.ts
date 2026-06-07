@@ -4,99 +4,16 @@
  */
 
 import { KeywordNode } from "../types";
-import { GROUPS } from "./dictionaryService";
 
 export interface BeginnerData {
   whatIsThis: string;
   whenToUse: string;
   blockerSolved: string;
   promptInstructions: string;
-  miniSnippet: {
-    title: string;
-    lang: string;
-    code: string;
-  };
 }
-
-// Custom curated snippets for specific core keywords to make them incredibly educational
-const SPECIFIC_SNIPPETS: Record<string, { title: string; lang: string; code: string }> = {
-  "authentication.jwt": {
-    title: "Szerveroldali JWT aláírás Express-ben",
-    lang: "typescript",
-    code: `import jwt from 'jsonwebtoken';
-
-// Így írunk alá egy tokent a belépésnél:
-const token = jwt.sign(
-  { userId: user.id, role: 'admin' }, 
-  process.env.JWT_SECRET!, 
-  { expiresIn: '15m' } // Rövid lejárati idő a biztonságért!
-);`
-  },
-  "security.cors": {
-    title: "CORS szabályozás Express-ben",
-    lang: "typescript",
-    code: `import cors from 'cors';
-import express from 'express';
-const app = express();
-
-// Csak a saját frontendünkről engedjük be a kéréseket:
-app.use(cors({
-  origin: 'https://mysite.com',
-  credentials: true // Sütik / Authorization fejlécek továbbításához
-}));`
-  },
-  "database.firestore": {
-    title: "Adat hozzáadása Firestore-hoz (React SDK)",
-    lang: "typescript",
-    code: `import { db } from './firebase';
-import { collection, addDoc } from 'firebase/firestore';
-
-async function saveUserData(userId: string, data: any) {
-  // Mindig a gyűjtemény (collection) hivatkozással kezdünk:
-  const userRef = collection(db, 'users');
-  await addDoc(userRef, {
-    userId,
-    ...data,
-    createdAt: new Date().toISOString()
-  });
-}`
-  },
-  "frontend_ui.tailwind_css": {
-    title: "Modern, adaptív kártya Tailwind-ben",
-    lang: "html",
-    code: `<!-- Reszponzív belső tér, lekerekített sarkok, finom hover effekt -->
-<div class="p-6 bg-[#0b0b14] border border-white/5 rounded-2xl hover:border-sky-500/30 transition-all select-none duration-300">
-  <h3 class="text-sm font-sans font-semibold tracking-wide text-white">
-    Koncepció Panel
-  </h3>
-  <p class="text-xs text-white/60 mt-2 leading-relaxed">
-    Gyönyörű vizuális hierarchia tiszta térközökkel.
-  </p>
-</div>`
-  },
-  "debugging.stack_trace": {
-    title: "Hogyan olvasd a Stack Trace-t az AI-val",
-    lang: "prompt",
-    code: `Itt van az összeomlási naplóm (Stack Trace). 
-Kérlek bontsd fel, pontosan melyik fájlban, melyik sorban és miért történt a hiba, 
-majd mutass egy javítási javaslatot:
-
-[IDEMÁSOLD_A_TERMINAL_HIBÁT_HIÁNYTALANUL]`
-  },
-  "vibe_coding.git": {
-    title: "Junior AI-kódolási projekt briefing prompt",
-    lang: "prompt",
-    code: `Szia! Szeretném felépíteni ezt a funkciót: [FUNKCIÓ_LEÍRÁSA]. 
-Mielőtt bármilyen kódot írsz, készíts nekem:
-1. Egy világos funkciótérképet (Function Map)
-2. Egy lépésről lépésre követhető implementációs tervet
-3. Mutasd meg, milyen fájlokat fogsz létrehozni és módosítani.`
-  }
-};
 
 export function getBeginnerExplanation(node: KeywordNode): BeginnerData {
   const g = node.group;
-  const id = node.id;
 
   // 1. General group fallback values
   let whatIsThis = node.description;
@@ -174,39 +91,10 @@ export function getBeginnerExplanation(node: KeywordNode): BeginnerData {
     promptInstructions = `Mondd ezt az AI-nak: "Írj egy kiváló, részletes ${node.label} dokumentációt ehhez a modulhoz, példákkal kiegészítve!"`;
   }
 
-  // 2. Curated mini snippets check (if specific ID is defined, override, otherwise use a generic custom-designed default template)
-  let miniSnippet = SPECIFIC_SNIPPETS[id];
-  if (!miniSnippet) {
-    // Generate helpful generic template
-    miniSnippet = {
-      title: `${node.label} mintakód junior fejlesztőknek`,
-      lang: "typescript",
-      code: `// ${node.label} használatának szemléletes alapmintája:
-function handle${node.label.replace(/[^a-zA-Z0-9]/g, "")}Demo(input: string): void {
-  console.log("Kezdeményezve: ${node.label}...", input);
-  
-  // Fontos ellenőrzés a tipikus hibák ellen:
-  if (!input) {
-    throw new Error("Hiányzó paraméter! A(z) ${node.label} nem tud betölteni.");
-  }
-  
-  // Minden állapot logikusan le van fedve
-  const context = {
-    term: "${node.label}",
-    category: "${GROUPS[g]?.name || g}",
-    timestamp: new Date().toISOString()
-  };
-  
-  console.log("Sikeresen végrehajtva. Context:", context);
-}`
-    };
-  }
-
   return {
     whatIsThis,
     whenToUse,
     blockerSolved,
-    promptInstructions,
-    miniSnippet
+    promptInstructions
   };
 }

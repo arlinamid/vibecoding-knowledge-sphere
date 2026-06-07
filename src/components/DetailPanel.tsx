@@ -20,7 +20,6 @@ import {
   Check,
   BookOpen,
   Lightbulb,
-  Code,
   HelpCircle
 } from "lucide-react";
 
@@ -48,7 +47,6 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
   const [copiedPhraseIdx, setCopiedPhraseIdx] = useState<number | null>(null);
   const [copiedSteps, setCopiedSteps] = useState(false);
   const [copiedAnti, setCopiedAnti] = useState(false);
-  const [copiedSnippet, setCopiedSnippet] = useState(false);
 
   // Fetch customized junior content
   const beginnerData = selectedNode ? getBeginnerExplanation(selectedNode) : null;
@@ -61,7 +59,6 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
     setCopiedPhraseIdx(null);
     setCopiedSteps(false);
     setCopiedAnti(false);
-    setCopiedSnippet(false);
   }, [selectedNode]);
 
   // Copy helper functions
@@ -261,44 +258,6 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
               <p className="text-xs text-[#E0D8D0] opacity-80 leading-relaxed pl-1 font-sans">
                 {beginnerData.blockerSolved}
               </p>
-            </div>
-
-            {/* 4. Mini kezdő kód / prompt példa window */}
-            <div className="border border-white/10 rounded-xl overflow-hidden bg-[#07070d] space-y-2">
-              <div className="flex items-center justify-between bg-black/40 px-3 py-2 border-b border-white/5">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-red-500/60" />
-                  <span className="w-2 h-2 rounded-full bg-yellow-500/60" />
-                  <span className="w-2 h-2 rounded-full bg-green-500/60" />
-                  <span className="text-[9px] font-mono text-white/40 uppercase tracking-widest ml-1">{beginnerData.miniSnippet.title}</span>
-                </div>
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(beginnerData.miniSnippet.code);
-                    setCopiedSnippet(true);
-                    setTimeout(() => setCopiedSnippet(false), 1500);
-                  }}
-                  className="p-1 px-2.5 text-[9px] font-mono font-bold tracking-wider text-white/55 hover:text-white bg-white/5 hover:bg-white/10 rounded border border-white/10 flex items-center gap-1 transition-all cursor-pointer"
-                  title="Példa másolása"
-                >
-                  {copiedSnippet ? (
-                    <>
-                      <Check className="w-3 h-3 text-emerald-400" />
-                      MÁSOLVA
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3 h-3 text-white/60" />
-                      MÁSOLÁS
-                    </>
-                  )}
-                </button>
-              </div>
-              <div className="p-3">
-                <pre className="text-[11px] font-mono leading-relaxed text-[#5bc0be] overflow-x-auto whitespace-pre-wrap select-all">
-                  <code>{beginnerData.miniSnippet.code}</code>
-                </pre>
-              </div>
             </div>
 
             {/* Prompt tanácsok header */}
