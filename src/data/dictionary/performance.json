@@ -1,0 +1,689 @@
+{
+  "group": "performance",
+  "keywords": [
+    {
+      "id": "performance.performance_budget",
+      "label": "performance_budget",
+      "group": "performance",
+      "description": "Mérhető teljesítménykeret, amely előre rögzíti a betöltési, interakciós, csomagméret- és válaszidő-korlátokat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Állíts fel performance budgetet a legfontosabb felhasználói útvonalakra, külön mobil és desktop célértékekkel.",
+        "Fogalmazd meg, mely metrikák számítanak kapuőrnek release előtt, és mi történjen budget túllépés esetén.",
+        "Kösd össze a teljesítménykeretet üzleti hatással: konverzió, megtartás, kereshetőség vagy belső használhatóság.",
+        "Javasolj mérési ritmust, amely a fejlesztés közben és éles forgalomban is visszajelzést ad.",
+        "Bontsd le a budgetet oldal-, komponens-, API- és asset-szintű felelősségekre."
+      ],
+      "anti_patterns": [
+        "ertek_nelkuli_budget: A csapat beszél a gyorsaságról, de nincs számszerű határ, amelyhez döntést lehet kötni.",
+        "csak_lab_meres: A döntés kizárólag gépi laboreredményen alapul, miközben a valós felhasználói eszközök lassabbak.",
+        "release_utan_derul_ki: A teljesítményromlás csak élesítés után látszik, mert nincs build- vagy review-kapu.",
+        "minden_oldal_egyforma: Ugyanazt a célértéket várják el egy landingtől, egy dashboardtól és egy adatsűrű admin nézettől.",
+        "tul_sok_mutato: Annyi metrika kerül a budgetbe, hogy senki nem tudja, melyik sérülés számít valódi blokkolónak."
+      ],
+      "checklist": [
+        "Van külön célérték a fő útvonalakra, nem csak az alkalmazás átlagára?",
+        "A budget tartalmaz felhasználói élményhez kötött metrikákat, például LCP-t, INP-t és CLS-t?",
+        "Rögzítve van, ki dönt a kivételről, ha egy release átlépi a keretet?",
+        "A mérések tartalmaznak éles felhasználói adatot és kontrollált tesztkörnyezetet is?",
+        "A csomagméret, API-válaszidő és kritikus assetek külön is követhetők?",
+        "A célértékeket rendszeresen újranézik, amikor a termék vagy a forgalmi profil változik?"
+      ],
+      "relations": [
+        "performance.core_web_vitals",
+        "performance.bundle_size",
+        "observability.metrics",
+        "testing_qa.load_test",
+        "devops_deploy.ci_cd"
+      ]
+    },
+    {
+      "id": "performance.lazy_loading",
+      "label": "lazy_loading",
+      "group": "performance",
+      "description": "Erőforrások késleltetett betöltése akkorra, amikor a felhasználó ténylegesen közel kerül a használatukhoz.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Térképezd fel, mely képek, panelek, widgetek és háttéradatok várhatnak a kezdeti betöltés utánra.",
+        "Adj lazy loading stratégiát úgy, hogy a látható első tartalom ne üres helykitöltőkből álljon.",
+        "Vizsgáld meg, hol okozhat késleltetett betöltés villanást, fókuszvesztést vagy mérhető layout elmozdulást.",
+        "Javasolj előtöltési szabályt azokhoz az elemekhez, amelyek hamarosan valószínűleg szükségesek lesznek.",
+        "Különítsd el a valóban halasztható tartalmat a kereső, akadálymentesség vagy konverzió miatt kritikus elemektől."
+      ],
+      "anti_patterns": [
+        "mindent_lustitanak: Kritikus tartalom is késleltetve töltődik, ezért az első képernyő gyorsnak mért, de üresnek érződik.",
+        "kesoi_trigger: A betöltés csak akkor indul, amikor az elem már látható lenne, így a felhasználó várakozást lát.",
+        "meretlen_placeholder: A helykitöltőnek nincs stabil mérete, ezért a később érkező tartalom eltolja a layoutot.",
+        "seo_elrejtett_tartalom: Fontos indexelhető szöveg vagy kép csak kliensoldali esemény után jelenik meg.",
+        "fokusz_csapda: Billentyűzettel navigáló felhasználó olyan elemre jut, amelynek tartalma még nincs betöltve."
+      ],
+      "checklist": [
+        "Az első viewport kritikus tartalma késleltetés nélkül elérhető?",
+        "A lazy elemeknek előre ismert helye és mérete van?",
+        "Van külön szabály képekre, modulokra és adatlekérésekre?",
+        "A betöltési trigger elég korai a görgetési sebességhez képest?",
+        "A megoldás nem rontja a kereshetőséget és az akadálymentes navigációt?",
+        "Mérve van, hogy a halasztás javítja-e a kezdeti betöltést, nem csak átrendezi a várakozást?"
+      ],
+      "relations": [
+        "performance.lcp",
+        "performance.cls",
+        "performance.image_optimization",
+        "frontend_ui.responsive_layout",
+        "accessibility.keyboard_navigation"
+      ]
+    },
+    {
+      "id": "performance.code_splitting",
+      "label": "code_splitting",
+      "group": "performance",
+      "description": "A kliensoldali kód értelmes csomagokra bontása, hogy az induláshoz csak a szükséges rész töltődjön be.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Azonosítsd, mely route-ok, modális felületek, szerkesztők és ritka funkciók kerülhetnek külön betöltési egységbe.",
+        "Javasolj code splitting határokat, amelyek a felhasználói útvonalakhoz igazodnak, nem pusztán a mappaszerkezethez.",
+        "Vizsgáld meg, hogy a darabolás nem termel-e túl sok apró hálózati kérést lassú kapcsolaton.",
+        "Adj stratégiát a gyakran következő képernyők előmelegítésére anélkül, hogy a kezdőcsomag újra meghízna.",
+        "Mutasd meg, mely közös függőségek duplikálódhatnak a chunkok között, és hogyan kell ezt észrevenni."
+      ],
+      "anti_patterns": [
+        "route_nev_alapu_vagas: A csomaghatár csak az útvonal nevét követi, miközben a nehéz komponensek közös kezdőcsomagban maradnak.",
+        "aprodarabos_chunkok: Túl sok apró csomag keletkezik, ezért a hálózati késleltetés elviszi a nyereséget.",
+        "duplikalt_vendor: Ugyanaz a nagy könyvtár több késleltetett csomagba is bekerül.",
+        "lassu_elso_interakcio: Az első kattintás után kezdődik el egy kulcsfontosságú modul letöltése, ezért a felület tétovának hat.",
+        "lathatatlan_koltseg: A csapat csak a fő bundle-t nézi, a később betöltött chunkok össztömegét nem."
+      ],
+      "checklist": [
+        "A splitting határok megfelelnek a valódi felhasználói útvonalaknak?",
+        "A kezdőcsomagból kikerültek a ritkán használt nagy felületek?",
+        "Ellenőrizve van a chunkok száma és összmérete lassabb hálózaton is?",
+        "A közös függőségek nem duplikálódnak több csomagban?",
+        "Van előtöltés a nagy valószínűséggel következő interakciókhoz?",
+        "A hibakezelés lefedi, ha egy késleltetett csomag nem töltődik be?"
+      ],
+      "relations": [
+        "performance.bundle_size",
+        "performance.lazy_loading",
+        "frontend_architecture.routing",
+        "frontend_architecture.nextjs",
+        "debugging.network_trace"
+      ]
+    },
+    {
+      "id": "performance.bundle_size",
+      "label": "bundle_size",
+      "group": "performance",
+      "description": "A felhasználó böngészőjébe küldött kliensoldali JavaScript, CSS és kapcsolódó assetek mérete.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts bundle size auditot, amely külön mutatja a saját kódot, a keretrendszer-részt és a harmadik feles csomagokat.",
+        "Jelöld meg, mely függőségek túl drágák ahhoz képest, amennyi felületet vagy üzleti értéket adnak.",
+        "Adj javaslatot csomagméret-budgetre route-onként és kritikus felhasználói folyamatonként.",
+        "Vizsgáld meg, hogy a design rendszer, ikoncsomag vagy dátumkezelés nem hoz-e be aránytalan többletet.",
+        "Fogalmazz meg döntési szabályt új frontend függőség felvétele előtt."
+      ],
+      "anti_patterns": [
+        "ikoncsomag_egeszben: Néhány ikon miatt teljes ikonkönyvtár kerül a kezdőcsomagba.",
+        "feature_ertek_nelkul: Egy ritkán használt kényelmi csomag minden felhasználó első betöltését drágítja.",
+        "gzip_mogotti_vaksag: Csak tömörített méretet néznek, miközben a parse és futtatási költség magas marad.",
+        "vendor_mindent_visz: A harmadik feles függőségek nőnek, de nincs tulajdonosa a csomagméret-romlásnak.",
+        "nincs_diff_figyeles: Pull requestben nem látszik, hogy egy változás mennyivel növeli a kliensoldali terhet."
+      ],
+      "checklist": [
+        "Látható a kezdőcsomag és a késleltetett csomagok mérete külön-külön?",
+        "Van megállapított méretküszöb új függőségekhez?",
+        "A mért méret mellett a böngésző parse és futtatási ideje is szerepel az értékelésben?",
+        "Az ikonok, dátumkezelők, grafikonok és editorok külön figyelmet kaptak?",
+        "A bundle size változás megjelenik review vagy CI környezetben?",
+        "A régi, már nem használt funkciók kódja ténylegesen kikerült a csomagból?"
+      ],
+      "relations": [
+        "performance.code_splitting",
+        "performance.tree_shaking",
+        "frontend_ui.component_library",
+        "devops_deploy.build",
+        "performance.performance_budget"
+      ]
+    },
+    {
+      "id": "performance.tree_shaking",
+      "label": "tree_shaking",
+      "group": "performance",
+      "description": "Build idejű optimalizáció, amely kihagyja a végső csomagból a ténylegesen nem használt kódrészeket.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Ellenőrizd, mely függőségek és belső modulok alkalmasak valódi tree shakingre, és hol akadályozza ezt a csomagformátum.",
+        "Térképezd fel, hogy a kényelmi gyűjtőexportok nem húznak-e be felesleges modulokat.",
+        "Adj útmutatót arra, hogyan lehet felismerni, ha egy elvileg nem használt funkció mégis megjelenik a buildben.",
+        "Vizsgáld meg a mellékhatásos importokat, amelyek miatt a bundler óvatosan mindent megtart.",
+        "Javasolj csomagválasztási szempontokat, amikor ugyanarra a feladatra több frontend könyvtár is szóba jön."
+      ],
+      "anti_patterns": [
+        "barrel_export_tulzas: A központi exportfájl kényelmes, de észrevétlenül nagy modulokat húz be.",
+        "mellekhatasos_import: Egy import látszólag csak típust vagy segédfüggvényt kér, valójában globális mellékhatást indít.",
+        "cjs_fuggoseg: A használt csomag formátuma miatt a bundler nem tudja biztonságosan kidobni a nem használt részeket.",
+        "hamis_biztonsagerzet: A csapat feltételezi, hogy a build mindent eltávolít, de nem nézi meg az elkészült csomagot.",
+        "tesztadat_prod_bundleben: Fejlesztési segédadat vagy demókonfiguráció bekerül az éles klienscsomagba."
+      ],
+      "checklist": [
+        "A kritikus függőségeknél ellenőrzött, hogy támogatják-e a hatékony tree shakinget?",
+        "A gyűjtőexportok nem hoznak be felesleges komponenseket vagy segédmodulokat?",
+        "A mellékhatásos importok listája ismert és indokolt?",
+        "A build elemzése visszaigazolja, hogy a nem használt kód valóban eltűnt?",
+        "A fejlesztési, teszt- és demótartalom nem kerül éles csomagba?",
+        "Új könyvtár választásakor szempont a csomagolási forma és a ténylegesen importált rész mérete?"
+      ],
+      "relations": [
+        "performance.bundle_size",
+        "performance.code_splitting",
+        "devops_deploy.build",
+        "frontend_architecture.typescript",
+        "debugging.dependency_conflict"
+      ]
+    },
+    {
+      "id": "performance.caching_strategy",
+      "label": "caching_strategy",
+      "group": "performance",
+      "description": "Rétegzett gyorsítótárazási terv, amely meghatározza, mit, hol, meddig és milyen érvénytelenítéssel tárol a rendszer.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Dolgozz ki cache stratégiát a böngésző, CDN, alkalmazásszerver, adatbázis és kliensoldali adatkezelés szintjeire.",
+        "Határozd meg, mely adatok olvashatók régebbi állapotból, és melyeknél kötelező a friss válasz.",
+        "Javasolj invalidálási szabályt tartalomfrissítésre, jogosultságváltozásra és háttérfolyamatok eredményére.",
+        "Térképezd fel, hol okozhat a cache inkonzisztens felületet vagy jogosulatlan adatmegjelenítést.",
+        "Adj mérési tervet cache találati arányra, válaszidőre és hibásan kiszolgált régi tartalomra."
+      ],
+      "anti_patterns": [
+        "orokke_friss_vagy_orokke_regi: Nincs árnyalt frissességi szabály, minden adat vagy soha nem cache-elődik, vagy túl sokáig marad bent.",
+        "invalidalas_nelkul: A cache gyors, de nincs megbízható esemény vagy időkorlát, amely törölné a rossz adatot.",
+        "felhasznalo_keveredes: Személyre szabott választ közös cache-ben tárolnak, ezért más felhasználó is láthatja.",
+        "hit_rate_vaksag: Senki nem méri, hogy a cache tényleg talál-e, csak reméli, hogy gyorsít.",
+        "tobb_reteg_harca: Böngésző, CDN és backend cache egymásnak ellentmondó élettartamokat használ."
+      ],
+      "checklist": [
+        "Minden cache-elt adattípushoz tartozik frissességi elvárás?",
+        "Az invalidálás eseményalapon, időkorláttal vagy explicit verziózással tisztázott?",
+        "Személyes, jogosultságfüggő vagy tenant-specifikus adatok nem kerülnek közös cache-be?",
+        "Mérve van a találati arány, a válaszidő és a hibás régi válaszok száma?",
+        "A cache rétegek élettartamai nem mondanak ellent egymásnak?",
+        "Van vészforgatókönyv tömeges cache ürítésre vagy rossz tartalom visszavonására?"
+      ],
+      "relations": [
+        "backend.caching",
+        "database.redis",
+        "frontend_architecture.tanstack_query",
+        "performance.cdn_caching",
+        "observability.metrics"
+      ]
+    },
+    {
+      "id": "performance.cdn_caching",
+      "label": "cdn_caching",
+      "group": "performance",
+      "description": "Tartalmak peremhálózati gyorsítótárazása, hogy a felhasználóhoz földrajzilag és hálózatilag közelebb szolgálódjanak ki.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg, mely statikus és dinamikus válaszok kerülhetnek CDN cache-be, és melyek maradjanak origin-közeli kiszolgáláson.",
+        "Javasolj cache kulcsot nyelv, eszköztípus, jogosultság, query paraméter és tartalomverzió figyelembevételével.",
+        "Ellenőrizd, hogy a CDN beállítások nem törik-e meg az előnézeti, staging vagy személyre szabott oldalakat.",
+        "Adj invalidálási és verziózási tervet kampányoldalakra, képekre, letölthető fájlokra és API-válaszokra.",
+        "Fogalmazd meg, milyen metrikákból derül ki, hogy a CDN valóban tehermentesíti az origint."
+      ],
+      "anti_patterns": [
+        "rossz_cache_kulcs: A CDN nem veszi figyelembe a nyelvet, jogosultságot vagy query paramétert, ezért hibás változatot szolgál ki.",
+        "origin_mindenert: A statikus tartalom is mindig az origin szervert éri, így a CDN csak drága átjáróként működik.",
+        "purge_panik: Tartalomhiba esetén csak kézi, lassú és bizonytalan ürítéssel lehet javítani.",
+        "preview_szennyezes: Előnézeti vagy staging tartalom bekerül a publikus cache-be.",
+        "ttl_talalgatas: A lejárati idők érzésre készülnek, nem tartalomfrissítési ritmus és kockázat alapján."
+      ],
+      "checklist": [
+        "A CDN cache kulcsa kezeli a szükséges variációkat, például nyelvet és eszköztípust?",
+        "A személyre szabott vagy jogosultságfüggő válaszok nem cache-elődnek publikus rétegben?",
+        "Van gyors és visszakövethető invalidálási folyamat?",
+        "A statikus assetek verziózása támogatja a hosszú lejáratot?",
+        "Mérve van a CDN találati arány és az origin tehercsökkenése?",
+        "A preview és staging környezet külön cache szabályt kapott?"
+      ],
+      "relations": [
+        "devops_deploy.cdn",
+        "devops_deploy.edge_function",
+        "backend.caching",
+        "performance.caching_strategy",
+        "observability.throughput"
+      ]
+    },
+    {
+      "id": "performance.image_optimization",
+      "label": "image_optimization",
+      "group": "performance",
+      "description": "Képek méretének, formátumának, tömörítésének és kiszolgálásának igazítása a felület valódi igényeihez.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld a képhasználatot: mely képek túl nagy felbontásúak, rossz formátumúak vagy feleslegesen kerülnek az első betöltésbe.",
+        "Javasolj reszponzív képkiszolgálást külön mobil, tablet és nagy kijelzős nézetekre.",
+        "Határozd meg, mely vizuális elemek számítanak LCP-jelöltnek, és melyek tölthetők késleltetve.",
+        "Adj minőségi szabályt arra, hol elfogadható erősebb tömörítés, és hol kell részletgazdag kép.",
+        "Vizsgáld meg, hogy a képek méretezése nem okoz-e layout elmozdulást vagy homályos megjelenést."
+      ],
+      "anti_patterns": [
+        "eredeti_feltoltes_kiszolgalva: A felhasználó ugyanazt a több megabájtos képet kapja, amelyet a szerkesztő feltöltött.",
+        "egy_meret_mindenre: Mobilra és desktopra ugyanaz a felbontás érkezik, ezért az egyik pazarló, a másik homályos.",
+        "lcp_kep_kesik: A fő vizuális elem későn töltődik, miközben kevésbé fontos dekorációk előnyt kapnak.",
+        "meret_nelkul: A képnek nincs stabil megjelenítési mérete, ezért betöltéskor eltolja a tartalmat.",
+        "formatum_hitvita: A formátumválasztás általános véleményen alapul, nem böngészőtámogatáson, képtípuson és mérésen."
+      ],
+      "checklist": [
+        "A képek a megjelenített mérethez közeli felbontásban érkeznek?",
+        "A rendszer külön változatot ad eltérő viewportokra és pixelsűrűségekre?",
+        "A kritikus, LCP-t érintő képek prioritást kapnak?",
+        "Minden képnek van stabil szélesség-magasság aránya a layout elmozdulás elkerülésére?",
+        "A formátumválasztás figyelembe veszi a fotó, illusztráció, áttetszőség és animáció igényét?",
+        "A tömörítés minőségét vizuális ellenőrzés és mért fájlméret alapján döntik el?"
+      ],
+      "relations": [
+        "performance.webp",
+        "performance.avif",
+        "performance.lcp",
+        "performance.cls",
+        "accessibility.alt_text"
+      ]
+    },
+    {
+      "id": "performance.webp",
+      "label": "webp",
+      "group": "performance",
+      "description": "Modern képfájlformátum, amely sok esetben kisebb fájlméretet ad jó vizuális minőség mellett.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Döntsd el, mely meglévő JPEG vagy PNG képek nyernének érdemben WebP változattal.",
+        "Adj bevezetési tervet WebP-re úgy, hogy a régebbi kliensek és speciális képtípusok se maradjanak használhatatlanul.",
+        "Hasonlítsd össze a WebP megtakarítást a képek tartalma, átlátszósága és minőségi elvárása alapján.",
+        "Javasolj szerkesztői vagy build folyamatot, amely automatikusan létrehozza és ellenőrzi a WebP változatokat.",
+        "Vizsgáld meg, mikor jobb WebP-t használni, és mikor indokolt inkább AVIF vagy eredeti formátum."
+      ],
+      "anti_patterns": [
+        "vak_atkonvertalas: Minden kép WebP lesz akkor is, ha a minőség romlik vagy a méret alig csökken.",
+        "fallback_hianya: A kiszolgálás nem számol olyan környezettel, ahol a WebP nem vagy hibásan támogatott.",
+        "dupla_tarolas_logika_nelkul: Több formátum készül, de nincs szabály arra, melyik kliens melyiket kapja.",
+        "minoseg_ellenorzes_nelkul: A fájl kisebb lett, de a fontos részletek, szövegek vagy arcvonások láthatóan sérültek.",
+        "animacio_felreertes: Animált vagy áttetsző képeknél nem vizsgálják külön a formátum korlátait és költségét."
+      ],
+      "checklist": [
+        "A WebP változat valóban kisebb a megfelelő minőség megtartása mellett?",
+        "Van fallback vagy alternatív kiszolgálás nem támogatott kliensre?",
+        "A képgenerálási folyamat automatikus és megismételhető?",
+        "A vizuális minőséget emberi ellenőrzés vagy elfogadási szabály védi?",
+        "A formátumválasztás külön kezeli a fotókat, ikonokat, áttetsző grafikákat és animációkat?",
+        "A CDN vagy képtranszformáló réteg helyesen választ a WebP és más formátumok között?"
+      ],
+      "relations": [
+        "performance.image_optimization",
+        "performance.avif",
+        "performance.cdn_caching",
+        "frontend_ui.design_system",
+        "devops_deploy.cdn"
+      ]
+    },
+    {
+      "id": "performance.avif",
+      "label": "avif",
+      "group": "performance",
+      "description": "Nagyon hatékony modern képformátum, amely jó tömörítést adhat, de bevezetésénél figyelni kell kompatibilitásra és előállítási költségre.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Vizsgáld meg, mely nagy forgalmú képek profitálnának AVIF-ból WebP vagy JPEG mellett.",
+        "Adj döntési szabályt arra, mikor éri meg az AVIF nagyobb kódolási költsége a kisebb letöltési méretért.",
+        "Tervezd meg az AVIF, WebP és hagyományos formátumok közötti kiszolgálási sorrendet.",
+        "Ellenőrizd, hogy a hero képek és termékfotók AVIF változata nem veszít-e fontos részletet vagy színpontosságot.",
+        "Javasolj cache és build stratégiát az AVIF variánsok előállítására és frissítésére."
+      ],
+      "anti_patterns": [
+        "kodolas_minden_keresnel: Az AVIF képek kérésenként készülnek, ezért a szerveroldali költség elnyeli a letöltési nyereséget.",
+        "kompatibilitas_elfelejtve: Nincs alternatív formátum olyan kliensre, amely nem kezeli jól az AVIF-ot.",
+        "tuleros_tomorites: A fájlméret látványosan csökken, de a kép sávosodik, fakul vagy részleteket veszít.",
+        "lassu_pipeline: A képfeldolgozás annyira lassú, hogy a tartalomszerkesztés vagy deploy folyamat akad el.",
+        "rossz_prioritas: Kis ikonok AVIF optimalizálásával foglalkoznak, miközben a nagy hero képek változatlanul nehezek."
+      ],
+      "checklist": [
+        "Az AVIF használata mért megtakarítást ad a legnagyobb képeknél?",
+        "A rendszer biztosít WebP vagy hagyományos fallbacket?",
+        "Az AVIF előállítása buildben, háttérfolyamatban vagy cache-elve történik, nem minden kérésnél?",
+        "A minőség ellenőrzése kiterjed színekre, részletekre és szöveget tartalmazó képekre?",
+        "A képvariánsok érvénytelenítése követi az eredeti tartalom frissítését?",
+        "A bevezetés a nagy forgalmú vagy LCP-t érintő képekkel kezdődik?"
+      ],
+      "relations": [
+        "performance.image_optimization",
+        "performance.webp",
+        "performance.lcp",
+        "backend.worker",
+        "devops_deploy.build"
+      ]
+    },
+    {
+      "id": "performance.lcp",
+      "label": "lcp",
+      "group": "performance",
+      "description": "Largest Contentful Paint: azt jelzi, mikor jelenik meg a felhasználó számára a legnagyobb, lényegi tartalmi elem.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Azonosítsd oldalanként az LCP-elemet, és írd le, mi késlelteti a megjelenését.",
+        "Adj optimalizációs tervet a szerverválasz, kritikus CSS, fő kép, betűtöltés és kliensoldali renderelés szétválasztásával.",
+        "Vizsgáld meg, hogy mobilon és lassabb hálózaton ugyanaz az elem számít-e LCP-nek, mint desktopon.",
+        "Javasolj prioritási szabályt a hero kép, címsor, termékfotó vagy fő dashboard panel betöltésére.",
+        "Kösd össze az LCP javítását mért üzleti vagy használhatósági kockázattal."
+      ],
+      "anti_patterns": [
+        "rossz_elemre_optimalizal: A csapat nem tudja, mi az LCP-elem, ezért mellékes asseteket gyorsít.",
+        "hero_kep_prioritas_nelkul: A fő kép későn indul, mert ugyanúgy kezelik, mint a dekorációt.",
+        "szerver_valasz_rejtve: A frontend optimalizálás takarja, hogy már az első HTML vagy adatválasz is lassú.",
+        "betu_blokkolas: A webfont betöltése késlelteti a látható szöveget vagy villanást okoz.",
+        "labor_csak_desktopon: Csak erős gépen mérik az LCP-t, ezért a mobil felhasználói élményről nincs kép."
+      ],
+      "checklist": [
+        "Minden kulcsoldalon ismert és dokumentált az aktuális LCP-elem?",
+        "A fő kép vagy tartalmi blokk magas betöltési prioritást kap, ha indokolt?",
+        "A szerverválaszidő, adatlekérés és renderelés külön mérhető?",
+        "A kritikus CSS és betűtöltés nem késlelteti a lényegi tartalmat?",
+        "Mobil és valós felhasználói adatok alapján is ellenőrzött az LCP?",
+        "Az LCP célérték része a performance budgetnek?"
+      ],
+      "relations": [
+        "performance.core_web_vitals",
+        "performance.image_optimization",
+        "performance.cdn_caching",
+        "observability.latency",
+        "frontend_architecture.ssr"
+      ]
+    },
+    {
+      "id": "performance.cls",
+      "label": "cls",
+      "group": "performance",
+      "description": "Cumulative Layout Shift: a váratlan vizuális elmozdulások mértéke betöltés és használat közben.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Keresd meg, mely képek, hirdetések, fontok, beágyazások vagy későn érkező komponensek okoznak layout elmozdulást.",
+        "Adj stabil méretezési szabályt minden dinamikus vagy külső tartalomhoz.",
+        "Vizsgáld meg, hogy az állapotváltások, hibaüzenetek és betöltési helykitöltők nem tolják-e el a környező elemeket.",
+        "Javasolj UX-barát megoldást a későn érkező tartalomra, amely nem rángatja el a felhasználó célpontját.",
+        "Külön ellenőrizd mobilon a billentyűzet, cookie sáv, banner és sticky elemek hatását."
+      ],
+      "anti_patterns": [
+        "meret_nelkuli_media: Kép vagy beágyazás méret nélkül érkezik, majd betöltéskor helyet követel magának.",
+        "keson_beugro_banner: Hirdetés, cookie sáv vagy promóciós elem váratlanul betolja a tartalmat.",
+        "font_csere_rangas: A fallback és végleges betű eltérő mérete miatt a szöveg átrendezi az oldalt.",
+        "skeleton_nem_egyezik: A betöltési váz más méretű, mint a tényleges komponens.",
+        "interakcio_elcsuszik: A felhasználó kattintana, de az elem elmozdul, és más célpont aktiválódik."
+      ],
+      "checklist": [
+        "Minden kép, videó és beágyazott elem előre kap stabil helyet?",
+        "A betöltési vázak mérete megfelel a végleges tartalomnak?",
+        "A bannerek, hirdetések és cookie elemek nem tolják váratlanul a fő tartalmat?",
+        "A webfontok metrikái nem okoznak érzékelhető szövegátrendeződést?",
+        "Az állapot- és hibaüzenetek helye előre tervezett?",
+        "CLS mérés történik valós eszközökön, nem csak fejlesztői gépen?"
+      ],
+      "relations": [
+        "performance.core_web_vitals",
+        "performance.image_optimization",
+        "performance.lazy_loading",
+        "frontend_ui.responsive_layout",
+        "ux_states.loading_state"
+      ]
+    },
+    {
+      "id": "performance.inp",
+      "label": "inp",
+      "group": "performance",
+      "description": "Interaction to Next Paint: azt méri, mennyi idő telik el egy felhasználói interakció és a következő látható visszajelzés között.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Azonosítsd a leglassabb kattintásokat, gépeléseket és vezérlőváltásokat a fő felhasználói folyamatokban.",
+        "Bontsd szét az INP-problémát eseménykezelésre, főszál-terhelésre, renderelésre és hálózati várakozásra.",
+        "Javasolj prioritást arra, mely interakcióknak kell azonnali vizuális visszajelzést adniuk.",
+        "Vizsgáld meg, hogy a nagy listák, grafikonok, validációk vagy állapotfrissítések blokkolják-e a főszálat.",
+        "Adj tervet a lassú interakciók mérésére valós felhasználói környezetben."
+      ],
+      "anti_patterns": [
+        "nehez_event_handler: Egy kattintás túl sok szinkron számítást, renderelést vagy állapotfrissítést indít.",
+        "visszajelzes_nelkul: A felület dolgozik, de a felhasználó nem lát azonnali reakciót.",
+        "lista_teljes_ujrarajzolva: Egy apró változás nagy listát vagy dashboardot rendereltet újra.",
+        "validacio_foszalon: Gépelés közben drága ellenőrzés fut, ezért a mező akadozik.",
+        "atlaggal_takarva: Az átlagos interakció elfogadható, de a ritkább rossz esetek fájdalmasan lassúak."
+      ],
+      "checklist": [
+        "Ismertek a legrosszabb INP-t adó interakciók és oldalak?",
+        "Az interakciók azonnali vizuális visszajelzést adnak, akkor is, ha a háttérmunka tart?",
+        "A nagy listák, grafikonok és űrlapok nem renderelődnek újra feleslegesen?",
+        "A drága validációk, keresések és számítások nem blokkolják a gépelést?",
+        "A főszál-terhelés külön mérhető a hálózati késleltetéstől?",
+        "A mérés percentiliseket néz, nem csak átlagot?"
+      ],
+      "relations": [
+        "performance.core_web_vitals",
+        "performance.memoization",
+        "performance.debounce",
+        "performance.throttle",
+        "observability.latency"
+      ]
+    },
+    {
+      "id": "performance.core_web_vitals",
+      "label": "core_web_vitals",
+      "group": "performance",
+      "description": "Webes élménymutatók együttese, amely a betöltés, vizuális stabilitás és interakciós válaszkészség felhasználói oldalát fogja meg.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts Core Web Vitals értékelést külön LCP, CLS és INP bontásban, valós felhasználói adatokkal.",
+        "Mutasd meg, mely oldaltípusok rontják leginkább a teljes képet, és ne csak domain-átlagot adj.",
+        "Javasolj javítási sorrendet aszerint, hogy melyik metrika érint több felhasználót vagy üzleti folyamatot.",
+        "Kapcsold össze a labor mérést, a mezőadatot és a release előtti ellenőrzést egy közös ritmusba.",
+        "Fogalmazz meg elfogadási küszöböket új oldalakra, kampányokra és nagyobb komponenscserékre."
+      ],
+      "anti_patterns": [
+        "domain_atlag_elrejti: A teljes domain átlaga jónak tűnik, miközben a fontos útvonalak rosszak.",
+        "egy_mutato_mania: Csak LCP-re optimalizálnak, miközben az interakció vagy stabilitás romlik.",
+        "lab_es_mezo_szetvalik: A laboreredmény és valós felhasználói adat külön csapatnál él, nincs közös döntés.",
+        "kampany_kivetel: Rövid életű landingekre nem alkalmaznak minőségi kaput, pedig nagy forgalmat kapnak.",
+        "eszkozprofil_nelkul: Nem látszik, hogy a gyenge mobilok és lassú hálózatok más képet adnak."
+      ],
+      "checklist": [
+        "A mérés oldaltípusonként és fontos útvonalanként bontott?",
+        "LCP, CLS és INP egyszerre szerepel az értékelésben?",
+        "A laboreredmények és valós felhasználói adatok eltéréseit megvizsgálják?",
+        "A gyenge mobil eszközök és lassabb hálózatok külön figyelmet kapnak?",
+        "A javítási sorrend felhasználói és üzleti hatás alapján készül?",
+        "Új release vagy kampány előtt van Core Web Vitals ellenőrzés?"
+      ],
+      "relations": [
+        "performance.lcp",
+        "performance.cls",
+        "performance.inp",
+        "observability.dashboard",
+        "performance.performance_budget"
+      ]
+    },
+    {
+      "id": "performance.query_optimization",
+      "label": "query_optimization",
+      "group": "performance",
+      "description": "Adatlekérdezések gyorsítása úgy, hogy kevesebb felesleges munka, jobb indexhasználat és kiszámíthatóbb válaszidő legyen.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Elemezd a lassú lekérdezéseket végrehajtási terv, indexhasználat, adatmennyiség és alkalmazásszintű hívási minta szerint.",
+        "Javasolj optimalizációt úgy, hogy ne változzon meg a lekérdezés üzleti jelentése.",
+        "Különítsd el, mi oldható indexszel, lapozással, adatmodell-változtatással, cache-sel vagy háttérfeldolgozással.",
+        "Vizsgáld meg, hogy a frontend túl széles vagy túl gyakori adatlekéréseket indít-e.",
+        "Adj mérési tervet p95/p99 válaszidőre, adatbázis-terhelésre és regressziófigyelésre."
+      ],
+      "anti_patterns": [
+        "explain_nelkul: Indexet vagy átírást vezetnek be végrehajtási terv ellenőrzése nélkül.",
+        "tul_szeles_select: A lekérdezés több oszlopot és sort hoz vissza, mint amennyire a felületnek szüksége van.",
+        "lapozas_hianya: Nagy adathalmazokat teljes egészében töltenek le, majd alkalmazásszinten vágják meg.",
+        "index_mindenre: Minden lassúságra új index készül, ami később írási lassulást és karbantartási terhet okoz.",
+        "atlagos_valaszido: Csak átlagot néznek, ezért a ritka, de felhasználókat érintő lassú esetek rejtve maradnak."
+      ],
+      "checklist": [
+        "A lassú lekérdezésekhez készült végrehajtási terv vagy mérési bizonyíték?",
+        "A lekérdezés csak a szükséges mezőket és sorokat kéri le?",
+        "Az indexek a valódi szűrési, rendezési és kapcsolási mintákat támogatják?",
+        "A lapozás, limitálás és rendezés adatbázisszinten történik, ahol lehet?",
+        "A változtatás nem rontja jelentősen az írási teljesítményt?",
+        "A p95 és p99 válaszidő külön követhető éles forgalomban?"
+      ],
+      "relations": [
+        "database.query_optimization",
+        "database.index",
+        "backend.pagination",
+        "performance.n_plus_one_query",
+        "observability.latency"
+      ]
+    },
+    {
+      "id": "performance.n_plus_one_query",
+      "label": "n_plus_one_query",
+      "group": "performance",
+      "description": "Lekérdezési hiba, amikor egy fő lista betöltése után minden elemhez külön további adatbázis- vagy API-hívás indul.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Vizsgáld meg, hol keletkezik N+1 minta listanézetekben, részletező oldalakon, jogosultságellenőrzésben vagy soronkénti számításban.",
+        "Javasolj adatbetöltési stratégiát, amely előre összegyűjti a szükséges kapcsolt adatokat.",
+        "Mutasd meg, hogyan lehet mérésből felismerni, hogy az elem darabszámával együtt nő a hívások száma.",
+        "Különítsd el az adatbázis N+1-et az API-aggregációs és frontend adatlekérési N+1 mintáktól.",
+        "Adj regresszióvédelmet olyan nézetekre, ahol a lista hossza később könnyen megnőhet."
+      ],
+      "anti_patterns": [
+        "soronkenti_betoltes: Minden listaelem saját kapcsolt adatot kér, ezért a hívások száma a lista hosszával nő.",
+        "kis_adaton_nem_latszik: Fejlesztői adatbázisban gyors, éles mennyiségnél viszont összeomlik.",
+        "serializer_rejtett_hivas: A megjelenítés vagy szerializáció közben indulnak rejtett adatlekérések.",
+        "frontend_aggregacio: A kliens sok apró API-hívásból rak össze egy nézetet, ahelyett hogy célzott választ kapna.",
+        "cache_elrejti_a_hibat: A cache elfedi az N+1 mintát, de cache miss vagy új adat esetén visszatér a lassulás."
+      ],
+      "checklist": [
+        "A listaelemek számával arányosan nem nő a lekérdezések vagy API-hívások száma?",
+        "Tesztelve van nagyobb adatmennyiséggel is, nem csak mintarekordokkal?",
+        "A kapcsolt adatok betöltése tudatosan tervezett, nem megjelenítés közbeni mellékhatás?",
+        "A szerializáció, jogosultságellenőrzés és sablonrenderelés nem indít rejtett lekérdezéseket?",
+        "Van mérés vagy napló, amely megmutatja az egy kérésre jutó lekérdezésszámot?",
+        "A javítás nem tölt be aránytalanul sok felesleges kapcsolt adatot?"
+      ],
+      "relations": [
+        "performance.query_optimization",
+        "database.query_optimization",
+        "backend.serialization",
+        "frontend_architecture.tanstack_query",
+        "debugging.performance_bottleneck"
+      ]
+    },
+    {
+      "id": "performance.memoization",
+      "label": "memoization",
+      "group": "performance",
+      "description": "Számítási eredmények újrafelhasználása azonos bemenet mellett, főleg drága kalkulációk és renderelési döntések gyorsítására.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Azonosítsd, mely számítások futnak újra változatlan bemenet mellett, és tényleg elég drágák-e a memoizáláshoz.",
+        "Javasolj memoizálási határokat komponensek, szelektorok, aggregációk vagy formázási lépések köré.",
+        "Vizsgáld meg, hogy a cache kulcs stabilan írja-e le a bemenetet, és nem ad-e vissza elavult eredményt.",
+        "Mérd fel, mikor nagyobb a memoizálás memóriaköltsége és komplexitása, mint a számítás újrafuttatása.",
+        "Adj ellenőrzési pontokat renderelési regressziókra és rejtett állapotfüggésekre."
+      ],
+      "anti_patterns": [
+        "mindent_memoizal: Egyszerű, olcsó műveletekre is memoizálást tesznek, amitől a kód bonyolultabb lesz, de nem gyorsabb.",
+        "hibas_kulcs: A memoizált eredmény nem minden bemenetet vesz figyelembe, ezért régi vagy rossz adat jelenik meg.",
+        "referencia_zaj: Minden rendernél új objektumok keletkeznek, így a memoizálás sosem talál.",
+        "memoria_novekedes: A tárolt eredményeknek nincs határa, ezért hosszabb használat után nő a memóriaigény.",
+        "meres_nelkul: A csapat érzésre tesz memoizálást olyan pontra, amely nem is volt szűk keresztmetszet."
+      ],
+      "checklist": [
+        "Bizonyított, hogy a memoizált művelet érdemben drága vagy gyakran ismétlődik?",
+        "A cache kulcs minden releváns bemenetet és állapotot figyelembe vesz?",
+        "A memoizálásnak van méret-, életciklus- vagy érvénytelenítési korlátja, ahol szükséges?",
+        "A bemeneti referenciák stabilak, vagy a stratégia kezeli a referenciazajt?",
+        "A változtatás után mérhetően csökken a renderelési vagy számítási idő?",
+        "A kód olvashatósága nem romlik aránytalanul a nyereséghez képest?"
+      ],
+      "relations": [
+        "performance.inp",
+        "frontend_architecture.react",
+        "frontend_architecture.state_management",
+        "debugging.memory_leak",
+        "observability.metrics"
+      ]
+    },
+    {
+      "id": "performance.debounce",
+      "label": "debounce",
+      "group": "performance",
+      "description": "Gyakran ismétlődő események késleltetett kezelése úgy, hogy a művelet csak a nyugalmi szakasz után fusson le.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Javasolj debounce használatot olyan keresésre, szűrésre, mentésre vagy validációra, amely gépelés közben túl gyakran futna.",
+        "Határozd meg az ideális késleltetést a felhasználói érzés, hálózati terhelés és adatfrissesség alapján.",
+        "Vizsgáld meg, hol kell azonnali visszajelzés a debounce ellenére, például helyi állapotban vagy betöltésjelzőben.",
+        "Adj szabályt arra, mikor kell az utolsó értéket biztosan elküldeni fókuszvesztéskor vagy mentés előtt.",
+        "Különítsd el a debounce-ot a throttle-tól olyan példákkal, ahol a rossz választás rontaná az élményt."
+      ],
+      "anti_patterns": [
+        "tul_hosszu_varakozas: A felhasználó úgy érzi, a kereső vagy validáció nem reagál, mert a késleltetés túl nagy.",
+        "utolso_ertek_elveszik: Navigálás, fókuszvesztés vagy mentés előtt a legfrissebb input nem jut el a rendszerhez.",
+        "nincs_azonnali_ui: A hálózati kérés késik, de a felület helyben sem jelzi a felhasználó beírását.",
+        "rossz_esemenyre_tesz: Folyamatos visszajelzést igénylő görgetésre vagy húzásra debounce kerül, ezért darabossá válik.",
+        "versenyzo_valaszok: Régebbi, lassabban visszaérő kérés felülírja az újabb inputhoz tartozó eredményt."
+      ],
+      "checklist": [
+        "A debounce olyan műveletet késleltet, amelynél a nyugalmi állapot számít?",
+        "A késleltetés felhasználói érzés alapján is elfogadható, nem csak szerverterhelés szerint?",
+        "A felület azonnal tükrözi a helyi inputot vagy állapotváltozást?",
+        "Fókuszvesztéskor, küldéskor vagy navigálás előtt nem vész el az utolsó érték?",
+        "A régi hálózati válaszok nem írhatják felül az újabb eredményt?",
+        "Világos, miért debounce kell ide, és nem throttle vagy explicit mentés?"
+      ],
+      "relations": [
+        "performance.inp",
+        "performance.throttle",
+        "frontend_architecture.client_side_validation",
+        "frontend_architecture.form_schema",
+        "backend.rate_limiting"
+      ]
+    },
+    {
+      "id": "performance.throttle",
+      "label": "throttle",
+      "group": "performance",
+      "description": "Gyakori események korlátozott ütemű kezelése, amikor a folyamatos, de nem minden egyes eseményre reagáló frissítés a cél.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Javasolj throttle stratégiát görgetésre, átméretezésre, húzásra vagy valós idejű pozíciófrissítésre.",
+        "Határozd meg, milyen gyakran kell frissíteni a felületet ahhoz, hogy folyamatosnak érződjön, de ne terhelje túl a főszálat.",
+        "Vizsgáld meg, mely eseményeknél kell megtartani az első, az utolsó vagy mindkét frissítést.",
+        "Adj mérési tervet arra, hogy a throttle javítja-e az INP-t és a renderelési stabilitást.",
+        "Különítsd el azokat a helyzeteket, ahol a throttle helyett eseménydelegálás, virtualizálás vagy kevesebb renderelés kell."
+      ],
+      "anti_patterns": [
+        "darabos_mozgas: A korlátozás túl ritka, ezért a görgetéshez vagy húzáshoz kötött UI akadozónak tűnik.",
+        "utolso_allapot_hianyzik: A művelet végén nem fut le záró frissítés, így a felület régi pozíción vagy értéken marad.",
+        "rossz_gyogyszer: Throttle kerül olyan problémára, ahol valójában túl nagy renderelési fa vagy lista okozza a lassulást.",
+        "rejtett_foszal_terheles: Kevesebb esemény fut, de mindegyik még mindig túl drága számítást végez.",
+        "minden_esemeny_kulon: Sok komponens saját throttle logikát tart fenn, ezért a frissítések összeakadnak."
+      ],
+      "checklist": [
+        "Az esemény folyamatos visszajelzést igényel, ezért throttle valóban jobb választás, mint debounce?",
+        "A frissítési gyakoriság megőrzi a mozgás vagy visszajelzés természetes érzetét?",
+        "A kezdő és záró frissítés viselkedése tudatosan beállított?",
+        "Az egyes frissítések munkája önmagában sem túl drága?",
+        "A változtatás mérhetően csökkenti a főszál-terhelést vagy javítja az INP-t?",
+        "A komponensek nem hoznak létre egymással versengő, párhuzamos korlátozásokat?"
+      ],
+      "relations": [
+        "performance.inp",
+        "performance.debounce",
+        "frontend_ui.microinteractions",
+        "debugging.performance_bottleneck",
+        "observability.latency"
+      ]
+    }
+  ]
+}

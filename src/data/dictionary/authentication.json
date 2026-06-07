@@ -1,0 +1,957 @@
+{
+  "group": "authentication",
+  "keywords": [
+    {
+      "id": "authentication.authentication",
+      "label": "authentication",
+      "group": "authentication",
+      "description": "Annak megbízható megállapítása, hogy a kérés mögött ki áll: felhasználó, eszköz, szolgáltatás vagy automatizált kliens.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a hitelesítési folyamatot belépéssel, sessionnel, tokennel és hibakezeléssel együtt.",
+        "Döntsd el, jelszó, passkey, magic link, SSO vagy külső identity provider illik-e ehhez a termékhez.",
+        "Írd le, hogyan derül ki minden backend kérésnél a hitelesített felhasználó identitása."
+      ],
+      "anti_patterns": [
+        "identity_from_client: A backend elhiszi a kliens által küldött userId mezőt.",
+        "login_only_security: Csak a bejelentkezés védett, a későbbi kérések ellenőrzése laza.",
+        "mixed_auth_sources: Cookie, bearer token és session egyszerre él tiszta elsődleges forrás nélkül."
+      ],
+      "checklist": [
+        "A backend maga állapítja meg a felhasználó identitását?",
+        "A hitelesítési állapot minden védett kérésnél ellenőrzött?",
+        "A hibák nem árulnak el felesleges fiókinformációt?",
+        "A választott belépési mód illik a felhasználói kockázathoz?"
+      ],
+      "relations": [
+        "authentication.session_management",
+        "authentication.authorization",
+        "authentication.identity_provider"
+      ]
+    },
+    {
+      "id": "authentication.authorization",
+      "label": "authorization",
+      "group": "authentication",
+      "description": "Annak eldöntése, hogy a már azonosított szereplő milyen erőforrásokat láthat, módosíthat vagy adminisztrálhat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz jogosultsági ellenőrzést erőforrás, művelet, tulajdonos és szerepkör alapján.",
+        "Válaszd szét az authentication és authorization logikát a backend rétegekben.",
+        "Adj példát route-szintű, service-szintű és adatlekérdezés-szintű jogosultságellenőrzésre."
+      ],
+      "anti_patterns": [
+        "authz_in_ui_only: A jogosultság csak gombok elrejtésével van kezelve.",
+        "role_without_resource_check: Adminnak nem számító user saját erőforrásán kívül is hozzáfér adatokhoz.",
+        "permit_by_default: Ismeretlen jogosultsági eset alapból átenged."
+      ],
+      "checklist": [
+        "A jogosultság backend oldalon is érvényesül?",
+        "Az ellenőrzés figyelembe veszi az erőforrás tulajdonosát?",
+        "A tiltott hozzáférés auditálható?",
+        "Az alapértelmezett döntés tiltás, nem engedés?"
+      ],
+      "relations": [
+        "authentication.rbac",
+        "authentication.abac",
+        "authentication.least_privilege"
+      ]
+    },
+    {
+      "id": "authentication.auth_flow",
+      "label": "auth_flow",
+      "group": "authentication",
+      "description": "A bejelentkezés, regisztráció, email-ellenőrzés, tokenfrissítés, kijelentkezés és hibakezelés teljes felhasználói és technikai útvonala.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Rajzold fel az auth flow-t regisztrációtól a kijelentkezésig siker-, hiba- és lejárt session ágakkal.",
+        "Írd le, milyen képernyők, API végpontok, cookie-k és tokenek szerepelnek a folyamatban.",
+        "Tervezz UX állapotokat rossz jelszó, lejárt link, hiányzó MFA és tokenfrissítés esetére."
+      ],
+      "anti_patterns": [
+        "happy_path_only_auth: Csak a sikeres belépés van megtervezve, a lejárat és hibaágak nincsenek.",
+        "redirect_loop: Auth guard és redirect szabályok végtelen körbe küldik a felhasználót.",
+        "unclear_post_login_target: Belépés után nem tiszta, hová tér vissza a user."
+      ],
+      "checklist": [
+        "Van teljes auth útvonal sikeres és hibás ágakkal?",
+        "A lejárt token és session kezelése felhasználóbarát?",
+        "Belépés után megmarad az eredeti céloldal?",
+        "A flow minden lépése backend oldalon is ellenőrzött?"
+      ],
+      "relations": [
+        "authentication.session_management",
+        "authentication.password_reset_flow",
+        "authentication.email_verification"
+      ]
+    },
+    {
+      "id": "authentication.session_management",
+      "label": "session_management",
+      "group": "authentication",
+      "description": "Felhasználói munkamenetek kezelése létrehozással, lejárattal, frissítéssel, eszközlistával, kijelentkeztetéssel és kockázatos eseményekkel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz session management modellt lejárattal, sliding sessionnel, device listával és logouttal.",
+        "Írd le, hol tárolódik a session azonosító, és hogyan vonható vissza minden aktív munkamenet.",
+        "Adj szabályt jelszóváltás, MFA bekapcsolás és gyanús belépés utáni session kezelésre."
+      ],
+      "anti_patterns": [
+        "never_expiring_session: A munkamenet lejárat és frissítési szabály nélkül él.",
+        "logout_local_only: Kijelentkezés csak kliensoldali törlés, a szerver session tovább érvényes.",
+        "no_device_visibility: A user nem látja vagy nem zárhatja le aktív eszközeit."
+      ],
+      "checklist": [
+        "A session lejárata és frissítése dokumentált?",
+        "A logout szerveroldalon is érvénytelenít?",
+        "Kritikus fiókmódosítás után újraértékeljük a sessionöket?",
+        "Van lehetőség összes eszköz kijelentkeztetésére?"
+      ],
+      "relations": [
+        "authentication.secure_cookie",
+        "authentication.refresh_token",
+        "authentication.token_revocation"
+      ]
+    },
+    {
+      "id": "authentication.jwt",
+      "label": "jwt",
+      "group": "authentication",
+      "description": "Aláírt JSON token, amely állításokat hordoz a felhasználóról vagy kliensről, és ellenőrizhető szerveroldali állapotlekérdezés nélkül is.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a JWT tartalmát minimális claim listával, lejárattal, issuerrel, audience-szel és aláírási algoritmussal.",
+        "Írd le, mely adat nem kerülhet JWT-be, mert érzékeny vagy gyakran változik.",
+        "Adj ellenőrzési mintát signature, exp, nbf, iss és aud validációra backend oldalon."
+      ],
+      "anti_patterns": [
+        "jwt_as_database: A token túl sok felhasználói adatot és jogosultsági részletet tartalmaz.",
+        "signature_not_verified: A backend dekódolja a JWT-t, de nem ellenőrzi az aláírást.",
+        "no_exp_claim: A token lejárat nélkül használható."
+      ],
+      "checklist": [
+        "A JWT aláírása és algoritmusa ellenőrzött?",
+        "A token csak szükséges claimet tartalmaz?",
+        "Az issuer és audience validálva van?",
+        "A lejárat rövid és illik a kockázathoz?"
+      ],
+      "relations": [
+        "authentication.access_token",
+        "authentication.refresh_token",
+        "authentication.token_revocation"
+      ]
+    },
+    {
+      "id": "authentication.access_token",
+      "label": "access_token",
+      "group": "authentication",
+      "description": "Rövid élettartamú hozzáférési token, amelyet API hívások jogosultsági ellenőrzésére használunk.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Határozd meg az access token élettartamát, tárolását, scope-jait és frissítési folyamatát.",
+        "Írd le, hogyan küldi a kliens az access tokent, és hogyan reagál lejáratkor.",
+        "Adj backend ellenőrzési szabályt scope, audience és user státusz alapján."
+      ],
+      "anti_patterns": [
+        "long_lived_access_token: Az access token túl sokáig érvényes, ezért lopáskor nagy a kár.",
+        "token_in_local_storage_by_default: Böngészős appban automatikusan localStorage-ba kerül a token XSS kockázattal.",
+        "scope_ignored: A token scope-okat tartalmaz, de a backend nem használja döntésre."
+      ],
+      "checklist": [
+        "Az access token rövid élettartamú?",
+        "A tárolási mód illik a kliens típusához?",
+        "A backend ellenőrzi a scope-ot és audience-t?",
+        "Lejáratkor a kliens biztonságosan frissít vagy kijelentkeztet?"
+      ],
+      "relations": [
+        "authentication.jwt",
+        "authentication.refresh_token",
+        "authentication.token_rotation"
+      ]
+    },
+    {
+      "id": "authentication.refresh_token",
+      "label": "refresh_token",
+      "group": "authentication",
+      "description": "Hosszabb élettartamú, érzékeny token, amely új access token kérésére szolgál, ezért erős tárolást és visszavonhatóságot igényel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz refresh token folyamatot httpOnly cookie-val, rotationnel, reuse detectionnel és visszavonással.",
+        "Írd le, hogyan kezeljük a refresh token lopás, duplikált használat és lejárat eseteit.",
+        "Adj adatmodellt refresh token családra, eszközre, lejáratra és revocation állapotra."
+      ],
+      "anti_patterns": [
+        "refresh_token_in_js_storage: Refresh token JavaScriptből olvasható tárhelyen van.",
+        "no_reuse_detection: Ellopott régi refresh token használata nem vált ki riasztást vagy visszavonást.",
+        "infinite_refresh_chain: A refresh tokenek korlátlanul hosszabbíthatók abszolút lejárat nélkül."
+      ],
+      "checklist": [
+        "A refresh token erősen védett helyen tárolódik?",
+        "Van rotation és reuse detection?",
+        "Van abszolút lejárat vagy device-szintű kontroll?",
+        "A token visszavonható felhasználói és admin műveletből?"
+      ],
+      "relations": [
+        "authentication.token_rotation",
+        "authentication.token_revocation",
+        "authentication.httponly_cookie"
+      ]
+    },
+    {
+      "id": "authentication.token_rotation",
+      "label": "token_rotation",
+      "group": "authentication",
+      "description": "Tokenek rendszeres cseréje, különösen refresh tokeneknél, hogy egy régi token újrafelhasználása gyanús eseményként felismerhető legyen.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a refresh token rotation folyamatát token családdal, új token kiadásával és régi token érvénytelenítésével.",
+        "Írd le, mi történik, ha egy már rotált token újra megjelenik.",
+        "Adj race condition kezelést párhuzamos refresh kérések esetére."
+      ],
+      "anti_patterns": [
+        "old_token_still_valid: Új refresh token kiadása után a régi token tovább használható.",
+        "rotation_race_logout: Párhuzamos böngészőfülek véletlenül token reuse eseményt okoznak.",
+        "no_token_family: Nem követhető, mely tokenek tartoznak ugyanahhoz a sessionhöz."
+      ],
+      "checklist": [
+        "Az új token kiadásakor a régi token állapota változik?",
+        "Token reuse esetén védelmi reakció indul?",
+        "A párhuzamos refresh helyzetek kezeltek?",
+        "A token család vagy session kapcsolat visszakövethető?"
+      ],
+      "relations": [
+        "authentication.refresh_token",
+        "authentication.token_revocation",
+        "debugging.race_condition"
+      ]
+    },
+    {
+      "id": "authentication.token_revocation",
+      "label": "token_revocation",
+      "group": "authentication",
+      "description": "Token vagy session érvénytelenítése lejárat előtt, például logout, jelszócsere, kompromittálódás vagy admin tiltás miatt.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz token revocation modellt blacklist, session store vagy token version mező alapján.",
+        "Írd le, hogyan vonjuk vissza az összes tokent jelszóváltás vagy fióktiltás után.",
+        "Adj stratégiát rövid access tokenek és hosszú refresh tokenek külön visszavonására."
+      ],
+      "anti_patterns": [
+        "stateless_no_revocation: Hosszú életű tokeneket használunk visszavonási mechanizmus nélkül.",
+        "logout_without_server_state: Logout után a token tovább elfogadott a backendnél.",
+        "revocation_not_checked: A visszavonási lista létezik, de a védett végpontok nem ellenőrzik."
+      ],
+      "checklist": [
+        "Van mód session vagy token lejárat előtti visszavonására?",
+        "Jelszóváltás és fióktiltás érvényteleníti a releváns tokeneket?",
+        "A backend minden védett kérésnél figyelembe veszi a revocation állapotot?",
+        "A revocation megoldás nem lassítja aránytalanul az API-t?"
+      ],
+      "relations": [
+        "authentication.session_management",
+        "authentication.jwt",
+        "backend.caching"
+      ]
+    },
+    {
+      "id": "authentication.oauth2",
+      "label": "oauth2",
+      "group": "authentication",
+      "description": "Engedélyezési szabvány, amelyben egy alkalmazás korlátozott hozzáférést kér egy erőforráshoz a felhasználó nevében.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg az OAuth2 authorization code flow-t PKCE-vel, redirect URI-val, state paraméterrel és scope-okkal.",
+        "Döntsd el, mely OAuth grant típus illik webapphoz, SPA-hoz, mobilhoz vagy gép-gép kommunikációhoz.",
+        "Írd le, hogyan tároljuk és frissítjük a provider által adott access és refresh tokeneket."
+      ],
+      "anti_patterns": [
+        "implicit_flow_legacy: Modern böngészős appban régi implicit flow-t használunk PKCE helyett.",
+        "missing_state_check: A callback nem ellenőrzi a state paramétert CSRF ellen.",
+        "overbroad_scopes: Az app több jogosultságot kér, mint amire tényleg szüksége van."
+      ],
+      "checklist": [
+        "Authorization code + PKCE használatos publikus kliensnél?",
+        "A redirect URI-k szigorúan regisztráltak?",
+        "A state és scope validáció megtörténik?",
+        "A provider tokenek biztonságosan tároltak és visszavonhatók?"
+      ],
+      "relations": [
+        "authentication.oidc",
+        "authentication.identity_provider",
+        "authentication.least_privilege"
+      ]
+    },
+    {
+      "id": "authentication.oidc",
+      "label": "oidc",
+      "group": "authentication",
+      "description": "OpenID Connect, az OAuth2-re épülő identitásréteg, amely ID tokent és szabványos felhasználói claim-eket ad.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz OIDC belépést discovery URL-lel, client beállítással, ID token validációval és user mappinggel.",
+        "Írd le, mely claim-eket használjuk identitásra, és melyeket nem szabad jogosultsági döntésként kezelni.",
+        "Adj ellenőrzési lépést nonce, issuer, audience, expiry és JWKS kulcsrotáció kezelésére."
+      ],
+      "anti_patterns": [
+        "id_token_as_api_token: ID tokent használunk backend API hozzáférésre access token helyett.",
+        "email_as_stable_identity: Email címet kezelünk végleges azonosítóként provider subject helyett.",
+        "claims_trusted_forever: Egyszer beolvasott claim később nem frissül vagy nem ellenőrzött."
+      ],
+      "checklist": [
+        "Az ID token aláírása és claimjei validáltak?",
+        "A subject az elsődleges külső azonosító?",
+        "Nonce és state ellenőrzés működik?",
+        "A user mapping kezeli az email változást és provider linkelést?"
+      ],
+      "relations": [
+        "authentication.oauth2",
+        "authentication.sso",
+        "authentication.identity_provider"
+      ]
+    },
+    {
+      "id": "authentication.sso",
+      "label": "sso",
+      "group": "authentication",
+      "description": "Single Sign-On, ahol a felhasználó egy központi identitásszolgáltatón keresztül több alkalmazásba léphet be.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz SSO integrációt domain matchinggel, enterprise tenanttel, IdP metadata kezeléssel és user provisioninggel.",
+        "Írd le, hogyan kapcsolódik az SSO a helyi felhasználói rekordhoz és jogosultsági modellhez.",
+        "Adj belépési, kijelentkezési és IdP hibaágakat enterprise felhasználóknak."
+      ],
+      "anti_patterns": [
+        "sso_without_tenant_boundary: SSO user rossz szervezethez kapcsolódhat domain vagy tenant ellenőrzés nélkül.",
+        "local_password_bypass: Enterprise fiók SSO mellett helyi jelszóval is beléphet tiltás nélkül.",
+        "no_provisioning_plan: Nem tiszta, hogyan jönnek létre és szűnnek meg SSO felhasználók."
+      ],
+      "checklist": [
+        "A tenant és domain hozzárendelés védett?",
+        "A helyi login szabálya tiszta SSO-s fióknál?",
+        "Van user provisioning és deprovisioning terv?",
+        "Az SSO hibaágak nem zárják ki végleg az adminokat?"
+      ],
+      "relations": [
+        "authentication.oidc",
+        "authentication.identity_provider",
+        "authentication.rbac"
+      ]
+    },
+    {
+      "id": "authentication.mfa",
+      "label": "mfa",
+      "group": "authentication",
+      "description": "Többfaktoros hitelesítés, amely jelszó vagy elsődleges belépés mellé további bizonyítékot kér a fiókvédelemhez.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz MFA bevezetést TOTP, passkey, recovery code és step-up auth használatával.",
+        "Írd le, mikor kötelező MFA: admin műveletnél, új eszköznél vagy kockázatos belépésnél.",
+        "Adj UX folyamatot MFA beállításra, elvesztett eszközre és recovery code használatra."
+      ],
+      "anti_patterns": [
+        "mfa_without_recovery: A user végleg kizáródik, ha elveszíti a második faktort.",
+        "sms_only_high_risk: Magas kockázatú rendszer csak SMS-alapú MFA-ra támaszkodik.",
+        "mfa_prompt_every_click: Túl gyakori MFA kérés miatt a felhasználó kifárad és kerülőutat keres."
+      ],
+      "checklist": [
+        "Van biztonságos recovery folyamat?",
+        "Kockázatos műveleteknél step-up auth működik?",
+        "A második faktor típusa illik a védendő adathoz?",
+        "Az MFA események auditálva vannak?"
+      ],
+      "relations": [
+        "authentication.2fa",
+        "authentication.passkey",
+        "authentication.account_lockout"
+      ]
+    },
+    {
+      "id": "authentication.2fa",
+      "label": "2fa",
+      "group": "authentication",
+      "description": "Kétfaktoros hitelesítés, ahol két különböző bizonyíték, például jelszó és TOTP kód együtt szükséges a belépéshez.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz 2FA belépési folyamatot TOTP kóddal, backup kóddal és remember device opcióval.",
+        "Írd le, hogyan validáljuk az egyszer használatos kódot időablakkal és próbálkozási limittel.",
+        "Adj hibaüzenet mintát rossz kód, lejárt kód és túl sok próbálkozás esetére."
+      ],
+      "anti_patterns": [
+        "backup_codes_plaintext: Recovery kódokat sima szövegként tárolunk.",
+        "unlimited_code_attempts: A 2FA kód korlátlanul próbálgatható.",
+        "remember_device_forever: Megbízható eszköz jelölés lejárat nélkül marad."
+      ],
+      "checklist": [
+        "A 2FA kód próbálkozásai limitáltak?",
+        "A backup kódok hash-elve és egyszer használatosak?",
+        "A remember device lejár és visszavonható?",
+        "A 2FA beállítás és kikapcsolás újrahitelesítést kér?"
+      ],
+      "relations": [
+        "authentication.mfa",
+        "authentication.account_lockout",
+        "authentication.secure_cookie"
+      ]
+    },
+    {
+      "id": "authentication.passkey",
+      "label": "passkey",
+      "group": "authentication",
+      "description": "Jelszó nélküli belépési módszer publikus kulcsú kriptográfiával, eszközön vagy felhőben szinkronizált hitelesítővel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz passkey regisztrációs és belépési folyamatot challenge, credential tárolás és user verification kezelésével.",
+        "Írd le, hogyan illeszkedik a passkey meglévő jelszavas, SSO vagy MFA folyamat mellé.",
+        "Adj account recovery tervet elveszett eszköz, új eszköz és több credential esetére."
+      ],
+      "anti_patterns": [
+        "passkey_no_recovery: Passkey elvesztése után nincs biztonságos fiók-visszaszerzés.",
+        "credential_not_bound: A credential nincs felhasználóhoz és relying partyhoz szigorúan kötve.",
+        "password_fallback_weakens_all: Gyenge jelszavas fallback lenullázza a passkey biztonsági előnyét."
+      ],
+      "checklist": [
+        "A challenge egyszer használatos és rövid életű?",
+        "A credential ID és public key biztonságosan tárolt?",
+        "Több passkey kezelése és törlése megoldott?",
+        "A fallback út nem gyengébb a védett fióknál?"
+      ],
+      "relations": [
+        "authentication.webauthn",
+        "authentication.mfa",
+        "authentication.password_reset_flow"
+      ]
+    },
+    {
+      "id": "authentication.webauthn",
+      "label": "webauthn",
+      "group": "authentication",
+      "description": "Böngészős szabvány passkeyek és hardverkulcsok használatához, challenge-válasz alapú, phishingálló hitelesítéssel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a WebAuthn registration és authentication ceremony szerveroldali ellenőrzéseit.",
+        "Írd le, hogyan validáljuk origin, relying party ID, challenge, user presence és user verification mezőket.",
+        "Adj adattárolási sémát credential ID, public key, sign count és transports mezőkkel."
+      ],
+      "anti_patterns": [
+        "challenge_reuse: Ugyanaz a challenge több próbálkozásnál is elfogadott.",
+        "origin_not_checked: A szerver nem validálja, honnan jött a WebAuthn válasz.",
+        "sign_count_ignored_blindly: Klónozásgyanús authenticator viselkedést nem vizsgálunk."
+      ],
+      "checklist": [
+        "A challenge egyszer használatos és sessionhöz kötött?",
+        "Az origin és RP ID validáció szigorú?",
+        "A credential public key és sign count tárolt?",
+        "A hibák nem fednek fel credential létezést feleslegesen?"
+      ],
+      "relations": [
+        "authentication.passkey",
+        "authentication.authentication",
+        "security.phishing_resistance"
+      ]
+    },
+    {
+      "id": "authentication.magic_link",
+      "label": "magic_link",
+      "group": "authentication",
+      "description": "Emailben küldött egyszer használatos belépési link, amely jelszó nélkül azonosítja a felhasználót rövid lejáratú tokennel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz magic link folyamatot rövid lejárattal, egyszer használatos tokennel és biztonságos redirecttel.",
+        "Írd le, hogyan akadályozzuk meg email enumerationt, token újrafelhasználást és open redirectet.",
+        "Adj UX szövegeket link elküldve, lejárt link, már használt link és újraküldés állapotokra."
+      ],
+      "anti_patterns": [
+        "long_lived_login_link: A belépési link órákig vagy napokig érvényes.",
+        "open_redirect_after_login: A callback tetszőleges külső URL-re továbbíthat.",
+        "email_enumeration_message: A válasz elárulja, létezik-e az email cím."
+      ],
+      "checklist": [
+        "A magic link token rövid életű és egyszer használatos?",
+        "A redirect cél engedélyezett listából jön?",
+        "A válasz nem árul el fióklétezést?",
+        "A link újrakérése rate limitált?"
+      ],
+      "relations": [
+        "authentication.email_verification",
+        "authentication.secure_cookie",
+        "backend.rate_limiting"
+      ]
+    },
+    {
+      "id": "authentication.secure_cookie",
+      "label": "secure_cookie",
+      "group": "authentication",
+      "description": "Biztonságosan beállított böngészős süti, amely HTTPS-hez, domainhez, lejárathoz és SameSite szabályhoz kötött.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg az auth cookie beállításait Secure, SameSite, domain, path, maxAge és prefix szabályokkal.",
+        "Döntsd el, mikor legyen SameSite=Lax, Strict vagy None, különösen cross-site auth flow esetén.",
+        "Adj dev, staging és production cookie konfigurációt HTTPS és localhost eltérésekre."
+      ],
+      "anti_patterns": [
+        "secure_false_in_prod: Éles auth cookie HTTPS nélkül is küldhető.",
+        "wildcard_domain_cookie: A cookie túl széles domainre érvényes, növelve a támadási felületet.",
+        "samesite_none_without_secure: Cross-site cookie Secure nélkül próbál működni."
+      ],
+      "checklist": [
+        "Éles környezetben Secure cookie-t használunk?",
+        "A SameSite beállítás illik az auth flow-hoz?",
+        "A domain és path nem túl széles?",
+        "A lejárat és törlés konzisztens logoutkor?"
+      ],
+      "relations": [
+        "authentication.httponly_cookie",
+        "authentication.csrf_protection",
+        "authentication.session_management"
+      ]
+    },
+    {
+      "id": "authentication.httponly_cookie",
+      "label": "httponly_cookie",
+      "group": "authentication",
+      "description": "JavaScriptből nem olvasható cookie, amely csökkenti annak kockázatát, hogy XSS támadás közvetlenül ellopja a session vagy refresh tokent.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Állíts be httpOnly auth cookie-t refresh token vagy session ID tárolására Secure és SameSite szabályokkal.",
+        "Írd le, hogyan fér hozzá a frontend az auth állapothoz anélkül, hogy olvasná a tokent.",
+        "Adj CSRF védelmi tervet cookie-alapú hitelesítés mellé."
+      ],
+      "anti_patterns": [
+        "token_read_by_javascript: A refresh token JavaScriptből olvasható tárhelyen van.",
+        "httponly_without_csrf_plan: Cookie védi a token lopást, de CSRF ellen nincs védelem.",
+        "auth_state_equals_token_access: A UI csak akkor működik, ha közvetlenül olvassa a tokent."
+      ],
+      "checklist": [
+        "A kritikus auth token httpOnly cookie-ban van?",
+        "A frontend külön auth state endpointból tájékozódik?",
+        "CSRF védelem kapcsolódik a cookie-alapú kérésekhez?",
+        "Logoutkor a cookie szerveroldali Set-Cookie törléssel is megszűnik?"
+      ],
+      "relations": [
+        "authentication.secure_cookie",
+        "authentication.csrf_protection",
+        "authentication.refresh_token"
+      ]
+    },
+    {
+      "id": "authentication.csrf_protection",
+      "label": "csrf_protection",
+      "group": "authentication",
+      "description": "Védelem az ellen, hogy egy másik oldal a felhasználó böngészőjével, annak cookie-jaival küldjön nem kívánt módosító kérést.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz CSRF védelmet cookie-alapú authhoz SameSite, CSRF token és origin ellenőrzés kombinációjával.",
+        "Döntsd el, mely végpontok igényelnek CSRF ellenőrzést, és melyek biztonságosak bearer token mellett.",
+        "Adj hibakezelést hiányzó, rossz vagy lejárt CSRF token esetére."
+      ],
+      "anti_patterns": [
+        "csrf_ignored_with_cookies: Cookie-alapú auth mellett nincs CSRF kontroll módosító kérésekre.",
+        "get_mutates_state: GET kérés adatot módosít, ezért linkkel is kiváltható mellékhatás.",
+        "token_not_bound_to_session: A CSRF token nincs sessionhöz vagy felhasználóhoz kötve."
+      ],
+      "checklist": [
+        "A módosító kérések CSRF ellen védettek?",
+        "A GET végpontok nem okoznak mellékhatást?",
+        "Origin vagy referer ellenőrzés támogatja a tokenes védelmet?",
+        "A CSRF hiba biztonságosan és érthetően kezelhető?"
+      ],
+      "relations": [
+        "authentication.secure_cookie",
+        "authentication.httponly_cookie",
+        "backend.validation"
+      ]
+    },
+    {
+      "id": "authentication.cors",
+      "label": "cors",
+      "group": "authentication",
+      "description": "Böngészős cross-origin hozzáférési szabályrendszer, amely meghatározza, mely domainekről hívható az API kliensoldali JavaScriptből.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz CORS beállítást engedélyezett origin listával, credentials szabállyal, metódusokkal és fejlécekkel.",
+        "Írd le a különbséget CORS, authentication és authorization között ebben a rendszerben.",
+        "Adj dev, staging és production CORS konfigurációt wildcard nélkül."
+      ],
+      "anti_patterns": [
+        "wildcard_with_credentials: Credentials mellett wildcard origin próbálja megnyitni az API-t.",
+        "cors_as_security_boundary: A backend azt hiszi, CORS megvédi nem böngészős kliensektől.",
+        "origin_reflection: A szerver minden beérkező origin értéket visszatükröz ellenőrzés nélkül."
+      ],
+      "checklist": [
+        "Az engedélyezett origin lista explicit?",
+        "Credentials csak szükség esetén engedélyezett?",
+        "A CORS nem helyettesíti a backend auth ellenőrzést?",
+        "A preflight válaszok csak szükséges metódusokat és fejléceket engednek?"
+      ],
+      "relations": [
+        "authentication.csrf_protection",
+        "backend.middleware",
+        "security.cors_misconfiguration"
+      ]
+    },
+    {
+      "id": "authentication.rbac",
+      "label": "rbac",
+      "group": "authentication",
+      "description": "Szerepköralapú jogosultságkezelés, ahol a felhasználó szerepei határozzák meg az engedélyezett műveleteket.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz RBAC modellt role, permission és erőforrás-szintű kivétel kezelésével.",
+        "Írd le, mely szerepkörök léteznek, mit tehetnek, és hogyan változik a szerepkör auditáltan.",
+        "Adj backend ellenőrzési mintát, amely nem csak UI menüpontokat rejt el."
+      ],
+      "anti_patterns": [
+        "role_name_in_code_everywhere: Szerepnevek szétszórva szerepelnek if ágakban.",
+        "admin_role_overuse: Minden új igény admin jogosultságot kap finomabb permission helyett.",
+        "role_without_scope: A szerep nem veszi figyelembe, mely szervezetre vagy projektre érvényes."
+      ],
+      "checklist": [
+        "A role és permission külön kezelhető?",
+        "A jogosultság scope-ja, például tenant vagy projekt, ismert?",
+        "A szerepkörmódosítás auditált?",
+        "A backend központi jogosultsági ellenőrzést használ?"
+      ],
+      "relations": [
+        "authentication.authorization",
+        "authentication.abac",
+        "authentication.least_privilege"
+      ]
+    },
+    {
+      "id": "authentication.abac",
+      "label": "abac",
+      "group": "authentication",
+      "description": "Attribútumalapú jogosultságkezelés, ahol a döntés felhasználói, erőforrás-, környezeti és műveleti attribútumokból áll össze.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz ABAC szabályokat user attribútum, resource owner, tenant, idő és művelet alapján.",
+        "Döntsd el, mely esetekhez elég RBAC, és hol kell attribútumalapú finomítás.",
+        "Adj policy evaluation tervet tesztelhető szabályokkal és tiltó alapértelmezéssel."
+      ],
+      "anti_patterns": [
+        "policy_hidden_in_queries: Jogosultsági szabályok ad hoc SQL feltételekben szóródnak szét.",
+        "attribute_not_trusted: Döntéshez használt attribútumot a kliens küldi ellenőrizetlenül.",
+        "unexplainable_denial: A rendszer nem tudja megmondani, mely szabály miatt tiltott."
+      ],
+      "checklist": [
+        "A policy szabályok központi helyen tesztelhetők?",
+        "A döntéshez használt attribútumok megbízható forrásból jönnek?",
+        "A tiltás oka naplózható és támogatásnak értelmezhető?",
+        "Az alapértelmezett döntés deny?"
+      ],
+      "relations": [
+        "authentication.authorization",
+        "authentication.rbac",
+        "database.filtering"
+      ]
+    },
+    {
+      "id": "authentication.least_privilege",
+      "label": "least_privilege",
+      "group": "authentication",
+      "description": "Biztonsági elv, amely szerint felhasználó, token, service account és integráció csak a ténylegesen szükséges minimális jogosultságot kapja.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Vizsgáld át ezt a jogosultsági modellt least privilege szempontból felhasználókra, tokenekre és service accountokra.",
+        "Javasolj scope- és permission-szűkítést a túl széles hozzáférések helyett.",
+        "Adj rendszeres access review folyamatot régi, felesleges jogosultságok kiszűrésére."
+      ],
+      "anti_patterns": [
+        "temporary_admin_forever: Ideiglenes admin jog tartósan megmarad.",
+        "one_token_all_scopes: Egy API token minden műveletre és erőforrásra jogosult.",
+        "no_access_review: Régi felhasználók és integrációk jogosultságai soha nem kerülnek felülvizsgálatra."
+      ],
+      "checklist": [
+        "Minden jogosultság konkrét feladathoz köthető?",
+        "A token scope-ok szűkek és lejárattal rendelkeznek?",
+        "Van rendszeres access review?",
+        "A privilege escalation műveletek külön auditáltak?"
+      ],
+      "relations": [
+        "authentication.authorization",
+        "authentication.oauth2",
+        "security.access_control"
+      ]
+    },
+    {
+      "id": "authentication.account_lockout",
+      "label": "account_lockout",
+      "group": "authentication",
+      "description": "Fiók vagy belépési út ideiglenes korlátozása túl sok sikertelen próbálkozás vagy gyanús aktivitás után.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz account lockout szabályt próbálkozási limittel, időablakkal, fokozatos késleltetéssel és recovery úttal.",
+        "Döntsd el, mikor limitálunk fiókra, IP-re, eszközre vagy globális mintára.",
+        "Adj hibaüzenetet, amely nem segíti az email enumerationt vagy brute force támadást."
+      ],
+      "anti_patterns": [
+        "permanent_lockout_no_recovery: A user ügyfélszolgálat nélkül nem tud visszajutni.",
+        "attacker_can_lock_victims: Támadó könnyen zárolhat más fiókokat ismert email címekkel.",
+        "clear_user_exists_signal: A lockout üzenet elárulja, hogy a fiók létezik."
+      ],
+      "checklist": [
+        "A limit védi a brute force próbálkozásokat?",
+        "Nem lehet könnyen más fiókját kizárni?",
+        "A visszaengedési folyamat biztonságos?",
+        "A lockout események monitorozottak?"
+      ],
+      "relations": [
+        "backend.rate_limiting",
+        "authentication.mfa",
+        "observability.alerting"
+      ]
+    },
+    {
+      "id": "authentication.password_reset_flow",
+      "label": "password_reset_flow",
+      "group": "authentication",
+      "description": "Jelszó-visszaállítási folyamat rövid életű tokennel, fióklétezést nem felfedő kommunikációval és session érvénytelenítéssel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz password reset flow-t egyszer használatos tokennel, rövid lejárattal és biztonságos siker utáni session kezeléssel.",
+        "Írd le, hogyan kerülhető el email enumeration a reset kérés válaszában.",
+        "Adj szabályt arra, hogy jelszócsere után mely sessionök és tokenek maradnak érvényesek."
+      ],
+      "anti_patterns": [
+        "reset_token_reusable: A jelszóreset token többször is használható.",
+        "account_exists_response: A reset endpoint elárulja, létezik-e az email cím.",
+        "sessions_survive_password_change: Jelszóváltás után ellopott sessionök tovább élnek."
+      ],
+      "checklist": [
+        "A reset token rövid életű és egyszer használatos?",
+        "A reset válasz nem árul el fióklétezést?",
+        "Jelszócsere után releváns sessionök és tokenek érvénytelenednek?",
+        "A reset esemény auditált és értesítést küld?"
+      ],
+      "relations": [
+        "authentication.token_revocation",
+        "authentication.email_verification",
+        "authentication.account_lockout"
+      ]
+    },
+    {
+      "id": "authentication.email_verification",
+      "label": "email_verification",
+      "group": "authentication",
+      "description": "Email cím megerősítése, amely igazolja, hogy a felhasználó hozzáfér a megadott postafiókhoz, de önmagában nem erős identitásbizonyíték.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz email verification folyamatot egyszer használatos tokennel, lejárattal és újraküldési limittel.",
+        "Döntsd el, mely funkciók használhatók ellenőrizetlen emaillel, és melyek csak verifikáció után.",
+        "Adj UX állapotokat lejárt link, már megerősített email és email cím módosítása esetére."
+      ],
+      "anti_patterns": [
+        "verified_equals_trusted_identity: Email verifikációt valódi személyazonosságként kezelünk.",
+        "verification_link_no_expiry: A megerősítő link lejárat nélkül használható.",
+        "change_email_without_reverify: Email módosítás után az új cím ellenőrzés nélkül aktív lesz."
+      ],
+      "checklist": [
+        "A verifikációs token rövid életű és egyszer használatos?",
+        "Email változáskor újra kell ellenőrizni a címet?",
+        "A nem verifikált állapot jogosultságai korlátozottak?",
+        "Az újraküldés rate limitált?"
+      ],
+      "relations": [
+        "authentication.magic_link",
+        "authentication.password_reset_flow",
+        "backend.rate_limiting"
+      ]
+    },
+    {
+      "id": "authentication.identity_provider",
+      "label": "identity_provider",
+      "group": "authentication",
+      "description": "Külső vagy belső identitásszolgáltató, amely felhasználókat azonosít, tokeneket ad ki, és gyakran SSO, MFA vagy lifecycle funkciókat kezel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Válassz identity providert termékigény, enterprise SSO, MFA, adatrezidencia és lock-in kockázat alapján.",
+        "Írd le, hogyan mappeljük a provider user ID-t a helyi felhasználói rekordra.",
+        "Adj migrációs tervet provider váltásra vagy több provider összekapcsolására."
+      ],
+      "anti_patterns": [
+        "email_as_provider_key: Provider subject helyett email alapján azonosítjuk a külső felhasználót.",
+        "vendor_lock_without_exit: Nincs terv, hogyan exportálható vagy migrálható az identity adat.",
+        "provider_claims_as_permissions: Külső claimet közvetlenül belső jogosultságnak tekintünk."
+      ],
+      "checklist": [
+        "A külső subject stabil azonosítóként tárolt?",
+        "A provider claim és belső permission külön kezelhető?",
+        "Van exit vagy migrációs terv?",
+        "A provider kiesésére van degradált működés vagy kommunikáció?"
+      ],
+      "relations": [
+        "authentication.oauth2",
+        "authentication.oidc",
+        "authentication.sso"
+      ]
+    },
+    {
+      "id": "authentication.clerk",
+      "label": "clerk",
+      "group": "authentication",
+      "description": "Modern auth szolgáltatás webappokhoz, előre elkészített UI-val, session kezeléssel, social loginnal, MFA-val és B2B funkciókkal.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz Clerk integrációt frontend komponensekkel, backend session ellenőrzéssel és organization modellel.",
+        "Írd le, mely auth UI részeket használjuk készen, és hol kell saját flow vagy webhook.",
+        "Adj tervet Clerk webhookok, user metadata és role mapping biztonságos kezelésére."
+      ],
+      "anti_patterns": [
+        "frontend_only_clerk_check: A backend nem validálja a Clerk sessiont, csak a UI bízik benne.",
+        "metadata_as_trusted_authz: Kliensből írható metadata alapján döntünk jogosultságról.",
+        "webhook_no_signature_verify: Clerk webhookot aláírás-ellenőrzés nélkül fogadunk."
+      ],
+      "checklist": [
+        "A backend Clerk token vagy session validációt végez?",
+        "A metadata jogosultsági használata korlátozott és szerveroldali?",
+        "A webhook signature ellenőrzött?",
+        "A szervezeti szerepek mappelve vannak a belső jogosultságokra?"
+      ],
+      "relations": [
+        "authentication.identity_provider",
+        "authentication.sso",
+        "backend.webhook"
+      ]
+    },
+    {
+      "id": "authentication.auth0",
+      "label": "auth0",
+      "group": "authentication",
+      "description": "Enterprise auth platform, amely OIDC/OAuth2, SSO, tenantkezelés, rules/actions, MFA és széles integrációs ökoszisztéma köré épül.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz Auth0 integrációt tenant, application, API audience, callback URL és role mapping beállításokkal.",
+        "Írd le, hogyan kezeljük Auth0 Actions, custom claims és organization alapú jogosultságok határait.",
+        "Adj logout és token validation tervet SPA, backend API és enterprise SSO esetére."
+      ],
+      "anti_patterns": [
+        "wrong_audience_token: API olyan tokent fogad el, amely nem neki szól.",
+        "custom_claim_collision: Nem namespaced custom claim ütközik szabványos claimmel.",
+        "tenant_config_drift: Dev, staging és production tenant beállításai kézzel eltérnek."
+      ],
+      "checklist": [
+        "Az API audience és issuer validálva van?",
+        "A custom claim namespaced és dokumentált?",
+        "A tenant konfiguráció verziózott vagy reprodukálható?",
+        "A logout kezeli az app sessiont és provider sessiont is?"
+      ],
+      "relations": [
+        "authentication.oauth2",
+        "authentication.oidc",
+        "authentication.rbac"
+      ]
+    },
+    {
+      "id": "authentication.supabase_auth",
+      "label": "supabase_auth",
+      "group": "authentication",
+      "description": "Supabase beépített auth rendszere, amely Postgreshez kapcsolt felhasználókezelést, JWT-t, social logint és row level security mintákat támogat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz Supabase Auth integrációt session kezeléssel, RLS policykkel és frontend auth state figyeléssel.",
+        "Írd le, hogyan kapcsolódik az auth.users rekord a publikus profil táblához.",
+        "Adj RLS ellenőrzési tervet, hogy a frontend közvetlen adatlekérései se kerülhessék meg a jogosultságot."
+      ],
+      "anti_patterns": [
+        "rls_disabled_in_prod: A táblák közvetlenül elérhetők, de nincs row level security.",
+        "auth_user_exposed_directly: Az auth.users belső adatát keverjük publikus profiladatokkal.",
+        "service_role_in_client: Service role kulcs bekerül frontend kódba."
+      ],
+      "checklist": [
+        "Az RLS policyk védik a felhasználói adatokat?",
+        "A service role kulcs csak szerveren van?",
+        "A profil tábla biztonságosan kapcsolódik auth.users-hez?",
+        "A session refresh és logout kezelése működik kliensen?"
+      ],
+      "relations": [
+        "database.postgresql",
+        "authentication.jwt",
+        "security.secrets"
+      ]
+    },
+    {
+      "id": "authentication.firebase_auth",
+      "label": "firebase_auth",
+      "group": "authentication",
+      "description": "Firebase hitelesítési szolgáltatás social loginnal, email/jelszóval, custom tokennel és kliensoldali SDK-központú auth állapottal.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz Firebase Auth integrációt ID token validációval backend oldalon és security rules összhanggal.",
+        "Írd le, hogyan kezeljük custom claims, email verification és account linking eseteit.",
+        "Adj tervet Firebase ID token frissítésre, logout kezelésre és admin SDK használatra."
+      ],
+      "anti_patterns": [
+        "client_uid_trusted: Backend elhiszi a kliens által küldött Firebase UID-t ID token validáció nélkül.",
+        "custom_claims_not_refreshed: Jogosultság változik, de a kliens régi token claimet használ.",
+        "admin_sdk_in_client: Admin SDK vagy service account adat frontendbe kerül."
+      ],
+      "checklist": [
+        "A backend validálja a Firebase ID tokent?",
+        "A custom claim változás után token refresh történik?",
+        "A security rules és backend auth logika nem mond ellent egymásnak?",
+        "Service account titkok csak szerveren vannak?"
+      ],
+      "relations": [
+        "authentication.identity_provider",
+        "authentication.email_verification",
+        "security.secrets"
+      ]
+    },
+    {
+      "id": "authentication.keycloak",
+      "label": "keycloak",
+      "group": "authentication",
+      "description": "Nyílt forráskódú identitás- és hozzáféréskezelő rendszer realm, client, role, group, SSO és federation támogatással.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz Keycloak realmet clientekkel, redirect URI-kkal, role mappinggel és protocol mapper beállításokkal.",
+        "Írd le, hogyan integrálódik a backend OIDC token validációval és JWKS kulcsrotációval.",
+        "Adj üzemeltetési tervet realm export, backup, admin hozzáférés és verziófrissítés kezelésére."
+      ],
+      "anti_patterns": [
+        "master_realm_for_apps: Alkalmazásokat a master realmben kezelünk külön realm helyett.",
+        "broad_realm_admin: Túl sok ember kap teljes realm admin jogot.",
+        "mapper_sprawl: Custom claim mapperek dokumentáció nélkül szaporodnak."
+      ],
+      "checklist": [
+        "A realm és client konfiguráció elkülönített és exportálható?",
+        "A backend ellenőrzi issuer, audience és aláírás mezőket?",
+        "A role és group mapping dokumentált?",
+        "Az admin hozzáférés MFA-val és least privilege elvvel védett?"
+      ],
+      "relations": [
+        "authentication.oidc",
+        "authentication.sso",
+        "authentication.rbac"
+      ]
+    },
+    {
+      "id": "authentication.better_auth",
+      "label": "better_auth",
+      "group": "authentication",
+      "description": "Modern TypeScript auth könyvtár, amely alkalmazáskódba építhető session, provider, plugin és adatbázis adapter mintákkal.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz Better Auth integrációt adatbázis adapterrel, session cookie-val, social providerrel és plugin beállításokkal.",
+        "Írd le, mely auth döntések maradnak saját backendben, és mit ad át a könyvtárnak a rendszer.",
+        "Adj migrációs tervet meglévő user tábláról Better Auth sémára adatvesztés nélkül."
+      ],
+      "anti_patterns": [
+        "library_defaults_unreviewed: Alapértelmezett cookie, session és provider beállításokat élesben átvesszük ellenőrzés nélkül.",
+        "schema_collision: A Better Auth táblái ütköznek meglévő user modellel tiszta mapping nélkül.",
+        "plugin_overtrust: Plugin által adott adatot közvetlen jogosultsági döntésre használunk."
+      ],
+      "checklist": [
+        "A cookie és session beállítások productionre vannak hangolva?",
+        "Az adatbázis adapter sémája illeszkedik a meglévő modellhez?",
+        "A provider és plugin adatok szerveroldalon validáltak?",
+        "A migráció visszaellenőrizhető és rollbackelhető?"
+      ],
+      "relations": [
+        "authentication.session_management",
+        "database.migration",
+        "authentication.secure_cookie"
+      ]
+    }
+  ]
+}

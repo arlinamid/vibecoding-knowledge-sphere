@@ -1,0 +1,691 @@
+{
+  "group": "testing_qa",
+  "keywords": [
+    {
+      "id": "testing_qa.unit_test",
+      "label": "unit_test",
+      "group": "testing_qa",
+      "description": "Egyetlen függvény, metódus vagy komponens izolált viselkedésének gyors, determinisztikus ellenőrzése.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Fogalmazd meg, milyen üzleti szabályt bizonyítson az unit teszt, ne csak melyik függvényt hívja meg.",
+        "Készíts unit teszt tervet a tiszta bemenetekre, hibás bemenetekre és határértékekre.",
+        "Azonosítsd, mely függőségeket érdemes leválasztani, hogy a teszt gyors és determinisztikus maradjon.",
+        "Javasolj beszédes teszteset-neveket, amelyekből kiderül a feltétel és az elvárt viselkedés."
+      ],
+      "anti_patterns": [
+        "implementation_lockin: A teszt belső lépéseket rögzít, ezért refaktor után akkor is törik, ha a viselkedés helyes.",
+        "hidden_dependency: A teszt véletlenül időtől, globális állapottól vagy hálózattól függ.",
+        "assertion_gap: A teszt lefuttatja a kódot, de nem ellenőrzi a lényeges üzleti eredményt.",
+        "fixture_overload: Túl sok előkészítő adat takarja el, pontosan mit bizonyít az eset."
+      ],
+      "checklist": [
+        "A teszt egy jól körülhatárolt viselkedést ellenőriz.",
+        "Az elvárás a publikus szerződésre, nem a belső implementációra vonatkozik.",
+        "A bemeneti adat kicsi, olvasható és a tesztben indokolt.",
+        "Van negatív vagy határértékes eset ott, ahol a szabály sérülhet.",
+        "A teszt sorrendtől és külső környezettől függetlenül fut."
+      ],
+      "relations": [
+        "testing_qa.mock",
+        "testing_qa.fixture",
+        "testing_qa.edge_case_test",
+        "testing_qa.regression_test",
+        "frontend_architecture.typescript",
+        "debugging.minimal_reproduction"
+      ]
+    },
+    {
+      "id": "testing_qa.integration_test",
+      "label": "integration_test",
+      "group": "testing_qa",
+      "description": "Egymással együttműködő modulok, rétegek vagy szolgáltatások szerződésének ellenőrzése.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Térképezd fel, mely komponensek közötti szerződést kell integrációs teszttel bizonyítani.",
+        "Készíts integrációs tesztlistát az adatbázis, API és jogosultsági réteg találkozási pontjaira.",
+        "Jelöld meg, hol kell valódi függőséget használni, és hol elég kontrollált tesztdouble.",
+        "Írd le, milyen állapotból induljon és milyen állapotot hagyjon maga után a teszt."
+      ],
+      "anti_patterns": [
+        "fake_integration: Minden függőség mockolt, így a teszt valójában unit teszt marad.",
+        "shared_state_bleed: A tesztek egymás adatait használják vagy rontják el.",
+        "contract_blindness: A teszt csak státuszt néz, de nem ellenőrzi az adat- és hibaszerződést.",
+        "slow_setup_sprawl: Az előkészítés annyira nagy, hogy a hiba okát nehéz megtalálni."
+      ],
+      "checklist": [
+        "A teszt legalább két valódi együttműködő réteget érint.",
+        "Az előkészített állapot izolált és futás után visszaállítható.",
+        "Ellenőrizve van a sikeres út, a validációs hiba és legalább egy jogosultsági vagy adatütközés.",
+        "A külső szolgáltatások helyettesítése tudatosan dokumentált.",
+        "A hibajelzés és a perzisztált eredmény is vizsgálva van, ahol releváns."
+      ],
+      "relations": [
+        "backend.endpoint",
+        "backend.service_layer",
+        "database.transaction",
+        "authentication.authorization",
+        "testing_qa.fixture",
+        "testing_qa.mock",
+        "debugging.network_trace"
+      ]
+    },
+    {
+      "id": "testing_qa.e2e_test",
+      "label": "e2e_test",
+      "group": "testing_qa",
+      "description": "Teljes felhasználói útvonal böngészőtől háttérrendszerig, a felhasználó szemszögéből ellenőrizve.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Válaszd ki azokat a kritikus user flow-kat, amelyek E2E tesztet érdemelnek a release kapuban.",
+        "Írj forgatókönyvet a belépéstől a végső visszajelzésig, felhasználói nyelven.",
+        "Határozd meg, milyen adatállapot és jogosultság kell a teljes útvonal stabil futásához.",
+        "Javasolj ellenőrzési pontokat, amelyek valódi üzleti sikert mérnek, nem csak oldalbetöltést."
+      ],
+      "anti_patterns": [
+        "click_tour: A teszt kattintgatási útvonal, de nem bizonyítja, hogy az üzleti művelet sikerült.",
+        "selector_fragility: A lépések vizuális részletekhez kötődnek, ezért kis UI változásnál instabillá válnak.",
+        "environment_guessing: A teszt előfeltételei nincsenek rögzítve, csak egy fejlesztő gépén működik.",
+        "end_to_end_everything: Minden apró szabály E2E szinten van tesztelve, ezért a suite lassú és drága."
+      ],
+      "checklist": [
+        "A flow üzletileg kritikus és felhasználó által érzékelhető.",
+        "A teszt stabil belépési, adat-előkészítési és takarítási stratégiával fut.",
+        "Az ellenőrzések látható visszajelzésre és rendszerállapotra is kiterjednek.",
+        "A várakozások eseményhez vagy állapothoz kötődnek, nem vak időzítéshez.",
+        "A hibakereséshez képernyőkép, trace vagy napló elérhető sikertelen futásnál."
+      ],
+      "relations": [
+        "ui_ux.user_flow",
+        "testing_qa.playwright",
+        "testing_qa.cypress",
+        "testing_qa.acceptance_test",
+        "ux_states.success_state",
+        "debugging.reproduce_steps",
+        "devops_deploy.preview_deployment"
+      ]
+    },
+    {
+      "id": "testing_qa.playwright",
+      "label": "playwright",
+      "group": "testing_qa",
+      "description": "Böngészőautomatizálási keretrendszer E2E, komponens- és vizuális regressziós ellenőrzésekhez.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg Playwrightban a fő böngészős útvonalakat úgy, hogy párhuzamosan is stabilan fussanak.",
+        "Javasolj lokátor-stratégiát, amely a felhasználó számára látható szerepekre és szövegekre támaszkodik.",
+        "Állíts össze trace- és screenshot-alapú hibakeresési elvárásokat sikertelen futásokhoz.",
+        "Különítsd el, mely tesztek fussanak Chromium, Firefox és WebKit alatt."
+      ],
+      "anti_patterns": [
+        "timeout_padding: A stabilitást hosszú várakozásokkal próbálják elérni valódi állapotfigyelés helyett.",
+        "css_selector_trap: A tesztek törékeny CSS-láncokra épülnek, nem felhasználói szerepekre vagy tesztazonosítókra.",
+        "trace_ignored: A Playwright trace készül, de a csapat nem használja hibadiagnosztikára.",
+        "browser_matrix_noise: Minden eset minden böngészőben fut, pedig csak a kockázatos flow-knál lenne indokolt."
+      ],
+      "checklist": [
+        "A lokátorok hozzáférhetőségi szerepekhez, címkékhez vagy stabil tesztazonosítókhoz kötődnek.",
+        "A tesztállapot worker-szinten izolált, párhuzamos futásnál sem ütközik.",
+        "A trace, screenshot és videó beállítás a CI hibakeresést szolgálja.",
+        "A hálózati mockolás nem rejti el a szerződéshibákat.",
+        "A böngészőmátrix a tényleges felhasználói és üzleti kockázathoz igazodik."
+      ],
+      "relations": [
+        "testing_qa.e2e_test",
+        "accessibility.aria_labels",
+        "accessibility.keyboard_navigation",
+        "debugging.network_trace",
+        "devops_deploy.ci_cd",
+        "frontend_architecture.react"
+      ]
+    },
+    {
+      "id": "testing_qa.cypress",
+      "label": "cypress",
+      "group": "testing_qa",
+      "description": "Frontendre fókuszáló tesztelő eszköz interaktív hibakereséssel és böngészős folyamatellenőrzéssel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Javasolj Cypress teszteket azokhoz a frontend flow-khoz, ahol gyors vizuális visszajelzés kell fejlesztés közben.",
+        "Fogalmazd meg, mely API-hívásokat szabad interceptálni, és melyeket kell valódi integrációként hagyni.",
+        "Készíts Cypress QA tervet űrlapokra, hibaállapotokra és navigációs átmenetekre.",
+        "Írd le, milyen adat-előkészítés kell ahhoz, hogy a Cypress suite újrafuttatható legyen."
+      ],
+      "anti_patterns": [
+        "intercept_overuse: Az összes hálózati válasz helyettesítve van, ezért a teszt nem veszi észre az API-szerződés törését.",
+        "command_chain_fog: A hosszú parancsláncok elrejtik, melyik felhasználói szándékot vizsgálja a teszt.",
+        "local_only_runner: A tesztek csak interaktív módban futnak, CI-ben nincs megbízható visszajelzés.",
+        "brittle_animation_wait: Animációkra és időzítésre vár a teszt állapotellenőrzés helyett."
+      ],
+      "checklist": [
+        "A teszt leírása felhasználói műveletet nevez meg, nem technikai kattintássorozatot.",
+        "Az interceptált válaszok mögött tudatos tesztcél van.",
+        "A fixture-adatok verziózottak és nem függnek korábbi futástól.",
+        "A hibaállapotok, üres állapotok és sikeres visszajelzések külön ellenőrzést kapnak.",
+        "A CI futás ugyanazt a konfigurációt használja, mint amit a csapat elfogad release előtt."
+      ],
+      "relations": [
+        "testing_qa.e2e_test",
+        "testing_qa.fixture",
+        "ux_states.error_state",
+        "ux_states.form_feedback",
+        "backend.rest_api",
+        "frontend_ui.responsive_layout",
+        "devops_deploy.ci_cd"
+      ]
+    },
+    {
+      "id": "testing_qa.jest",
+      "label": "jest",
+      "group": "testing_qa",
+      "description": "JavaScript és TypeScript projektekben gyakori tesztkeretrendszer unit és integrációs ellenőrzésekhez.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Rendezd Jest tesztcsoportokba a tiszta logikát, a komponensviselkedést és az aszinkron hibakezelést.",
+        "Javasolj fake timer stratégiát időzítőkre, lejáratokra és debounce jellegű működésre.",
+        "Nézd át, hol okozhat a globális mock vagy modulcache hamis pozitív eredményt.",
+        "Fogalmazz meg elvárásokat a Jest suite sebességére és diagnosztikai üzeneteire."
+      ],
+      "anti_patterns": [
+        "global_mock_leak: Egy tesztben beállított mock hatása átszivárog más esetekbe.",
+        "async_false_green: Az aszinkron állítás nincs bevárva, ezért a teszt zölden fut hibás viselkedés mellett is.",
+        "snapshot_reflex: Snapshot készül ott is, ahol konkrét üzleti állítást kellene írni.",
+        "cache_surprise: A modulcache miatt a teszt nem tiszta induló állapotból fut."
+      ],
+      "checklist": [
+        "A setup és teardown visszaállítja a módosított globális állapotot.",
+        "Az aszinkron eredmények és hibák explicit ellenőrzést kapnak.",
+        "A mockok hatóköre a tesztesetre vagy a releváns csoportjára korlátozott.",
+        "A hibás bemenetek és időfüggő esetek determinisztikusan futnak.",
+        "A tesztnevek olvasásából kiderül, milyen szerződést véd a suite."
+      ],
+      "relations": [
+        "testing_qa.unit_test",
+        "testing_qa.mock",
+        "testing_qa.snapshot_test",
+        "frontend_architecture.typescript",
+        "debugging.error_log",
+        "performance.debounce"
+      ]
+    },
+    {
+      "id": "testing_qa.vitest",
+      "label": "vitest",
+      "group": "testing_qa",
+      "description": "Vite-alapú projektekhez illeszkedő modern tesztkeretrendszer gyors TypeScript és frontend tesztekhez.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Igazítsd a Vitest konfigurációt a Vite aliasokhoz, környezeti változókhoz és böngészős igényekhez.",
+        "Javasolj külön stratégiát node, jsdom és komponensközeli tesztekre.",
+        "Nézd át, mely tesztek profitálnak watch módból, és melyeket kell CI-ben szigorúan futtatni.",
+        "Fogalmazd meg, hogyan maradjon gyors a Vitest suite nagyobb TypeScript kódbázisban."
+      ],
+      "anti_patterns": [
+        "env_mismatch: A tesztkörnyezet eltér az alkalmazás Vite beállításaitól, ezért nem ugyanazt a viselkedést méri.",
+        "watch_blindness: Fejlesztés közben zöld a watch mód, de teljes CI futásban rejtett függőségek buknak ki.",
+        "dom_assumption: DOM API-t használó teszt node környezetben fut, vagy fordítva.",
+        "plugin_drift: A tesztek nem ugyanazokat az aliasokat és transzformációkat látják, mint az app."
+      ],
+      "checklist": [
+        "A Vitest környezet illeszkedik a tesztelt modul tényleges futási közegéhez.",
+        "A Vite aliasok, env-kezelés és transzformációk a tesztben is érvényesek.",
+        "A watch mód mellett van teljes, tiszta CI futás.",
+        "A párhuzamosítás nem okoz állapotütközést vagy portkonfliktust.",
+        "A coverage beállítás a fontos forrásokra vonatkozik, nem generált állományokra."
+      ],
+      "relations": [
+        "testing_qa.unit_test",
+        "testing_qa.test_coverage",
+        "frontend_architecture.typescript",
+        "frontend_architecture.react",
+        "devops_deploy.build",
+        "devops_deploy.ci_cd"
+      ]
+    },
+    {
+      "id": "testing_qa.test_coverage",
+      "label": "test_coverage",
+      "group": "testing_qa",
+      "description": "Mérőszám és minőségi jelzés arról, a tesztek a kód mely részeit és kockázatait érintik.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Értelmezd a coverage riportot kockázat szerint, ne pusztán százalékként.",
+        "Javasolj lefedési célokat üzletileg kritikus modulokra és hibára hajlamos ágakra.",
+        "Azonosítsd a magas coverage mellett is teszteletlen viselkedési szerződéseket.",
+        "Készíts tervet a coverage növelésére úgy, hogy ne szülessenek üres állítású tesztek."
+      ],
+      "anti_patterns": [
+        "percent_theater: A csapat százalékot hajszol, miközben a kritikus viselkedések teszteletlenek maradnak.",
+        "generated_noise: Generált, adapter vagy konfigurációs fájlok rontják vagy szépítik a képet.",
+        "uncovered_risk: A legalacsonyabb lefedettség épp a pénzügyi, jogosultsági vagy adatvesztési kockázatnál van.",
+        "assertion_free_coverage: A teszt végigfuttat kódágakat, de nem ellenőrzi a lényegi eredményt."
+      ],
+      "checklist": [
+        "A riportból külön látszanak a kritikus modulok és a kevésbé fontos segédrészek.",
+        "A branch coverage is figyelve van döntési logikánál.",
+        "A kizárások indokoltak és nem takarnak valódi hiányt.",
+        "A coverage cél nem ösztönöz üres vagy törékeny teszteket.",
+        "A lefedési hiányokból konkrét tesztfeladatok készülnek."
+      ],
+      "relations": [
+        "testing_qa.unit_test",
+        "testing_qa.integration_test",
+        "security.input_validation",
+        "authentication.authorization",
+        "backend.validation",
+        "ai_agentic.evaluation"
+      ]
+    },
+    {
+      "id": "testing_qa.mock",
+      "label": "mock",
+      "group": "testing_qa",
+      "description": "Kontrollált helyettesítő, amely egy függőség viselkedését előre megadott módon utánozza tesztben.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Döntsd el, mely függőségeket kell mockolni a teszt fókuszának tisztán tartásához.",
+        "Írd le, milyen viselkedést várunk a mocktól siker, hiba és lassú válasz esetén.",
+        "Ellenőrizd, hogy a mock nem ismétli-e le feleslegesen a valódi implementációt.",
+        "Javasolj mock-határokat külső API, idő, véletlen és e-mail küldés esetére."
+      ],
+      "anti_patterns": [
+        "behavior_fantasy: A mock olyan választ ad, amit a valódi rendszer soha nem küldene.",
+        "overmocked_unit: A teszt minden együttműködést leválaszt, ezért nem marad hasznos bizonyíték.",
+        "mock_as_spec: A mock válik dokumentációvá, miközben nincs szerződéses ellenőrzés a valódi szolgáltatás ellen.",
+        "call_count_fixation: A teszt hívásszámokra koncentrál, nem a felhasználói vagy üzleti eredményre."
+      ],
+      "checklist": [
+        "A mock csak a teszt fókuszán kívüli függőséget helyettesíti.",
+        "A helyettesített viselkedés megfelel a valós szerződésnek.",
+        "Van külön eset hibára, üres válaszra vagy timeout jellegű reakcióra, ha releváns.",
+        "A mock a teszt végén visszaáll vagy izolált hatókörben marad.",
+        "A kritikus integrációkhoz van legalább egy valódi szerződés- vagy integrációs teszt."
+      ],
+      "relations": [
+        "testing_qa.unit_test",
+        "testing_qa.integration_test",
+        "testing_qa.stub",
+        "backend.webhook",
+        "debugging.timeout",
+        "backend.retry_policy"
+      ]
+    },
+    {
+      "id": "testing_qa.stub",
+      "label": "stub",
+      "group": "testing_qa",
+      "description": "Egyszerű, előre meghatározott választ adó helyettesítő, amely nem modellez teljes együttműködést.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Határozd meg, hol elég stubot használni teljes mock helyett, mert csak bemeneti állapot kell.",
+        "Készíts stub-stratégiát ritka hibaágak és nehezen előállítható külső válaszok tesztelésére.",
+        "Írd le, milyen minimális adatot adjon vissza a stub, hogy a teszt olvasható maradjon.",
+        "Jelöld, mikor kell a stubot valódi integrációval kiváltani."
+      ],
+      "anti_patterns": [
+        "stub_bloat: A stub annyi logikát kap, hogy már külön tesztelendő komponenssé válik.",
+        "stale_response: A stub válasza lemarad a valódi API változásairól.",
+        "branch_masking: A stub mindig kényelmes választ ad, ezért a hibaágak rejtve maradnak.",
+        "hidden_contract: A teszt nem jelzi, milyen szerződést feltételez a stub adatairól."
+      ],
+      "checklist": [
+        "A stub minimális adatot ad a vizsgált viselkedéshez.",
+        "A stub nem tartalmaz üzleti logikát vagy feltételrendszert.",
+        "A feltételezett válaszforma össze van kötve API- vagy szerződésdokumentációval.",
+        "A hiba- és üres válaszokhoz külön stubváltozat készült, ha fontosak.",
+        "A stub használata nem zárja ki a szükséges integrációs ellenőrzést."
+      ],
+      "relations": [
+        "testing_qa.mock",
+        "testing_qa.fixture",
+        "backend.openapi",
+        "backend.endpoint",
+        "testing_qa.edge_case_test",
+        "documentation.api_docs"
+      ]
+    },
+    {
+      "id": "testing_qa.fixture",
+      "label": "fixture",
+      "group": "testing_qa",
+      "description": "Előre rögzített tesztadat vagy állapot, amely ismételhetővé és olvashatóvá teszi a teszteket.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a fixture-készletet úgy, hogy minden adatnak legyen világos tesztcélja.",
+        "Javasolj külön fixture-t normál felhasználóra, jogosultsági eltérésre és hibás adatra.",
+        "Nézd át, mely fixture-ök túl nagyok vagy túl általánosak a konkrét tesztekhez.",
+        "Fogalmazd meg, hogyan frissüljön a fixture, amikor az adatmodell változik."
+      ],
+      "anti_patterns": [
+        "mystery_fixture: A tesztben nem derül ki, miért pont az adott adat kell.",
+        "mega_fixture: Egyetlen hatalmas adatcsomag szolgál minden teszthez, ezért nehéz követni a függéseket.",
+        "stale_schema: A fixture régi mezőket vagy hiányzó új mezőket tartalmaz.",
+        "cross_test_coupling: Több teszt ugyanazt a módosítható fixture-t használja, és egymásra hatnak."
+      ],
+      "checklist": [
+        "A fixture neve elárulja a tesztelt helyzetet.",
+        "Csak a szükséges mezőket tartalmazza, a többi érték nem zavaró.",
+        "A fixture kompatibilis az aktuális sémával és validációval.",
+        "A módosítható tesztadat futásonként izolált.",
+        "A fixture-frissítés része a modell- vagy API-változtatás review-jának."
+      ],
+      "relations": [
+        "database.schema",
+        "backend.validation",
+        "testing_qa.integration_test",
+        "testing_qa.e2e_test",
+        "authentication.rbac",
+        "documentation.api_docs"
+      ]
+    },
+    {
+      "id": "testing_qa.snapshot_test",
+      "label": "snapshot_test",
+      "group": "testing_qa",
+      "description": "Korábbi kimenethez hasonlító teszt, amely gyorsan jelzi a nem várt UI- vagy struktúraváltozást.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Döntsd el, mely stabil kimeneteknél van értelme snapshot tesztet használni.",
+        "Írd le, milyen review-szabály mellett frissíthető egy snapshot.",
+        "Javasolj konkrét állításokat a snapshot mellé a fontos üzleti részletekre.",
+        "Azonosítsd a dinamikus mezőket, amelyeket normalizálni kell összehasonlítás előtt."
+      ],
+      "anti_patterns": [
+        "approve_without_reading: A snapshot frissítése automatikus reflex, tartalmi review nélkül.",
+        "noisy_snapshot: Időbélyeg, véletlen azonosító vagy sorrendváltozás miatt állandóan módosul.",
+        "snapshot_as_assertion: A snapshot helyettesíti a lényegi állításokat, ezért a hiba jelentése homályos.",
+        "oversized_output: Túl nagy kimenet kerül snapshotba, amit senki nem tud érdemben átnézni."
+      ],
+      "checklist": [
+        "A snapshot kicsi, stabil és ember által áttekinthető.",
+        "A dinamikus részek normalizálva vagy kizárva vannak.",
+        "A frissítésnél látszik, hogy szándékos viselkedésváltozás történt.",
+        "A fontos üzleti elvárások külön, olvasható állításként is szerepelnek.",
+        "A snapshot nem takarja el a vizuális vagy hozzáférhetőségi regressziót."
+      ],
+      "relations": [
+        "testing_qa.jest",
+        "testing_qa.vitest",
+        "testing_qa.regression_test",
+        "frontend_ui.component_library",
+        "accessibility.semantic_html",
+        "ui_ux.consistency"
+      ]
+    },
+    {
+      "id": "testing_qa.regression_test",
+      "label": "regression_test",
+      "group": "testing_qa",
+      "description": "Olyan teszt, amely egy korábban megtalált hiba visszatérését akadályozza meg.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Alakítsd a hibajegy reprodukcióját regressziós tesztté, a valódi elvárt viselkedéssel együtt.",
+        "Írd le, mely rétegen érdemes megfogni a regressziót: unit, integrációs vagy E2E szinten.",
+        "Kapcsold a regressziós tesztet a javított hiba okához, ne csak a tünetéhez.",
+        "Javasolj naminget, amelyből később is érthető, milyen hiba ne térjen vissza."
+      ],
+      "anti_patterns": [
+        "bug_without_test: A hiba javítása után nem marad automatikus védelem.",
+        "symptom_only: A teszt csak a látványos tünetet nézi, a kiváltó feltételt nem.",
+        "duplicate_guard: Ugyanazt a regressziót több törékeny teszt védi, felesleges karbantartási teherrel.",
+        "vague_history: A tesztből nem derül ki, milyen korábbi hiba miatt létezik."
+      ],
+      "checklist": [
+        "A teszt piros lett volna az eredeti hibás állapotban.",
+        "A teszt a hiba gyökerét vagy döntő feltételét ellenőrzi.",
+        "A tesztszint arányos a regresszió kockázatával és költségével.",
+        "A hiba kontextusa megtalálható tesztnévben, kommentben vagy kapcsolódó jegyben.",
+        "A javítás nem csak új teszttel, hanem meglévő suite futtatással is igazolt."
+      ],
+      "relations": [
+        "debugging.regression",
+        "debugging.root_cause_analysis",
+        "debugging.reproduce_steps",
+        "testing_qa.test_case",
+        "testing_qa.edge_case_test",
+        "vibe_coding.issue"
+      ]
+    },
+    {
+      "id": "testing_qa.smoke_test",
+      "label": "smoke_test",
+      "group": "testing_qa",
+      "description": "Gyors, széles lefutású ellenőrzés, amely jelzi, hogy a rendszer alapvető részei használhatók-e.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Állíts össze smoke tesztlistát a deploy utáni legfontosabb életjelekre.",
+        "Válaszd ki azokat az alapműveleteket, amelyek nélkül a release azonnal visszagörgetendő.",
+        "Javasolj rövid futású smoke suite-ot preview, staging és production környezetre.",
+        "Fogalmazd meg, milyen jelzésből legyen blokkoló hiba a smoke eredményben."
+      ],
+      "anti_patterns": [
+        "full_regression_disguise: A smoke suite túl nagyra nő, ezért már nem ad gyors visszajelzést.",
+        "shallow_ping: Csak azt nézi, hogy egy URL válaszol, de alapfunkciót nem ellenőriz.",
+        "no_prod_signal: Élesítés után nincs biztonságos, csak olvasó jellegű ellenőrzés.",
+        "alert_without_owner: A smoke hiba jelez, de nincs felelős vagy következő lépés."
+      ],
+      "checklist": [
+        "A smoke teszt néhány perc alatt lefut.",
+        "Lefedi a belépést, alapnavigációt és legalább egy kulcsfontosságú műveletet.",
+        "Környezetenként világos, milyen adatot használhat biztonságosan.",
+        "Sikertelen futásnál egyértelmű a blokkolás vagy rollback döntése.",
+        "Az eredmény látható a CI/CD vagy monitoring felületen."
+      ],
+      "relations": [
+        "devops_deploy.deploy",
+        "devops_deploy.health_check",
+        "devops_deploy.rollback",
+        "observability.uptime",
+        "testing_qa.e2e_test",
+        "testing_qa.qa_checklist"
+      ]
+    },
+    {
+      "id": "testing_qa.acceptance_test",
+      "label": "acceptance_test",
+      "group": "testing_qa",
+      "description": "Üzleti elfogadási feltételeket ellenőrző teszt, amely a kész funkció értékét bizonyítja.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Fordítsd az elfogadási kritériumokat tesztelhető, felhasználói nyelvű állításokká.",
+        "Készíts acceptance teszttervet szerepkörökre, jogosultságokra és üzleti eredményekre.",
+        "Azonosítsd, hol kell terméktulajdonosi megerősítés a várt viselkedéshez.",
+        "Írd le, milyen demonstrálható eredmény alapján mondható késznek a funkció."
+      ],
+      "anti_patterns": [
+        "criteria_afterthought: Az elfogadási feltételek csak fejlesztés után, utólag születnek meg.",
+        "technical_acceptance: A teszt belső implementációt igazol, nem felhasználói vagy üzleti értéket.",
+        "missing_role_view: Nem derül ki, mely felhasználói szerep szempontjából elfogadható a működés.",
+        "ambiguous_done: A kész állapot szubjektív, mert nincs mérhető vagy megfigyelhető elvárás."
+      ],
+      "checklist": [
+        "Minden acceptance case egy konkrét felhasználói célhoz kapcsolódik.",
+        "Az elvárt eredmény üzleti nyelven, ellenőrizhetően van megfogalmazva.",
+        "Szerepkörök és jogosultsági eltérések külön esetet kapnak, ha számítanak.",
+        "A product owner vagy domain szakértő vissza tudja igazolni a kritériumot.",
+        "A teszt nem függ belső technikai megoldástól."
+      ],
+      "relations": [
+        "ui_ux.use_case",
+        "ui_ux.job_to_be_done",
+        "authentication.rbac",
+        "testing_qa.e2e_test",
+        "testing_qa.test_case",
+        "vibe_coding.prd"
+      ]
+    },
+    {
+      "id": "testing_qa.test_case",
+      "label": "test_case",
+      "group": "testing_qa",
+      "description": "Konkrét, megismételhető tesztforgatókönyv előfeltételekkel, lépésekkel és elvárt eredménnyel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj teszteseteket előfeltétellel, lépéssel, várt eredménnyel és kockázati megjegyzéssel.",
+        "Bontsd szét a túl nagy tesztesetet önálló, jól elnevezett forgatókönyvekre.",
+        "Javasolj teszteseteket happy pathra, validációs hibára, jogosultságra és adatütközésre.",
+        "Nézd át, mely tesztesetek ismétlik egymást, és hol hiányzik valódi lefedés."
+      ],
+      "anti_patterns": [
+        "vague_steps: A lépések túl általánosak, két tesztelő nem ugyanazt hajtaná végre.",
+        "missing_expected: Van művelet, de nincs egyértelmű elvárt eredmény.",
+        "oversized_case: Egy teszteset több külön döntési pontot zsúfol össze.",
+        "stale_manual_case: A kézi teszteset régi UI-t vagy üzleti szabályt ír le."
+      ],
+      "checklist": [
+        "A teszteset előfeltételei világosak és előállíthatók.",
+        "A lépések reprodukálhatók külön fejlesztői magyarázat nélkül.",
+        "Az elvárt eredmény megfigyelhető és eldönthető.",
+        "Egy teszteset egy fő kockázatot vagy szabályt ellenőriz.",
+        "Látszik, hogy automatizálható-e vagy kézi validáció marad."
+      ],
+      "relations": [
+        "testing_qa.qa_checklist",
+        "testing_qa.acceptance_test",
+        "debugging.reproduce_steps",
+        "ui_ux.user_flow",
+        "backend.validation",
+        "documentation.runbook"
+      ]
+    },
+    {
+      "id": "testing_qa.edge_case_test",
+      "label": "edge_case_test",
+      "group": "testing_qa",
+      "description": "Határhelyzetek, ritka kombinációk és szélsőséges bemenetek ellenőrzése, ahol gyakran törik a logika.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Sorold fel a bemeneti tartományok, jogosultságok és állapotátmenetek legfontosabb edge case-eit.",
+        "Készíts edge case teszteket üres, túl hosszú, duplikált, lejárt és versenyhelyzetes adatokra.",
+        "Azonosítsd, mely ritka esetek okozhatnak adatvesztést vagy biztonsági hibát.",
+        "Javasolj határértékeket a validáció, lapozás, dátumkezelés és pénzügyi számítások köré."
+      ],
+      "anti_patterns": [
+        "random_edge_hunting: Véletlenszerű furcsaságokat tesztelnek, nem a kód és domain kockázatait.",
+        "boundary_off_by_one: A minimum és maximum körüli szomszédos értékek kimaradnak.",
+        "rare_role_gap: Ritka jogosultsági vagy állapotkombináció nincs ellenőrizve.",
+        "edge_without_oracle: Nincs meghatározva, mi lenne a helyes viselkedés a szélsőséges helyzetben."
+      ],
+      "checklist": [
+        "A határértékeknél a minimum, maximum és közvetlen szomszédjuk is átgondolt.",
+        "Üres, hiányzó, duplikált és rossz formátumú bemenetek külön kezelést kapnak.",
+        "Dátum, időzóna, lokalizáció és sorrendiség érintettsége vizsgálva van.",
+        "A ritka esetekhez világos elvárt viselkedés tartozik.",
+        "A legkockázatosabb edge case-ek regressziós védelembe kerülnek."
+      ],
+      "relations": [
+        "debugging.edge_case",
+        "debugging.race_condition",
+        "backend.validation",
+        "security.input_validation",
+        "testing_qa.unit_test",
+        "testing_qa.regression_test"
+      ]
+    },
+    {
+      "id": "testing_qa.load_test",
+      "label": "load_test",
+      "group": "testing_qa",
+      "description": "A rendszer teljesítményének mérése várható vagy célként kijelölt terhelés mellett.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a load tesztet valós forgalmi minták, csúcsidők és kritikus endpointok alapján.",
+        "Határozd meg a mérendő célokat válaszidőre, áteresztőképességre és hibaarányra.",
+        "Javasolj tesztadat- és környezetstratégiát, amely nem torzítja a teljesítménymérést.",
+        "Írd le, hogyan értelmezzük az eredményt kapacitástervezés és release döntés szempontjából."
+      ],
+      "anti_patterns": [
+        "unrealistic_traffic: A terhelési profil nem hasonlít a valós felhasználói viselkedésre.",
+        "no_baseline: Nincs korábbi mérés, ezért nem látszik, romlott vagy javult-e a rendszer.",
+        "shared_env_noise: A tesztkörnyezetben más folyamatok torzítják a mérést.",
+        "metric_without_action: Gyűlnek a számok, de nincs döntési küszöb vagy következő lépés."
+      ],
+      "checklist": [
+        "A célterhelés valós forgalmi adatokból vagy üzleti várakozásból származik.",
+        "Mérve van p95 vagy p99 válaszidő, hibaarány és áteresztőképesség.",
+        "A tesztadat mennyisége és eloszlása közelíti az éles használatot.",
+        "A környezet kapacitása és konfigurációja dokumentált.",
+        "Az eredményből következik skálázási, optimalizálási vagy release döntés."
+      ],
+      "relations": [
+        "performance.performance_budget",
+        "observability.metrics",
+        "observability.latency",
+        "observability.error_rate",
+        "backend.endpoint",
+        "devops_deploy.autoscaling",
+        "testing_qa.stress_test"
+      ]
+    },
+    {
+      "id": "testing_qa.stress_test",
+      "label": "stress_test",
+      "group": "testing_qa",
+      "description": "Szándékosan extrém terheléses vizsgálat, amely megmutatja, hol és hogyan omlik meg a rendszer.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a stressztesztet úgy, hogy fokozatosan derüljön ki a rendszer töréspontja.",
+        "Határozd meg, milyen degradáció elfogadható extrém terhelésnél és mi számít hibás összeomlásnak.",
+        "Javasolj megfigyelési pontokat queue-kra, adatbázisra, cache-re és külső függőségekre.",
+        "Írd le, hogyan álljon helyre a rendszer a stresszteszt után adatvesztés nélkül."
+      ],
+      "anti_patterns": [
+        "destructive_surprise: A stresszteszt váratlanul közös vagy éles erőforrást terhel.",
+        "no_recovery_check: Csak a töréspontot mérik, de a visszaállást nem.",
+        "single_metric_view: Egyetlen válaszidőgrafikonból próbálnak következtetni a teljes rendszerre.",
+        "chaos_without_guardrail: Extrém terhelést adnak cél, limit és megszakítási feltétel nélkül."
+      ],
+      "checklist": [
+        "A teszt izolált, jóváhagyott környezetben fut.",
+        "Van fokozatos terhelésnövelés és biztonságos leállítási feltétel.",
+        "Figyelve van az erőforrás-használat, queue-mélység, hibaarány és adatkonzisztencia.",
+        "A rendszer degradációja dokumentált és üzletileg értelmezett.",
+        "A teszt után ellenőrzött a helyreállás és az adatok épsége."
+      ],
+      "relations": [
+        "testing_qa.load_test",
+        "backend.queue",
+        "backend.circuit_breaker",
+        "backend.retry_policy",
+        "database.connection_pooling",
+        "observability.alerting",
+        "debugging.performance_bottleneck"
+      ]
+    },
+    {
+      "id": "testing_qa.qa_checklist",
+      "label": "qa_checklist",
+      "group": "testing_qa",
+      "description": "Release vagy funkcióátadás előtti ellenőrzőlista, amely a minőségi kockázatokat rendszerezetten végigveszi.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Állíts össze QA checklistet erre a funkcióra funkcionális, UX, hozzáférhetőségi és biztonsági szempontból.",
+        "Rendezd a checklistet blokkoló, fontos és megfigyelendő kockázatok szerint.",
+        "Javasolj release előtti kézi ellenőrzéseket ott, ahol az automatizálás nem ad elég bizonyítékot.",
+        "Egészítsd ki a checklistet környezeti, adatmigrációs és rollback ellenőrzésekkel."
+      ],
+      "anti_patterns": [
+        "checkbox_theater: A lista kipipálható, de nem kötődik valódi release-kockázatokhoz.",
+        "same_for_everything: Minden funkció ugyanazt az általános checklistet kapja.",
+        "no_owner: A pontoknak nincs felelőse, ezért kimaradnak vagy duplán történnek meg.",
+        "late_quality_gate: A QA csak a végén jelenik meg, amikor a hibák javítása már drága."
+      ],
+      "checklist": [
+        "A checklist az adott funkció kockázataihoz és felhasználói útjaihoz igazodik.",
+        "Minden blokkoló pontnak van felelőse és elfogadási feltétele.",
+        "Automatizált teszt, kézi ellenőrzés és monitoring jel külön meg van nevezve.",
+        "Szerepel hozzáférhetőség, hibaállapot, jogosultság és adatkezelés ellenőrzés.",
+        "Release utánra is van smoke, rollback vagy megfigyelési pont."
+      ],
+      "relations": [
+        "testing_qa.smoke_test",
+        "testing_qa.acceptance_test",
+        "accessibility.wcag",
+        "security.owasp_top_10",
+        "devops_deploy.rollback",
+        "observability.dashboard",
+        "documentation.release_notes"
+      ]
+    }
+  ]
+}

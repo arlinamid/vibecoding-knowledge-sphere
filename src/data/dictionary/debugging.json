@@ -1,0 +1,869 @@
+{
+  "group": "debugging",
+  "keywords": [
+    {
+      "id": "debugging.debug",
+      "label": "debug",
+      "group": "debugging",
+      "description": "Célzott hibakeresés, ahol a tünetből, a kontextusból és a bizonyítékokból fokozatosan jutunk el a javítható okig.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Vezess végig egy fegyelmezett debug folyamaton: tünet, bizonyíték, hipotézis, ellenőrzés, javítás.",
+        "Különítsd el, mi biztos tény a hibáról, és mi csak feltételezés.",
+        "Javasolj olyan minimális vizsgálatot, amely gyorsan kizárja a legkockázatosabb hibaforrást.",
+        "Fogalmazd meg, milyen jelből tudjuk majd, hogy a javítás valóban a hibát oldotta meg."
+      ],
+      "anti_patterns": [
+        "kapkodo_javitas: A javítás előbb indul el, mint hogy tiszta lenne a hiba pontos viselkedése.",
+        "tunet_eltuntetes: A változtatás csak elrejti a hibát, de az adat- vagy állapothibát meghagyja.",
+        "bizonyitek_nelkuli_bizalom: A fejlesztő megérzésből lezártnak tekinti az ügyet mérés vagy reprodukció nélkül.",
+        "tul_szeles_valtoztatas: A hibakeresés közben több, egymástól független részt is átírnak, ezért nem derül ki, mi hatott."
+      ],
+      "checklist": [
+        "Meg van nevezve a konkrét tünet és az érintett felhasználói vagy rendszerfolyamat?",
+        "El van választva az észlelt viselkedés a feltételezett októl?",
+        "Van legalább egy ellenőrizhető hipotézis a hiba forrására?",
+        "A vizsgálat a lehető legkisebb, de döntő információt adó lépést választja?",
+        "A javítás után ugyanaz a jelenség újra ellenőrizhető?"
+      ],
+      "relations": [
+        "debugging.troubleshooting",
+        "debugging.root_cause_analysis",
+        "observability.logging",
+        "testing_qa.regression_test"
+      ]
+    },
+    {
+      "id": "debugging.troubleshooting",
+      "label": "troubleshooting",
+      "group": "debugging",
+      "description": "Szisztematikus problémafeltárás több lehetséges ok között, különösen akkor, amikor a hiba nem köthető azonnal egyetlen modulhoz.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Állíts fel troubleshooting döntési fát a legolcsóbban ellenőrizhető ágakkal kezdve.",
+        "Csoportosítsd a lehetséges okokat kliens, backend, adatbázis, infrastruktúra és konfiguráció szerint.",
+        "Írd le, milyen megfigyelés zárna ki egy-egy hibairányt.",
+        "Adj olyan sorrendet a vizsgálathoz, amely csökkenti a zajt és a felesleges újraindításokat."
+      ],
+      "anti_patterns": [
+        "minden_egyszerre: Több lehetséges okot egyszerre piszkálnak, ezért a vizsgálat elveszíti az összehasonlíthatóságát.",
+        "rossz_szint_valasztas: Alacsony szintű részletekben keresnek hibát, miközben még a rendszerhatár sem tiszta.",
+        "visszatero_korok: Ugyanazokat a lépéseket ismétlik új információ nélkül.",
+        "eszkalacio_adat_nelkul: Más csapatnak adják tovább az ügyet reprodukció, időpont és diagnosztika nélkül."
+      ],
+      "checklist": [
+        "A hibát érintő komponensek és határok fel vannak térképezve?",
+        "A vizsgálati sorrend indokolja, miért az adott lépés következik?",
+        "Minden kizárt okhoz tartozik konkrét megfigyelés vagy mérés?",
+        "A környezeti eltérések külön ágon szerepelnek?",
+        "Van rövid összefoglaló arról, mi maradt nyitva és mi zárható ki?"
+      ],
+      "relations": [
+        "debugging.debug",
+        "debugging.environment_issue",
+        "observability.monitoring",
+        "documentation.runbook"
+      ]
+    },
+    {
+      "id": "debugging.root_cause_analysis",
+      "label": "root_cause_analysis",
+      "group": "debugging",
+      "description": "A hiba közvetlen tünete mögötti valódi ok feltárása, hogy a javítás ne csak átmeneti enyhítés legyen.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Vezesd vissza a hibát az első olyan döntésig, állapotig vagy adatváltozásig, amely már rossz irányba vitte a rendszert.",
+        "Különítsd el a közvetlen kiváltó okot, a mélyebb tervezési okot és a hiányzó védőkorlátot.",
+        "Fogalmazd meg, milyen bizonyíték támasztja alá a választott root cause-t.",
+        "Írj javítási javaslatot úgy, hogy a hasonló hibaosztály jövőbeli előfordulása is csökkenjen."
+      ],
+      "anti_patterns": [
+        "elso_oknal_megallas: Az elemzés az első megtalált hibánál megáll, pedig az csak következmény.",
+        "feleloskereses: Az RCA emberi hibára szűkül, és nem vizsgálja a folyamat vagy rendszer hiányosságait.",
+        "ok_es_tunet_keverese: A stack trace utolsó sora lesz az ok, miközben a rossz bemenet korábban keletkezett.",
+        "ellenproba_hianya: A feltételezett okot nem próbálják meg cáfolni alternatív magyarázatokkal."
+      ],
+      "checklist": [
+        "A hiba láncolata időrendben le van írva?",
+        "A közvetlen ok és a mélyebb rendszerok külön szerepel?",
+        "Van bizonyíték, amely más magyarázatokat gyengít?",
+        "A javítás tartalmaz megelőző kontrollt vagy tesztet?",
+        "Az elemzés megfogalmazható tanulságként egy későbbi postmortemhez?"
+      ],
+      "relations": [
+        "debugging.actual_behavior",
+        "debugging.regression",
+        "observability.postmortem",
+        "testing_qa.regression_test"
+      ]
+    },
+    {
+      "id": "debugging.reproduce_steps",
+      "label": "reproduce_steps",
+      "group": "debugging",
+      "description": "A hiba előidézésének pontos, megismételhető lépéssora, amely közös alapot ad fejlesztéshez, teszteléshez és validáláshoz.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj reprodukciós lépéseket úgy, hogy egy másik fejlesztő ugyanazt az állapotot lássa.",
+        "Nevezd meg a szükséges előfeltételeket: felhasználói szerep, adatállapot, környezet és időzítés.",
+        "Válaszd szét a biztosan szükséges lépéseket a gyanús, de még nem igazolt körülményektől.",
+        "Adj rövid ellenőrző pontot minden kritikus lépés után, hogy látszódjon, jó úton járunk-e."
+      ],
+      "anti_patterns": [
+        "homalyos_lepesek: A reprodukció olyan szavakra épül, mint néha, valahogy vagy normál használat mellett.",
+        "rejtett_elofeltetel: A hiba csak speciális jogosultsággal vagy adattal jön elő, de ez nincs leírva.",
+        "kepernyohelyett_allapot: Csak a kattintások vannak felsorolva, a háttérben szükséges állapot nem.",
+        "nem_megismetelt_repro: A lépéseket egyszer sikerült előidézni, de senki nem próbálta újra tiszta környezetben."
+      ],
+      "checklist": [
+        "A lépések számozottan és időrendben követhetők?",
+        "Az induló adatállapot vagy felhasználói szerep ismert?",
+        "Meg van jelölve, melyik lépésnél tér el a rendszer az elvárttól?",
+        "A reprodukció más környezetben is kipróbálható?",
+        "A leírásból teszteset vagy QA ellenőrzés készíthető?"
+      ],
+      "relations": [
+        "debugging.expected_behavior",
+        "debugging.actual_behavior",
+        "debugging.minimal_reproduction",
+        "testing_qa.test_case"
+      ]
+    },
+    {
+      "id": "debugging.expected_behavior",
+      "label": "expected_behavior",
+      "group": "debugging",
+      "description": "Az elvárt működés pontos megfogalmazása, amelyhez képest a hiba tényleges eltérése mérhetővé válik.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Fogalmazd meg az elvárt viselkedést üzleti szabály, felhasználói élmény és technikai szerződés szerint.",
+        "Mondd ki, honnan származik az elvárás: specifikációból, korábbi működésből, API-szerződésből vagy termékdöntésből.",
+        "Írd le, milyen állapotnak kellene létrejönnie a folyamat végén.",
+        "Jelezd, ha az elvárás nincs dokumentálva, és külön döntést igényel."
+      ],
+      "anti_patterns": [
+        "kimondatlan_elvaras: A csapat ugyanarra a szóra mást ért, de ezt senki nem bontja ki.",
+        "regi_mukodes_mint_szabaly: A korábbi viselkedést automatikusan helyesnek tekintik termékvalidáció nélkül.",
+        "tul_altalanos_cel: Az elvárás csak annyi, hogy működjön, ezért nem ellenőrizhető.",
+        "technikai_vaksag: Csak a belső állapotot nézik, miközben a felhasználói eredmény rossz marad."
+      ],
+      "checklist": [
+        "Az elvárt eredmény konkrétan ellenőrizhető?",
+        "Látszik, milyen forrás igazolja az elvárást?",
+        "A felhasználói és technikai nézőpont nem mond ellent egymásnak?",
+        "A határesetekre is van meghatározott elvárt viselkedés?",
+        "A leírás segít eldönteni, hogy hiba vagy termékkérdés áll fenn?"
+      ],
+      "relations": [
+        "debugging.actual_behavior",
+        "testing_qa.acceptance_test",
+        "documentation.api_docs",
+        "ui_ux.use_case"
+      ]
+    },
+    {
+      "id": "debugging.actual_behavior",
+      "label": "actual_behavior",
+      "group": "debugging",
+      "description": "A ténylegesen tapasztalt működés tárgyszerű leírása, értelmezés és javítási javaslat nélkül.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írd le a tényleges viselkedést megfigyelhető jelekkel, ne következtetésekkel.",
+        "Add meg, mikor, hol és milyen felhasználói vagy rendszerállapotban látszik az eltérés.",
+        "Válaszd szét a felületi tünetet, a hálózati választ, a logüzenetet és az adatállapotot.",
+        "Fogalmazz úgy, hogy az actual behavior összevethető legyen az expected behavior mezővel."
+      ],
+      "anti_patterns": [
+        "kovetkeztetes_tenykent: A leírás rögtön hibás modult nevez meg, pedig csak tünet látható.",
+        "hianyzo_idopont: Nincs időbélyeg vagy eseménysorrend, ezért a logokkal nem párosítható a jelenség.",
+        "feluleti_leiras_only: Csak az látszik, mit mutat a UI, de nem szerepel a háttérválasz vagy állapot.",
+        "erzelmi_megfogalmazas: A hiba bosszantóként vagy véletlenszerűként szerepel konkrét megfigyelések nélkül."
+      ],
+      "checklist": [
+        "A leírás tartalmaz konkrét megfigyelést és időpontot?",
+        "Elkülönül benne a tünet és a feltételezett ok?",
+        "Tartalmazza az érintett környezetet, böngészőt, verziót vagy szolgáltatást, ha releváns?",
+        "Összevethető az expected behavior leírásával?",
+        "Van mellé olyan bizonyíték, amely később újra ellenőrizhető?"
+      ],
+      "relations": [
+        "debugging.expected_behavior",
+        "debugging.console_output",
+        "debugging.error_log",
+        "observability.tracing"
+      ]
+    },
+    {
+      "id": "debugging.stack_trace",
+      "label": "stack_trace",
+      "group": "debugging",
+      "description": "A futás közbeni hívási lánc lenyomata, amely segít megtalálni, hol keletkezett vagy hol vált láthatóvá a hiba.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Elemezd a stack trace-t úgy, hogy megkülönbözteted a zajos keretrendszer-réteget a saját kódbázis érintett pontjaitól.",
+        "Mutasd meg, melyik hívási szint hordozza a legkorábbi értelmes hibainformációt.",
+        "Kapcsold össze a stack trace-t a bejövő kéréssel, felhasználói művelettel vagy háttérfolyamattal.",
+        "Javasolj célzott ellenőrzést ott, ahol az első hibás feltételezés beléphetett."
+      ],
+      "anti_patterns": [
+        "utolso_sor_fetis: A vizsgálat csak a legalsó vagy legfelső sorra figyel, és kihagyja a hívási láncot.",
+        "vendor_zajban_elveszes: Külső könyvtár belső sorait elemzik, miközben a saját belépési pont kimarad.",
+        "stack_trace_nelkuli_kezeles: A hibát általános kivételként kezelik, és elveszik az eredeti hívási kontextus.",
+        "forras_nelkuli_masolas: A stack trace bekerül a jegybe, de nincs mellette környezet, kérésazonosító vagy időpont."
+      ],
+      "checklist": [
+        "Azonosítva van a saját kódbázishoz tartozó első releváns hívási pont?",
+        "Megvan az eredeti kivétel és nem csak egy becsomagolt hiba?",
+        "Kapcsolódik hozzá kérésazonosító, felhasználói művelet vagy háttérjob?",
+        "Kiderül belőle, hogy bemeneti, állapot- vagy függőségi hiba valószínű?",
+        "A javítás után ugyanaz a trace már nem jelenik meg azonos útvonalon?"
+      ],
+      "relations": [
+        "debugging.exception",
+        "debugging.error_log",
+        "observability.tracing",
+        "observability.correlation_id"
+      ]
+    },
+    {
+      "id": "debugging.error_log",
+      "label": "error_log",
+      "group": "debugging",
+      "description": "Hibanapló, amely a kivételes vagy hibás eseményeket időrendben, környezeti adatokkal együtt teszi vizsgálhatóvá.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Olvasd ki a logból az eseménysorrendet, ne csak az egyetlen piros hibasort.",
+        "Keresd meg, mely mezők kötik össze a hibát felhasználóval, kéréssel, builddel és környezettel.",
+        "Jelezd, milyen log hiányzik ahhoz, hogy a következő reprodukció már bizonyító erejű legyen.",
+        "Javasolj olyan logértelmezést, amely nem keveri össze az okot a későbbi következményekkel."
+      ],
+      "anti_patterns": [
+        "log_spam: Túl sok zajos üzenet takarja ki a valóban döntő hibát.",
+        "kontextus_nelkuli_error: A hibaüzenet önmagában áll, request id, felhasználói állapot vagy verzió nélkül.",
+        "csendes_bukas: A hibás ág nem logol, ezért csak a másodlagos tünet látszik.",
+        "rossz_szint: Figyelmeztetésként szerepel kritikus hiba, vagy hibaként szerepel üzemszerű eltérés."
+      ],
+      "checklist": [
+        "A log tartalmaz időpontot, környezetet és azonosítókat?",
+        "Az események időrendje rekonstruálható?",
+        "Elválasztható a kiváltó hiba a rákövetkező zajtól?",
+        "A logszint arányos a hiba súlyával?",
+        "Nincs benne érzékeny adat vagy felesleges személyes információ?"
+      ],
+      "relations": [
+        "observability.logging",
+        "observability.structured_logging",
+        "observability.request_id",
+        "security.audit_trail"
+      ]
+    },
+    {
+      "id": "debugging.console_output",
+      "label": "console_output",
+      "group": "debugging",
+      "description": "A lokális futtatás, build, teszt vagy böngészőkonzol kimenete, amely gyors visszajelzést ad a hiba közvetlen környezetéről.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Értelmezd a konzolkimenetet sorrendben: melyik üzenet az első valódi eltérés, és mi már csak következmény.",
+        "Válaszd szét a build, runtime, teszt és böngészőkonzol üzeneteit.",
+        "Mondd meg, mely figyelmeztetések hagyhatók későbbre, és melyek torzíthatják a hibakeresést.",
+        "Javasolj tiszta újrafuttatást úgy, hogy a kimenet összehasonlítható legyen az előzővel."
+      ],
+      "anti_patterns": [
+        "elso_piros_sor: A fejlesztő az első látványos hibára ugrik, pedig korábban már volt döntő figyelmeztetés.",
+        "console_zaj_megszokasa: Régóta ismert warningok miatt a friss, fontos jelzés is elsikkad.",
+        "kevert_forrasok: Szerveroldali, kliensoldali és tesztkimenet összemosódik egyetlen magyarázatban.",
+        "torolt_kimenet: A hibás futás kimenetét kitörlik vagy elveszítik, mielőtt össze lehetne vetni a javítással."
+      ],
+      "checklist": [
+        "Megvan a teljes kimenet a hibát megelőző sorokkal együtt?",
+        "Az üzenetek forrása egyértelműen azonosítható?",
+        "Van tiszta futtatás ugyanazzal a paranccsal vagy felhasználói művelettel?",
+        "A figyelmeztetések és hibák külön vannak értékelve?",
+        "A javítás után a kimenet összehasonlítható a korábbi állapottal?"
+      ],
+      "relations": [
+        "debugging.warning",
+        "debugging.error_log",
+        "devops_deploy.build",
+        "testing_qa.unit_test"
+      ]
+    },
+    {
+      "id": "debugging.network_trace",
+      "label": "network_trace",
+      "group": "debugging",
+      "description": "Hálózati kérések és válaszok nyoma, amely megmutatja, hol válik szét a kliens szándéka, a szerver válasza és a tényleges állapot.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Vizsgáld meg a hálózati trace-t kérésenként: metódus, útvonal, státusz, időzítés, payload és cache viselkedés szerint.",
+        "Keresd meg, melyik kérés az első, ahol az adat vagy státusz eltér az elvárttól.",
+        "Kapcsold össze a trace-t a backend logokkal request id vagy időablak alapján.",
+        "Jelezd, ha a hiba inkább kliensoldali értelmezés, szerveroldali válasz vagy hálózati köztes réteg miatt keletkezik."
+      ],
+      "anti_patterns": [
+        "statusz_only: Csak a státuszkódot nézik, miközben a választest vagy header magyarázza a hibát.",
+        "cache_vaksag: Régi válasz vagy agresszív cache miatt hamis következtetés születik.",
+        "rossz_keres: A vizsgálat nem azt a kérést elemzi, amely ténylegesen kiváltja a hibás állapotot.",
+        "payload_osszemossas: A kérés és válasz tartalma összekeveredik, ezért rossz komponensre terelődik a gyanú."
+      ],
+      "checklist": [
+        "Az érintett kérés és válasz pontosan beazonosítható?",
+        "A státusz, header, válaszidő és payload együtt van értékelve?",
+        "Látszik, hogy cache-ből vagy friss szerverválaszból jött az adat?",
+        "Van kapcsolat a kliens trace és a backend log között?",
+        "A sikertelen és sikeres kérés különbsége röviden megfogalmazható?"
+      ],
+      "relations": [
+        "debugging.request_payload",
+        "debugging.response_payload",
+        "backend.api",
+        "observability.latency"
+      ]
+    },
+    {
+      "id": "debugging.request_payload",
+      "label": "request_payload",
+      "group": "debugging",
+      "description": "A kliens vagy integráció által küldött adatok vizsgálata, különös figyelemmel a hiányzó, rossz típusú vagy félreértelmezett mezőkre.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Ellenőrizd a request payloadot a szerződéshez képest: kötelező mezők, típusok, értéktartományok és jogosultsági kontextus.",
+        "Mutasd meg, melyik mező változhatott meg a hibás útvonalon a sikeres kéréshez képest.",
+        "Különítsd el a kliensoldali formázási hibát a backend validációs hiánytól.",
+        "Javasolj olyan naplózást vagy validációt, amely személyes adat felfedése nélkül bizonyítja a payload hibáját."
+      ],
+      "anti_patterns": [
+        "vak_bizalom_kliensben: A backend feltételezi, hogy a kliens mindig helyes és teljes adatot küld.",
+        "payload_redakcio_nelkul: Hibajegybe vagy logba érzékeny mezők kerülnek feleslegesen.",
+        "implicit_default: Hiányzó mezőre csendes alapérték kerül, ami később félrevezető állapotot okoz.",
+        "schema_drift: A kliens és szerver eltérő szerződés szerint értelmezi ugyanazt a mezőt."
+      ],
+      "checklist": [
+        "A payload össze van vetve az aktuális API- vagy form szerződéssel?",
+        "A hiányzó és extra mezők külön látszanak?",
+        "A típusok, enumok és üres értékek ellenőrizve vannak?",
+        "A vizsgálat nem tesz ki érzékeny adatot?",
+        "Van sikeres referencia-kérés az összehasonlításhoz?"
+      ],
+      "relations": [
+        "backend.validation",
+        "backend.serialization",
+        "security.input_validation",
+        "frontend_architecture.form_schema"
+      ]
+    },
+    {
+      "id": "debugging.response_payload",
+      "label": "response_payload",
+      "group": "debugging",
+      "description": "A szerver válaszának tartalmi és szerződésbeli ellenőrzése, hogy a kliens hibája ne takarja el a hibás vagy hiányos választ.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Hasonlítsd össze a response payloadot azzal, amit a kliens és a dokumentált szerződés vár.",
+        "Jelöld meg, hogy a hiba adat-hiányból, rossz struktúrából, hibás státuszból vagy félrevezető hibaüzenetből jön.",
+        "Vizsgáld meg, hogy a válasz kompatibilis-e a régebbi kliensverziókkal vagy cache-elt állapotokkal.",
+        "Fogalmazd meg, milyen válasz lenne egyértelműen kezelhető a kliens számára."
+      ],
+      "anti_patterns": [
+        "sikeres_statusz_hibas_testtel: A válasz sikeresnek látszik, de a tartalma üzletileg hibás.",
+        "uzenet_nelkuli_hiba: A kliens csak általános hibát kap, ezért a felhasználó és a fejlesztő is vakon marad.",
+        "kompatibilitas_tores: Egy mező átnevezése vagy eltűnése régebbi klienseket tör meg jelzés nélkül.",
+        "tul_beszedes_valasz: A hibaüzenet belső részleteket vagy érzékeny adatot árul el."
+      ],
+      "checklist": [
+        "A státuszkód, választest és hibastruktúra egymással összhangban van?",
+        "A kliens által elvárt mezők jelen vannak és megfelelő típusúak?",
+        "A hibaüzenet hasznos, de nem szivárogtat belső részleteket?",
+        "Van összehasonlítás korábbi vagy sikeres válasszal?",
+        "A válasz cache-elési és verziózási hatása tisztázott?"
+      ],
+      "relations": [
+        "backend.api",
+        "backend.serialization",
+        "documentation.api_docs",
+        "security.output_encoding"
+      ]
+    },
+    {
+      "id": "debugging.exception",
+      "label": "exception",
+      "group": "debugging",
+      "description": "Futásidejű kivétel, amely megszakítja vagy hibás ágra viszi a végrehajtást, és megfelelő kontextus nélkül könnyen félrevezet.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Elemezd a kivételt típus, üzenet, hívási kontextus és kezelési stratégia szerint.",
+        "Keresd meg, hogy a kivétel valóban rendkívüli állapotot jelez-e, vagy hiányzó validáció következménye.",
+        "Javasolj olyan kezelést, amely megőrzi az eredeti okot és közben érthető hibát ad kifelé.",
+        "Mondd meg, hol kell a hibát megelőzni, és hol kell csak biztonságosan kezelni."
+      ],
+      "anti_patterns": [
+        "mindent_elnyelo_catch: A kivétel kezelése lenyeli az eredeti hibát, és hamis sikerállapotot eredményez.",
+        "altalanos_kivetel: Minden hiba ugyanabba a tág kategóriába esik, ezért a diagnózis elmosódik.",
+        "rossz_helyen_kezeles: A kivételt túl mélyen vagy túl későn kezelik, így elveszik a döntési kontextus.",
+        "hibauzenet_szivargas: A belső kivételszöveg közvetlenül megjelenik felhasználónak vagy külső integrációnak."
+      ],
+      "checklist": [
+        "Ismert a kivétel típusa és eredeti keletkezési pontja?",
+        "A kezelés megőrzi a diagnosztikai kontextust?",
+        "A felhasználó vagy kliens biztonságos, érthető hibát kap?",
+        "Van megelőző validáció, ahol a hiba előre felismerhető?",
+        "A kivételhez kapcsolódik teszt vagy ellenőrzött reprodukció?"
+      ],
+      "relations": [
+        "debugging.stack_trace",
+        "backend.validation",
+        "observability.error_rate",
+        "testing_qa.unit_test"
+      ]
+    },
+    {
+      "id": "debugging.warning",
+      "label": "warning",
+      "group": "debugging",
+      "description": "Nem végzetes, de fontos jelzés, amely gyakran a későbbi hiba előszobája vagy hibás feltételezés korai tünete.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Értékeld a warningot aszerint, hogy zaj, technikai adósság vagy közelgő hiba jele.",
+        "Keresd meg, mikor jelent meg először a figyelmeztetés, és milyen változtatáshoz köthető.",
+        "Mondd meg, a warning befolyásolja-e a felhasználói viselkedést, buildet, tesztet vagy teljesítményt.",
+        "Javasolj döntést: azonnal javítandó, ütemezhető vagy tudatosan elfogadott kockázat."
+      ],
+      "anti_patterns": [
+        "warning_vaksag: A csapat megszokja a figyelmeztetéseket, ezért az új kritikus jelzés is eltűnik a zajban.",
+        "hamis_prioritas: Minden warning blokkolóként kezelődik, így a valódi hibaelhárítás lelassul.",
+        "dokumentalatlan_elteres: A warning ismert, de nincs leírva, miért elfogadható átmenetileg.",
+        "leminosites_hiba: Valódi hibát warning szinten naplóznak, ezért monitoring és alert nem fogja el."
+      ],
+      "checklist": [
+        "A warning forrása és első megjelenése ismert?",
+        "Meg van becsülve a felhasználói vagy üzemeltetési kockázata?",
+        "El van döntve, hogy javítás, backlog vagy elfogadott kivétel lesz belőle?",
+        "A warning nem takar el más, fontosabb hibát?",
+        "Van szabály arra, mikor válik a warning hibává vagy buildblokkolóvá?"
+      ],
+      "relations": [
+        "debugging.console_output",
+        "observability.alerting",
+        "devops_deploy.build",
+        "testing_qa.smoke_test"
+      ]
+    },
+    {
+      "id": "debugging.regression",
+      "label": "regression",
+      "group": "debugging",
+      "description": "Olyan visszaesés, amikor egy korábban működő viselkedés új változtatás, függőség vagy konfiguráció miatt elromlik.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Határozd meg, melyik korábban működő viselkedés romlott el, és mikor volt utoljára biztosan jó.",
+        "Kösd össze a regressziót commitokkal, release-ekkel, konfigurációval vagy függőségfrissítéssel.",
+        "Javasolj minimális regressziós tesztet, amely a jövőben azonnal jelzi ezt a hibaosztályt.",
+        "Írd le, hogyan ellenőrizzük, hogy a javítás nem hozza vissza a régi mellékhatást."
+      ],
+      "anti_patterns": [
+        "uj_hibakent_kezeles: A regressziót izolált új hibának tekintik, és nem keresik a töréspontot.",
+        "teszt_nelkuli_visszajavitas: A korábbi működést visszaállítják, de nincs védőteszt a következő törés ellen.",
+        "release_idopont_hianya: Nem ismert, melyik verzióban lett rossz, ezért a keresési tér túl nagy marad.",
+        "mellekhatas_vaksag: A javítás csak a régi állapotot hozza vissza, de új folyamatokat törhet meg."
+      ],
+      "checklist": [
+        "Ismert az utolsó jó és az első rossz verzió vagy időpont?",
+        "A regresszió konkrét elvárt viselkedéshez van kötve?",
+        "A töréspont kereshető commit, konfiguráció vagy dependency szinten?",
+        "Készül regressziós teszt a javított esetre?",
+        "A javítás ellenőrizve van a kapcsolódó útvonalakon is?"
+      ],
+      "relations": [
+        "debugging.bisect",
+        "testing_qa.regression_test",
+        "devops_deploy.rollback",
+        "documentation.changelog"
+      ]
+    },
+    {
+      "id": "debugging.edge_case",
+      "label": "edge_case",
+      "group": "debugging",
+      "description": "Ritka, határértéki vagy nem tipikus bemenet és állapot, amely a fő útvonalon rejtve maradó hibát tesz láthatóvá.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Sorold fel azokat a határeseteket, amelyek ennél a hibánál valószínűen eltérő állapotot hoznak létre.",
+        "Vizsgáld külön az üres, túl nagy, duplikált, lejárt, részleges és jogosulatlan bemeneteket.",
+        "Mondd meg, mely edge case üzletileg életszerű, és melyik csak technikai védelem miatt fontos.",
+        "Javasolj olyan tesztelési fókuszt, amely nem fedi túl a normál útvonalat, de elkapja a szélső állapotot."
+      ],
+      "anti_patterns": [
+        "happy_path_teszteles: Csak a normál, tiszta bemenetet ellenőrzik, ezért a valós adatok hibái rejtve maradnak.",
+        "irrealis_hatarszelesseg: Olyan ritka esetekre megy el az idő, amelyek nem arányosak a kockázattal.",
+        "uzleti_szabaly_hianya: Nem derül ki, hogy a határesetet támogatni, tiltani vagy normalizálni kell.",
+        "csendes_kerekites: Határértéknél a rendszer láthatatlanul módosítja az adatot, és később nehéz visszakeresni."
+      ],
+      "checklist": [
+        "A határeset üzleti jelentősége tisztázott?",
+        "Az üres, minimális, maximális és duplikált állapotok át vannak nézve?",
+        "A rendszer explicit döntést hoz a nem támogatott esetekre?",
+        "Van edge case teszt a legkockázatosabb bemenetre?",
+        "A hibaüzenet vagy visszajelzés érthető a határhelyzetben is?"
+      ],
+      "relations": [
+        "testing_qa.edge_case_test",
+        "backend.validation",
+        "security.input_validation",
+        "ux_states.error_state"
+      ]
+    },
+    {
+      "id": "debugging.race_condition",
+      "label": "race_condition",
+      "group": "debugging",
+      "description": "Időzítésfüggő hiba, ahol párhuzamos vagy egymást átfedő műveletek más sorrendben más eredményt adnak.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Térképezd fel, mely műveletek versenyeznek ugyanazért az állapotért vagy erőforrásért.",
+        "Írd le azokat az időzítési sorrendeket, amelyek mellett a hiba előjönhet.",
+        "Javasolj megfigyelést request id, tranzakció, queue vagy kliensállapot alapján.",
+        "Mondd meg, hogy a megoldás zárolás, idempotencia, sorrendezés, retry vagy állapotmodell tisztázása felé mutat."
+      ],
+      "anti_patterns": [
+        "sleep_mint_javitas: Időkésleltetéssel próbálják eltüntetni a versenyhelyzetet, de a sorrend továbbra sem garantált.",
+        "lokalisan_nem_jon_elo: A hibát elvetik, mert egygépes fejlesztői környezetben ritkán reprodukálható.",
+        "allapot_megosztas_kontroll_nelkul: Több folyamat írja ugyanazt az adatot verzió, zárolás vagy konfliktuskezelés nélkül.",
+        "retry_duplazas: Újrapróbálkozás közben ugyanaz a művelet többször hat, mert nincs idempotencia."
+      ],
+      "checklist": [
+        "Az érintett közös állapot vagy erőforrás meg van nevezve?",
+        "Ismert legalább két olyan eseménysorrend, amely eltérő eredményt ad?",
+        "A logok alkalmasak a párhuzamos műveletek összekapcsolására?",
+        "A megoldás garantálja a sorrendet vagy kezeli a konfliktust?",
+        "Van terheléses vagy párhuzamos teszt a hibás időzítés közelítésére?"
+      ],
+      "relations": [
+        "backend.idempotency",
+        "database.transaction",
+        "observability.correlation_id",
+        "testing_qa.integration_test"
+      ]
+    },
+    {
+      "id": "debugging.memory_leak",
+      "label": "memory_leak",
+      "group": "debugging",
+      "description": "Memória- vagy erőforrás-szivárgás, ahol a rendszer használat közben fokozatosan veszít rendelkezésre álló kapacitásából.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Vizsgáld meg, nő-e a memóriahasználat stabil terhelés mellett akkor is, amikor a munka már befejeződött.",
+        "Különítsd el a valódi szivárgást a cache, pool, batch vagy egyszeri bemelegedési hatástól.",
+        "Mutasd meg, milyen erőforrás marad életben indokolatlanul: objektum, előfizetés, kapcsolat, timer vagy listener.",
+        "Javasolj mérési tervet hosszabb futással, kontrollált terheléssel és visszaesési pontokkal."
+      ],
+      "anti_patterns": [
+        "pillanatkep_alapjan_itelet: Egyetlen memóriaértékből vonnak le következtetést trend és terhelési kontextus nélkül.",
+        "cache_osszekeverese: Szándékos cache-növekedést szivárgásnak tekintenek, vagy fordítva.",
+        "cleanup_hiany: Feliratkozások, időzítők vagy kapcsolatok életciklusa nincs lezárva a folyamat végén.",
+        "ujrainditas_mint_megoldas: A rendszeres restart elfedi a szivárgást, de nem csökkenti az okot."
+      ],
+      "checklist": [
+        "Látszik memóriahasználati trend azonos terhelési mintán?",
+        "Elkülönül a cache, pool és valódi szivárgás viselkedése?",
+        "Az erőforrások életciklusa indítás, használat és lezárás szerint át van nézve?",
+        "Van hosszabb futású ellenőrzés a javítás előtt és után?",
+        "A monitoring alkalmas korai riasztásra újabb szivárgás esetén?"
+      ],
+      "relations": [
+        "observability.metrics",
+        "observability.monitoring",
+        "performance.performance_budget",
+        "testing_qa.stress_test"
+      ]
+    },
+    {
+      "id": "debugging.performance_bottleneck",
+      "label": "performance_bottleneck",
+      "group": "debugging",
+      "description": "Teljesítményt korlátozó pont, ahol a rendszer egészének lassulása egy szűk erőforrásra, algoritmusra vagy külső függőségre vezethető vissza.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Azonosítsd a szűk keresztmetszetet méréssel, ne érzés alapján: idő, CPU, memória, adatbázis, hálózat vagy renderelés szerint.",
+        "Bontsd le a válaszidőt szakaszokra, hogy látszódjon, hol fogy el a legtöbb idő.",
+        "Mondd meg, mely optimalizáció hozza a legnagyobb hatást a legkisebb kockázattal.",
+        "Javasolj benchmarkot, amely a javítás után is összehasonlítható marad."
+      ],
+      "anti_patterns": [
+        "prematur_optimalizalas: Mérés nélkül javítanak olyan részt, amely nem is a lassulás fő oka.",
+        "atlag_mogotti_fajdalom: Csak átlagos válaszidőt néznek, miközben a faroklatencia rontja a felhasználói élményt.",
+        "lokalis_meres_tulertelmezese: Fejlesztői gépen mért eredményt vetítenek production terhelésre.",
+        "cache_mindenre: Cache-sel fedik el a lassú alapműveletet, de invalidációs és frissességi hibát hoznak be."
+      ],
+      "checklist": [
+        "Van mérés a lassulás előtti és utáni állapotról?",
+        "A válaszidő vagy futási idő fő szakaszokra bontva látszik?",
+        "Az optimalizáció hatása és kockázata össze van vetve?",
+        "A javítás nem sérti az adatfrissességet vagy helyességet?",
+        "A teljesítményteszt reprodukálható és dokumentált?"
+      ],
+      "relations": [
+        "performance.query_optimization",
+        "performance.n_plus_one_query",
+        "observability.latency",
+        "testing_qa.load_test"
+      ]
+    },
+    {
+      "id": "debugging.timeout",
+      "label": "timeout",
+      "group": "debugging",
+      "description": "Időtúllépés, amely azt jelzi, hogy egy művelet nem fejeződött be a rendszer vagy felhasználó által elvárt időkereten belül.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Térképezd fel, mely réteg timeoutol: kliens, gateway, backend, adatbázis, queue vagy külső szolgáltatás.",
+        "Hasonlítsd össze a timeout értékeket a teljes hívási láncban, hogy ne egymás ellen dolgozzanak.",
+        "Keresd meg, hogy lassú művelet, várakozó erőforrás, retry-vihar vagy túl rövid limit okozza-e a hibát.",
+        "Javasolj felhasználói és rendszeroldali kezelést: megszakítás, retry, háttérfeldolgozás vagy jobb visszajelzés."
+      ],
+      "anti_patterns": [
+        "timeout_novelese_vakon: A limitet megemelik anélkül, hogy kiderülne, miért lassú a művelet.",
+        "inkonzisztens_limitek: A kliens hamarabb feladja, miközben a backend tovább dolgozik és mellékhatást okoz.",
+        "retry_vihar: Időtúllépés után több réteg is újrapróbálkozik, így a terhelés tovább nő.",
+        "felhasznalo_vakon_hagyasa: A folyamat látszólag lefagy, nincs állapotjelzés vagy biztonságos megszakítás."
+      ],
+      "checklist": [
+        "Ismert, melyik réteg jelenti az időtúllépést?",
+        "A timeout értékek összhangban vannak a hívási láncban?",
+        "A lassulás oka mérhető és nem csak a limitből következtetett?",
+        "A retry és idempotencia viselkedés tisztázott?",
+        "A felhasználó vagy hívó fél érthető visszajelzést kap?"
+      ],
+      "relations": [
+        "observability.latency",
+        "backend.retry_policy",
+        "backend.circuit_breaker",
+        "ux_states.loading_state"
+      ]
+    },
+    {
+      "id": "debugging.deadlock",
+      "label": "deadlock",
+      "group": "debugging",
+      "description": "Kölcsönös várakozásból kialakuló megakadás, amikor több folyamat, tranzakció vagy szál egymás erőforrását várja.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Rajzold le a várakozási láncot: mely szereplő mely erőforrásra vár, és mit tart közben zárolva.",
+        "Keresd meg a zárolási sorrend eltérését vagy a túl hosszú tranzakciót.",
+        "Mondd meg, hogy adatbázis-tranzakció, alkalmazásszintű lock vagy külső erőforrás okozza-e a megakadást.",
+        "Javasolj megelőző stratégiát: egységes lock sorrend, rövidebb tranzakció, timeout vagy konfliktuskezelés."
+      ],
+      "anti_patterns": [
+        "restart_mint_diagnosztika: Újraindítják a rendszert, mielőtt a várakozási állapot bizonyítékait rögzítenék.",
+        "lock_sorrend_kaosz: Különböző útvonalak más sorrendben kérik ugyanazokat az erőforrásokat.",
+        "hosszu_tranzakcio: Felhasználói vagy hálózati várakozás közben is nyitva marad a zárolt tranzakció.",
+        "deadlock_es_lassulas_keverese: Minden lassú választ deadlocknak neveznek, holott lehet sima terhelési sorban állás is."
+      ],
+      "checklist": [
+        "Rögzítve van a várakozási lánc vagy lock információ a megakadás idején?",
+        "Az érintett erőforrások és zárolási sorrendek ismertek?",
+        "A tranzakciók hossza és határa át van nézve?",
+        "Van stratégia a holtpont feloldására és újrapróbálására?",
+        "A változtatás ellenőrizhető párhuzamos terhelés alatt?"
+      ],
+      "relations": [
+        "database.transaction",
+        "database.connection_pooling",
+        "debugging.race_condition",
+        "testing_qa.stress_test"
+      ]
+    },
+    {
+      "id": "debugging.dependency_conflict",
+      "label": "dependency_conflict",
+      "group": "debugging",
+      "description": "Függőségek közötti verzió-, peer-, platform- vagy API-ütközés, amely build-, runtime- vagy viselkedésbeli hibát okozhat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Térképezd fel, mely függőségek kérnek egymással ütköző verziót vagy képességet.",
+        "Különítsd el a buildidejű, telepítési és futásidejű konfliktusokat.",
+        "Mondd meg, melyik csomagfrissítés, lockfile változás vagy transzitív függőség hozta be a törést.",
+        "Javasolj olyan megoldást, amely nem csak kényszeríti a verziót, hanem ellenőrzi a kompatibilitást is."
+      ],
+      "anti_patterns": [
+        "force_install_vakon: A telepítési konfliktust kényszerítéssel kerülik meg, majd runtime hibát kapnak.",
+        "lockfile_figyelmen_kivul: A lockfile változásait nem vizsgálják, pedig ott látszik a transzitív ugrás.",
+        "peer_warning_semlegesitese: Peer dependency warningot zajnak tekintenek, noha valódi API-eltérést jelez.",
+        "globalis_frissites: Egy lokális konfliktus miatt nagy dependency hullám indul el kontrollált ellenőrzés nélkül."
+      ],
+      "checklist": [
+        "Ismert az ütköző közvetlen és transzitív függőség?",
+        "A lockfile vagy dependency tree alapján látszik a változás?",
+        "A választott verzió kompatibilitása ellenőrizve van?",
+        "A biztonsági és licenc kockázatok nem romlanak a megoldással?",
+        "Van build vagy smoke teszt a konfliktus lezárására?"
+      ],
+      "relations": [
+        "debugging.version_mismatch",
+        "security.dependency_audit",
+        "security.vulnerability_scan",
+        "devops_deploy.build"
+      ]
+    },
+    {
+      "id": "debugging.version_mismatch",
+      "label": "version_mismatch",
+      "group": "debugging",
+      "description": "Eltérő verziók miatti inkompatibilitás, amely környezetek, kliensek, API-k, migrációk vagy futtatók között jelenhet meg.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Hasonlítsd össze az érintett verziókat kliens, backend, adatbázis, futtatókörnyezet és szerződés szintjén.",
+        "Keresd meg, hogy a hiba verzióeltérésből vagy tényleges kódbeli regresszióból fakad-e.",
+        "Írd le, melyik verziókombináció támogatott, tiltott vagy átmenetileg kompatibilis.",
+        "Javasolj ellenőrzést deploy, rollback vagy migrációs sorrend alapján."
+      ],
+      "anti_patterns": [
+        "mukodik_nalam: A lokális verziót veszik alapnak, miközben staging vagy production más futtatókörnyezetet használ.",
+        "szerzodes_nelkuli_valtas: API- vagy adatmező-változás verziózás nélkül kerül ki.",
+        "migracio_sorrend_hiba: Az alkalmazás új sémát vár, de a környezetben még régi adatbázis áll.",
+        "rejtett_runtime_elteres: Node, böngésző, adatbázis vagy rendszerkönyvtár verziója eltér, de nem kerül a hibajegybe."
+      ],
+      "checklist": [
+        "Az érintett komponensek pontos verziói ismertek?",
+        "A verziókombináció támogatottsága dokumentált vagy dönthető?",
+        "A migrációk és deploy lépések sorrendje összhangban van?",
+        "Van kompatibilitási vagy smoke ellenőrzés a kritikus kombinációra?",
+        "A javítás kezeli a régi és új verziók átmeneti együttélését?"
+      ],
+      "relations": [
+        "debugging.dependency_conflict",
+        "database.migration",
+        "devops_deploy.deploy",
+        "documentation.release_notes"
+      ]
+    },
+    {
+      "id": "debugging.environment_issue",
+      "label": "environment_issue",
+      "group": "debugging",
+      "description": "Környezeti eltérésből származó hiba, ahol a kód látszólag azonos, de konfiguráció, adat, jogosultság vagy infrastruktúra más.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Hasonlítsd össze a működő és hibás környezetet konfiguráció, secret, adatállapot, hálózat és buildverzió szerint.",
+        "Mutasd meg, mely eltérés lehet ok, és melyik csak ártalmatlan különbség.",
+        "Javasolj olyan környezet-ellenőrzést, amely gyorsan jelzi a hiányzó vagy rossz beállítást.",
+        "Fogalmazd meg, hogyan tehető reprodukálhatóvá a production vagy staging eltérés lokálisan."
+      ],
+      "anti_patterns": [
+        "konfig_megerzesbol: A környezeti beállításokat kézzel találgatják, nem összehasonlítható listából.",
+        "secret_hiany_csendben: Hiányzó secret miatt fallback indul, amely később félrevezető hibát okoz.",
+        "adatallapot_elhanyagolasa: A környezetek közötti adatkülönbséget nem vizsgálják, csak a kódot.",
+        "production_kivetel: Productionben kézzel javítanak, de a változás nem kerül vissza konfigurációba vagy deploy folyamatba."
+      ],
+      "checklist": [
+        "Van összehasonlítás a működő és hibás környezet fontos változóiról?",
+        "A secret, feature flag és külső endpoint beállítások ellenőrizve vannak?",
+        "Az adatállapot és migrációs szint nem tér el váratlanul?",
+        "A környezeti eltérés dokumentáltan reprodukálható vagy kizárható?",
+        "A javítás a környezetkezelési folyamatban is megjelenik?"
+      ],
+      "relations": [
+        "devops_deploy.environment_config",
+        "devops_deploy.staging",
+        "devops_deploy.production",
+        "security.environment_variables"
+      ]
+    },
+    {
+      "id": "debugging.diagnostic_logging",
+      "label": "diagnostic_logging",
+      "group": "debugging",
+      "description": "Ideiglenes vagy célzott naplózás, amely bizonyítékot gyűjt egy konkrét hibahipotézishez anélkül, hogy tartós zajt vagy adatvédelmi kockázatot hagyna maga után.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz diagnosztikai logolást egy konkrét hipotézis bizonyítására vagy cáfolására.",
+        "Határozd meg, milyen mezők kellenek a döntéshez, és melyeket tilos kiírni adatvédelmi okból.",
+        "Javasolj időben korlátozott vagy feature flaggel vezérelt diagnosztikát.",
+        "Írd le, mikor és milyen bizonyíték alapján távolítható el vagy alakítható át tartós loggá."
+      ],
+      "anti_patterns": [
+        "orokke_marado_debuglog: Ideiglenes log bekerül productionbe, majd tartós zajként ott marad.",
+        "mindent_kiirunk: A diagnosztika túl sok adatot naplóz, köztük érzékeny vagy irreleváns mezőket.",
+        "hipotezis_nelkuli_logolas: Logok kerülnek be anélkül, hogy világos lenne, milyen kérdésre válaszolnak.",
+        "osszefuzes_hianya: A logok nem tartalmaznak korrelációs azonosítót, ezért nem épül belőlük eseménysor."
+      ],
+      "checklist": [
+        "A diagnosztikai log egy konkrét kérdésre válaszol?",
+        "A szükséges mezők és tiltott adatok előre meg vannak nevezve?",
+        "Van request id, correlation id vagy más összekötő mező?",
+        "A logolás időben vagy konfigurációval korlátozható?",
+        "A vizsgálat után van döntés a log megtartásáról, tisztításáról vagy eltávolításáról?"
+      ],
+      "relations": [
+        "observability.structured_logging",
+        "observability.correlation_id",
+        "debugging.error_log",
+        "security.secrets_management"
+      ]
+    },
+    {
+      "id": "debugging.minimal_reproduction",
+      "label": "minimal_reproduction",
+      "group": "debugging",
+      "description": "A hiba lehető legkisebb, felesleges körítéstől megtisztított reprodukciója, amely gyorsan bizonyítja a problémát és csökkenti a félrevezető tényezőket.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Szűkítsd a hibát minimális reprodukcióra úgy, hogy minden elhagyott részről tudjuk, miért nem szükséges.",
+        "Határozd meg a legkisebb adatállapotot és felhasználói műveletet, amely még kiváltja a hibát.",
+        "Különítsd el, hogy a reprodukció kódbeli, konfigurációs, adatbeli vagy időzítési minimumból áll.",
+        "Írd le, milyen egyszerű ellenpróba bizonyítja, hogy a minimalizálás nem vágta le a hiba okát."
+      ],
+      "anti_patterns": [
+        "teljes_app_repro: A hiba csak teljes rendszerindítással vizsgálható, pedig kisebb szinten is kimutatható lenne.",
+        "tulvagott_pelda: A minimalizálás során eltűnik az a feltétel, amely valójában kiváltotta a hibát.",
+        "rejtett_fixture: A reprodukció függ egy nem dokumentált adatsortól, lokális cache-től vagy felhasználói beállítástól.",
+        "mellekes_zaj: Sok irreleváns lépés marad benne, ezért a vizsgálat lassú és sérülékeny."
+      ],
+      "checklist": [
+        "A reprodukció a lehető legkevesebb lépésből és állapotból áll?",
+        "Minden szükséges adat vagy konfiguráció explicit?",
+        "A hiba továbbra is ugyanúgy jelentkezik a szűkített formában?",
+        "Van ellenpróba, amely megmutatja, mikor nem jön elő?",
+        "A minimális reprodukcióból közvetlenül készíthető teszt vagy hibajegy-melléklet?"
+      ],
+      "relations": [
+        "debugging.reproduce_steps",
+        "testing_qa.fixture",
+        "testing_qa.unit_test",
+        "testing_qa.integration_test"
+      ]
+    },
+    {
+      "id": "debugging.bisect",
+      "label": "bisect",
+      "group": "debugging",
+      "description": "Felezéses keresés egy regresszió vagy viselkedésváltozás töréspontjának megtalálására, jellemzően commitok, release-ek vagy konfigurációs változások között.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a bisect folyamatot az utolsó biztosan jó és első biztosan rossz állapot alapján.",
+        "Fogalmazz meg gyors, determinisztikus ellenőrzést minden vizsgált pontra.",
+        "Jelezd, milyen változások tehetik félrevezetővé a felezést: migráció, dependency, flaky teszt vagy környezeti adat.",
+        "A megtalált töréspont után különítsd el a hibát okozó döntést a commit többi mellékes változásától."
+      ],
+      "anti_patterns": [
+        "bizonytalan_jo_rossz: A felezés úgy indul el, hogy nincs megbízható jó és rossz referenciaállapot.",
+        "lassu_manualis_proba: Minden pontot hosszú kézi ellenőrzéssel vizsgálnak, ezért a bisect elveszti az értelmét.",
+        "flaky_orakulum: A döntéshez használt teszt vagy reprodukció maga is bizonytalan.",
+        "commit_bunosseg: A megtalált commit egészét hibásnak tekintik, nem a benne lévő konkrét viselkedésváltozást keresik."
+      ],
+      "checklist": [
+        "Van megbízható utolsó jó és első rossz állapot?",
+        "Az ellenőrzés gyorsan és ismételhetően eldönti, jó vagy rossz az adott pont?",
+        "A környezeti és migrációs függések nem torzítják a keresést?",
+        "A töréspont után az érintett változás külön is meg van értve?",
+        "A megtalált okhoz készül regressziós védelem?"
+      ],
+      "relations": [
+        "debugging.regression",
+        "devops_deploy.ci_cd",
+        "testing_qa.regression_test",
+        "documentation.changelog"
+      ]
+    }
+  ]
+}

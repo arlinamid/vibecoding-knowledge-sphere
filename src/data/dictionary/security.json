@@ -1,0 +1,537 @@
+{
+  "group": "security",
+  "keywords": [
+    {
+      "id": "security.input_validation",
+      "label": "input_validation",
+      "group": "security",
+      "description": "Felhasználói és külső rendszerből érkező bemenetek ellenőrzése típus, forma, tartomány, üzleti szabály és jogosultsági kontextus alapján.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz input validation réteget body, query, params, fájlfeltöltés és webhook payload kezelésére.",
+        "Válaszd szét a formai validációt, az üzleti szabályokat és a jogosultsági ellenőrzést.",
+        "Adj hibaformátumot, amely segít javítani a bemenetet, de nem szivárogtat belső részletet."
+      ],
+      "anti_patterns": [
+        "trusting_client: A backend elhiszi, hogy a frontend már mindent ellenőrzött.",
+        "validation_after_side_effect: Előbb írunk adatot vagy hívunk külső rendszert, és csak utána validálunk.",
+        "silent_coercion: Hibás típust automatikusan átalakítunk, és ezzel rossz üzleti állapot jön létre."
+      ],
+      "checklist": [
+        "Minden külső bemenet szerveren is validált?",
+        "A validáció még mellékhatás előtt fut?",
+        "A hibaüzenetek nem fednek fel belső sémát vagy stack trace-t?",
+        "A validációs szabályok tesztelve vannak negatív esetekkel is?"
+      ],
+      "relations": [
+        "backend.validation",
+        "frontend_architecture.zod",
+        "security.sql_injection"
+      ]
+    },
+    {
+      "id": "security.output_encoding",
+      "label": "output_encoding",
+      "group": "security",
+      "description": "Adatok kontextushelyes escape-elése és megjelenítése, hogy a felhasználói vagy külső tartalom ne váljon futtatható kóddá.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Ellenőrizd, hol jelenik meg felhasználói tartalom HTML-ben, attribútumban, URL-ben, JSON-ban vagy markdownban.",
+        "Adj output encoding tervet kontextusonként, külön kezelve a rich text és markdown megjelenítést.",
+        "Vizsgáld meg, hol használ a felület veszélyes HTML beszúrást vagy nyers renderelést."
+      ],
+      "anti_patterns": [
+        "one_escape_for_all_contexts: Ugyanazt az escape logikát használjuk HTML-re, URL-re és JavaScript kontextusra.",
+        "dangerous_html_render: Felhasználói tartalom tisztítás nélkül kerül HTML-ként renderelve a DOM-ba.",
+        "stored_content_assumed_safe: Adatbázisból jövő régi tartalmat automatikusan megbízhatónak tekintünk."
+      ],
+      "checklist": [
+        "A kimenet a megjelenítési kontextusnak megfelelően encode-olt?",
+        "A rich text tartalom sanitizálása engedélylistára épül?",
+        "Nincs nyers HTML renderelés kontroll nélkül?",
+        "A tárolt felhasználói tartalom megjelenítése XSS ellen tesztelt?"
+      ],
+      "relations": [
+        "security.xss",
+        "security.content_security_policy",
+        "frontend_ui.text"
+      ]
+    },
+    {
+      "id": "security.sql_injection",
+      "label": "sql_injection",
+      "group": "security",
+      "description": "Támadás, ahol rosszindulatú bemenet módosítja az SQL lekérdezés jelentését, adatszivárgást, törlést vagy jogosulatlan műveletet okozva.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Vizsgáld át az adatbázis-lekérdezéseket SQL injection szempontból paraméterezés, query builder és raw SQL használat alapján.",
+        "Írd le, mely filter, sort és search paraméterek kerülhetnek veszélyesen SQL-be.",
+        "Adj védelmi tervet prepared statement, engedélyezett mezőlista és jogosultsági szűrés használatával."
+      ],
+      "anti_patterns": [
+        "string_built_query: SQL szöveg felhasználói inputból összefűzve készül.",
+        "dynamic_column_unchecked: Sort vagy filter mezőnév közvetlenül a kliensből kerül a lekérdezésbe.",
+        "error_leaks_sql: Hibaválaszban adatbázis hiba, tábla- vagy oszlopnév szivárog."
+      ],
+      "checklist": [
+        "Minden érték paraméterezett lekérdezésbe kerül?",
+        "Dinamikus mezőnevek csak engedélyezett listából jöhetnek?",
+        "A jogosultsági szűrés adatbázislekérdezésben is érvényesül?",
+        "A hibák nem mutatnak SQL részletet éles környezetben?"
+      ],
+      "relations": [
+        "database.query_optimization",
+        "backend.filtering",
+        "security.input_validation"
+      ]
+    },
+    {
+      "id": "security.xss",
+      "label": "xss",
+      "group": "security",
+      "description": "Cross-Site Scripting támadás, amikor támadó által kontrollált tartalom futtatható kódként jelenik meg más felhasználó böngészőjében.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld ezt a felületet XSS szempontból: tárolt, reflektált és DOM-alapú támadási útvonalakkal.",
+        "Javasolj védekezést output encoding, sanitization, CSP és biztonságos komponenshasználat alapján.",
+        "Keresd meg, hol kerül URL, markdown, rich text vagy API-ból jövő HTML közvetlenül a DOM-ba."
+      ],
+      "anti_patterns": [
+        "unsafe_inner_html: HTML közvetlenül kerül a DOM-ba sanitization nélkül.",
+        "url_javascript_scheme: Link vagy redirect URL engedi a javascript: vagy veszélyes sémákat.",
+        "csp_as_only_defense: Csak CSP-re támaszkodunk, miközben az output encoding hibás."
+      ],
+      "checklist": [
+        "Felhasználói tartalom minden megjelenítési pontja védett?",
+        "A rich text sanitization engedélylistát használ?",
+        "A linkek és URL-ek sémája ellenőrzött?",
+        "A CSP csökkenti a kockázatot, de nem helyettesíti az encodingot?"
+      ],
+      "relations": [
+        "security.output_encoding",
+        "security.content_security_policy",
+        "authentication.httponly_cookie"
+      ]
+    },
+    {
+      "id": "security.csrf",
+      "label": "csrf",
+      "group": "security",
+      "description": "Támadás, ahol egy másik oldal a felhasználó böngészőjét és cookie-jait használva indít nem kívánt módosító kérést.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Ellenőrizd a cookie-alapú auth végpontokat CSRF kockázat szerint, külön a módosító kéréseket.",
+        "Tervezz SameSite, CSRF token, origin check és metódusfegyelem kombinációját.",
+        "Írd le, mely végpontokon tilos GET metódussal állapotot módosítani."
+      ],
+      "anti_patterns": [
+        "state_change_get: GET kérés adatot módosít vagy műveletet indít.",
+        "cookie_auth_no_csrf: Cookie-alapú auth mellett nincs CSRF védelem.",
+        "origin_not_checked: Módosító kérésnél nem ellenőrizzük az origin vagy CSRF tokent."
+      ],
+      "checklist": [
+        "A módosító kérések CSRF védelemmel futnak?",
+        "A SameSite beállítás illik az auth flow-hoz?",
+        "A GET végpontok mellékhatásmentesek?",
+        "A CSRF hiba biztonságos, de érthető választ ad?"
+      ],
+      "relations": [
+        "authentication.csrf_protection",
+        "authentication.secure_cookie",
+        "security.cors"
+      ]
+    },
+    {
+      "id": "security.rate_limiting",
+      "label": "rate_limiting",
+      "group": "security",
+      "description": "Kérésmennyiség korlátozása visszaélés, brute force, scraping, költségrobbanás és szolgáltatás-túlterhelés ellen.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz rate limit szabályokat IP, user ID, tenant, API key és művelettípus szerint.",
+        "Adj külön limitet loginra, jelszóresetre, AI keresésre, webhookra és publikus API-ra.",
+        "Írd le a 429 válasz, retry-after jelzés és monitorozás elvárt viselkedését."
+      ],
+      "anti_patterns": [
+        "one_limit_everywhere: Minden endpoint ugyanazt a limitet kapja eltérő kockázat mellett.",
+        "ip_only_limit: Csak IP alapján limitálunk, ezért NAT és támadó botnet mellett pontatlan a védelem.",
+        "silent_throttle: A kliens nem kap jelzést arról, mikor próbálhatja újra."
+      ],
+      "checklist": [
+        "A limit kulcsa illik a támadási mintához?",
+        "Az érzékeny végpontok szigorúbb szabályt kapnak?",
+        "A limit túllépése naplózott és mérhető?",
+        "A kliens kap használható retry információt?"
+      ],
+      "relations": [
+        "backend.rate_limiting",
+        "security.brute_force_protection",
+        "observability.metrics"
+      ]
+    },
+    {
+      "id": "security.brute_force_protection",
+      "label": "brute_force_protection",
+      "group": "security",
+      "description": "Jelszó-, token-, kód- vagy linktalálgatás elleni védelem próbálkozási limitekkel, késleltetéssel, lockouttal és kockázatalapú jelzésekkel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz brute force védelmet login, 2FA, magic link, password reset és API token próbálkozásokra.",
+        "Válaszd szét a fiók-, IP-, eszköz- és globális mintázat alapján történő korlátozást.",
+        "Adj hibaüzenet-stratégiát, amely nem segíti a fióklétezés kitalálását."
+      ],
+      "anti_patterns": [
+        "unlimited_login_attempts: Bejelentkezés korlátlanul próbálgatható.",
+        "account_enum_lockout: A lockout üzenet elárulja, mely email cím létezik.",
+        "captcha_only_defense: Csak CAPTCHA-ra támaszkodunk valódi rate limit és audit nélkül."
+      ],
+      "checklist": [
+        "Minden titoktalálgatási út limitált?",
+        "A válaszok nem árulnak el fióklétezést?",
+        "A gyanús minták riasztást vagy extra ellenőrzést indítanak?",
+        "A védelem nem teszi könnyűvé más felhasználó kizárását?"
+      ],
+      "relations": [
+        "authentication.account_lockout",
+        "authentication.mfa",
+        "security.rate_limiting"
+      ]
+    },
+    {
+      "id": "security.secrets_management",
+      "label": "secrets_management",
+      "group": "security",
+      "description": "API kulcsok, jelszavak, privát kulcsok és tokenek biztonságos tárolása, rotációja, hozzáféréskezelése és szivárgás utáni kezelése.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a secret kezelését helyi fejlesztésben, CI-ben, stagingen és productionben.",
+        "Írd le, hogyan történik a secret rotáció, jogosultság-szűkítés és szivárgás utáni visszavonás.",
+        "Adj ellenőrzési tervet arra, hogy secret ne kerüljön frontendbe, logba vagy repositoryba."
+      ],
+      "anti_patterns": [
+        "hardcoded_secret: Kulcs vagy jelszó közvetlenül a forráskódban szerepel.",
+        "secret_in_frontend_bundle: Privát API kulcs kliensoldali buildbe kerül.",
+        "shared_admin_key: Több rendszer és fejlesztő ugyanazt a széles jogú kulcsot használja."
+      ],
+      "checklist": [
+        "A secret-ek secret managerben vagy védett env-ben vannak?",
+        "A hozzáférés least privilege elven működik?",
+        "Van rotációs és visszavonási folyamat?",
+        "A logok és build assetek nem tartalmaznak titkokat?"
+      ],
+      "relations": [
+        "security.environment_variables",
+        "authentication.least_privilege",
+        "devops_deploy.secrets"
+      ]
+    },
+    {
+      "id": "security.environment_variables",
+      "label": "environment_variables",
+      "group": "security",
+      "description": "Környezeti változók használata konfigurációhoz és titkokhoz úgy, hogy a runtime, build és kliensoldali határok világosak maradjanak.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld az env változókat aszerint, hogy build-time, runtime, public vagy secret értékek-e.",
+        "Tervezz .env.example fájlt titok nélküli dokumentációval és validációval induláskor.",
+        "Írd le, mely változók kerülhetnek frontendbe, és melyek kizárólag szerveren maradhatnak."
+      ],
+      "anti_patterns": [
+        "public_prefix_mistake: Secret változó publikus frontend prefixet kap.",
+        "env_missing_validation: Hiányzó vagy rossz env csak éles futás közben derül ki.",
+        "env_file_committed: Valódi .env fájl bekerül a repositoryba."
+      ],
+      "checklist": [
+        "A public és secret env változók szét vannak választva?",
+        "Induláskor validáljuk a kötelező konfigurációt?",
+        "A .env.example nem tartalmaz valódi titkot?",
+        "A CI és production env forrása auditálható?"
+      ],
+      "relations": [
+        "security.secrets_management",
+        "devops_deploy.environment_config",
+        "documentation.setup_guide"
+      ]
+    },
+    {
+      "id": "security.encryption_at_rest",
+      "label": "encryption_at_rest",
+      "group": "security",
+      "description": "Tárolt adatok titkosítása adatbázisban, fájlrendszerben, backupban vagy objektumtárolóban, kulcskezeléssel együtt.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz encryption at rest stratégiát adatbázisra, backupra, objektumtárolóra és különösen érzékeny mezőkre.",
+        "Írd le, ki kezeli a kulcsokat, hogyan történik a kulcsrotáció és mi a hozzáférési modell.",
+        "Döntsd el, mikor elég platformszintű titkosítás, és mikor kell alkalmazásszintű mezőtitkosítás."
+      ],
+      "anti_patterns": [
+        "encrypted_storage_plain_backup: Az éles tár titkosított, de a backup nincs.",
+        "keys_next_to_data: A titkosítási kulcs ugyanabban a hozzáférési körben van, mint az adat.",
+        "no_rotation_plan: Kulcsok rotációjára nincs tesztelt folyamat."
+      ],
+      "checklist": [
+        "Az adatbázis, fájlok és backupok titkosítottak?",
+        "A kulcsok külön védelmi körben vannak?",
+        "Van kulcsrotációs és incidenskezelési terv?",
+        "Az alkalmazásszintű titkosítás indokolt mezőknél használatos?"
+      ],
+      "relations": [
+        "database.backup",
+        "security.secrets_management",
+        "security.audit_trail"
+      ]
+    },
+    {
+      "id": "security.encryption_in_transit",
+      "label": "encryption_in_transit",
+      "group": "security",
+      "description": "Adatok titkosítása hálózati átvitel közben, hogy köztes szereplő ne olvashassa vagy módosíthassa a kommunikációt.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Ellenőrizd, hogy minden böngésző-API, service-service és adatbázis kapcsolat titkosított csatornán fut-e.",
+        "Tervezz TLS, HSTS, tanúsítvány-megújítás és belső hálózati titkosítás szabályokat.",
+        "Írd le, hol kell mTLS vagy privát hálózati kapcsolat magasabb bizalmi szinthez."
+      ],
+      "anti_patterns": [
+        "internal_http_trust: Belső hálózaton titkosítatlan HTTP-t megbízhatónak tekintünk.",
+        "tls_termination_blindspot: TLS a load balancernél véget ér, mögötte nincs tiszta védelmi modell.",
+        "expired_cert_surprise: Tanúsítvány lejáratára nincs monitorozás vagy automatikus megújítás."
+      ],
+      "checklist": [
+        "Minden külső kapcsolat TLS-t használ?",
+        "A belső service kommunikáció védelmi modellje dokumentált?",
+        "A tanúsítvány lejárat monitorozott?",
+        "Érzékeny service-service kapcsolatnál mTLS vagy hasonló erősítés indokolt?"
+      ],
+      "relations": [
+        "security.tls",
+        "devops_deploy.load_balancer",
+        "observability.alerting"
+      ]
+    },
+    {
+      "id": "security.tls",
+      "label": "tls",
+      "group": "security",
+      "description": "Transport Layer Security protokoll, amely hitelesített, titkosított csatornát ad kliens és szerver vagy szolgáltatások között.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld a TLS beállításokat protokollverzió, cipher suite, tanúsítványlánc és HSTS alapján.",
+        "Tervezz tanúsítvány-kezelést automatikus megújítással, lejárati riasztással és staging teszttel.",
+        "Írd le, hol történik TLS termination, és mi védi a továbbmenő forgalmat."
+      ],
+      "anti_patterns": [
+        "legacy_tls_enabled: Régi TLS verziók vagy gyenge cipher suite-ok engedélyezettek.",
+        "no_hsts: HTTPS van, de a böngésző nincs rákényszerítve a biztonságos kapcsolatra.",
+        "manual_cert_renewal: Tanúsítvány megújítása kézi emlékezeten múlik."
+      ],
+      "checklist": [
+        "Csak modern TLS verziók és erős cipher suite-ok engedélyezettek?",
+        "A tanúsítványlánc és domain lefedettség rendben van?",
+        "HSTS használata indokolt és beállított?",
+        "A lejárat és megújítás monitorozott?"
+      ],
+      "relations": [
+        "security.encryption_in_transit",
+        "security.security_headers",
+        "devops_deploy.cdn"
+      ]
+    },
+    {
+      "id": "security.audit_trail",
+      "label": "audit_trail",
+      "group": "security",
+      "description": "Biztonsági és üzleti szempontból fontos események visszakövethető lánca, amelyből látszik ki, mikor, mit és milyen kontextusban tett.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz audit trailt admin műveletekre, auth eseményekre, jogosultságváltozásra és adat exportokra.",
+        "Írd le az audit esemény mezőit: actor, action, target, timestamp, request ID, IP és eredmény.",
+        "Adj retention, hozzáféréskontroll és manipuláció elleni védelmi szabályokat."
+      ],
+      "anti_patterns": [
+        "audit_without_actor: Az eseményből nem derül ki, ki indította a műveletet.",
+        "mutable_audit: Audit rekordok utólag szabadon módosíthatók.",
+        "sensitive_payload_logging: Audit log teljes titkos vagy személyes payloadot tárol indokolatlanul."
+      ],
+      "checklist": [
+        "A kritikus műveletek auditálva vannak?",
+        "Az audit trail tartalmaz elég kontextust incidensvizsgálathoz?",
+        "A log védett utólagos módosítás ellen?",
+        "A retention és hozzáférés megfelel adatvédelmi szempontoknak?"
+      ],
+      "relations": [
+        "database.audit_log",
+        "observability.structured_logging",
+        "authentication.authorization"
+      ]
+    },
+    {
+      "id": "security.zero_trust",
+      "label": "zero_trust",
+      "group": "security",
+      "description": "Biztonsági szemlélet, amely nem tekint automatikusan megbízhatónak sem felhasználót, sem hálózatot, sem szolgáltatást.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Alkalmazz zero trust szemléletet erre az architektúrára identity, device, network és service szinten.",
+        "Írd le, hogyan validál minden service minden kérést a belső hálózaton belül is.",
+        "Adj least privilege, mikro-szegmentáció és folyamatos ellenőrzési javaslatot."
+      ],
+      "anti_patterns": [
+        "trusted_internal_network: Belső hálózatról jövő kérés automatikusan megbízható.",
+        "shared_service_secret: Több service ugyanazt a széles jogú titkot használja.",
+        "one_time_auth: A hozzáférést belépéskor ellenőrizzük, de később nem értékeljük újra."
+      ],
+      "checklist": [
+        "Minden service azonosítja és ellenőrzi a hívót?",
+        "A jogosultságok minimálisak és környezethez kötöttek?",
+        "A belső kommunikáció is védett?",
+        "A hozzáférési döntések naplózottak és felülvizsgálhatók?"
+      ],
+      "relations": [
+        "authentication.least_privilege",
+        "security.encryption_in_transit",
+        "observability.tracing"
+      ]
+    },
+    {
+      "id": "security.owasp_top_10",
+      "label": "owasp_top_10",
+      "group": "security",
+      "description": "A leggyakoribb webes biztonsági kockázatok irányadó listája, amely review, threat modeling és fejlesztési checklist alapja lehet.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld ezt a feature-t OWASP Top 10 nézőpontból, konkrét támadási útvonalakkal és javításokkal.",
+        "Kapcsold össze az OWASP kategóriákat a projekt tényleges endpointjaival, auth flow-ival és adatkezelésével.",
+        "Adj priorizált javítási listát kockázat, kihasználhatóság és üzleti hatás szerint."
+      ],
+      "anti_patterns": [
+        "checklist_theater: Az OWASP lista kipipálása történik valódi támadási gondolkodás nélkül.",
+        "generic_security_review: Minden projekt ugyanazt az általános szöveget kapja konkrét endpointok nélkül.",
+        "risk_not_prioritized: Alacsony és magas kockázatok azonos súllyal kerülnek a backlogba."
+      ],
+      "checklist": [
+        "A review konkrét projektútvonalakhoz kötődik?",
+        "A kockázatok priorizálva vannak hatás és valószínűség szerint?",
+        "Az auth, input, output, dependency és logging területek lefedettek?",
+        "A javítások ellenőrizhető acceptance kritériumot kapnak?"
+      ],
+      "relations": [
+        "security.input_validation",
+        "security.xss",
+        "security.dependency_audit"
+      ]
+    },
+    {
+      "id": "security.security_headers",
+      "label": "security_headers",
+      "group": "security",
+      "description": "HTTP válaszfejlécek, amelyek csökkentik a böngészős támadási felületet, például XSS, clickjacking és MIME sniffing kockázatát.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz security header készletet CSP, HSTS, X-Frame-Options vagy frame-ancestors, Referrer-Policy és Permissions-Policy használatával.",
+        "Döntsd el, mely fejlécek menjenek minden válaszra, és melyek útvonalanként eltérők.",
+        "Adj rollout tervet report-only móddal és böngészős regressziók figyelésével."
+      ],
+      "anti_patterns": [
+        "headers_copy_paste: Fejlécek értelmezés nélkül kerülnek be sablonból.",
+        "frame_allowed_by_default: Az alkalmazás beágyazható idegen oldalakba clickjacking védelem nélkül.",
+        "csp_breaks_silently: CSP bekapcsolás után nincs report vagy monitorozás a törésekről."
+      ],
+      "checklist": [
+        "A fontos biztonsági fejlécek be vannak állítva?",
+        "A frame beágyazás szabálya tudatos?",
+        "A CSP rollout report-only szakasszal indulhat?",
+        "A fejlécek nem törik el a szükséges integrációkat?"
+      ],
+      "relations": [
+        "security.content_security_policy",
+        "security.tls",
+        "frontend_architecture.nextjs"
+      ]
+    },
+    {
+      "id": "security.content_security_policy",
+      "label": "content_security_policy",
+      "group": "security",
+      "description": "Böngészős szabályrendszer, amely korlátozza, honnan tölthető script, style, kép, frame vagy egyéb erőforrás.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz CSP szabályt script-src, style-src, img-src, connect-src és frame-ancestors direktívákkal.",
+        "Írd le, hogyan vezetjük be a CSP-t report-only módból éles enforcementig.",
+        "Keresd meg, mely inline script, harmadik fél script vagy analytics integráció igényel külön döntést."
+      ],
+      "anti_patterns": [
+        "unsafe_inline_everywhere: A CSP engedi az inline scriptet és ezzel alig csökkenti az XSS kockázatot.",
+        "wildcard_sources: Széles wildcard források megnyitják a teljes védelmi modellt.",
+        "no_report_endpoint: CSP sértések nem látszanak, ezért a szabály nem hangolható."
+      ],
+      "checklist": [
+        "A CSP forráslistái minimálisak és indokoltak?",
+        "Inline script csak nonce vagy hash mellett engedett, ha muszáj?",
+        "Van report gyűjtés és rollout terv?",
+        "A CSP támogatja, de nem helyettesíti az XSS alapvédelmet?"
+      ],
+      "relations": [
+        "security.xss",
+        "security.security_headers",
+        "observability.logging"
+      ]
+    },
+    {
+      "id": "security.dependency_audit",
+      "label": "dependency_audit",
+      "group": "security",
+      "description": "Külső csomagok, transzitív függőségek és lockfile állapotának biztonsági ellenőrzése ismert sérülékenységek és supply chain kockázatok miatt.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz dependency audit folyamatot lockfile, transzitív csomagok, licencek és ismert CVE-k alapján.",
+        "Írd le, hogyan döntünk automatikus frissítés, manuális review és kockázat elfogadás között.",
+        "Adj CI lépést sérülékeny csomagok jelzésére anélkül, hogy minden alacsony kockázat megállítaná a fejlesztést."
+      ],
+      "anti_patterns": [
+        "audit_noise_ignored: Túl sok hamis vagy alacsony jelzés miatt minden audit figyelmen kívül marad.",
+        "no_lockfile_review: Függőségfrissítés lockfile változását senki nem nézi át.",
+        "runtime_unused_vuln_panic: Nem különítjük el a ténylegesen kihasználható és nem futó sérülékenységet."
+      ],
+      "checklist": [
+        "A függőség audit rendszeresen fut CI-ben?",
+        "A magas kockázatú sérülékenységek tulajdonost kapnak?",
+        "A lockfile változások review alatt vannak?",
+        "A döntések dokumentálják, mit frissítünk, mit fogadunk el és miért?"
+      ],
+      "relations": [
+        "security.vulnerability_scan",
+        "devops_deploy.ci_cd",
+        "documentation.decision_log"
+      ]
+    },
+    {
+      "id": "security.vulnerability_scan",
+      "label": "vulnerability_scan",
+      "group": "security",
+      "description": "Automatizált sérülékenységkeresés kódban, függőségekben, konténerképekben, konfigurációban vagy futó környezetben.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz vulnerability scan folyamatot SAST, dependency, container és secret scanning lépésekkel.",
+        "Írd le, mely találatok blokkolják a release-t, melyek mennek triage backlogba, és ki felel értük.",
+        "Adj false positive kezelést és újraellenőrzési szabályt javítás után."
+      ],
+      "anti_patterns": [
+        "scan_without_triage: A scanner fut, de senki nem dolgozza fel a találatokat.",
+        "block_all_findings: Minden jelzés blokkol, ezért a csapat kerülőutakat keres.",
+        "no_rescan_after_fix: Javítás után nem igazoljuk, hogy a sérülékenység megszűnt."
+      ],
+      "checklist": [
+        "A scan lefedi a kódot, függőséget, konténert és secret kockázatot?",
+        "A találatok priorizálási szabálya ismert?",
+        "Van tulajdonos és határidő magas kockázatra?",
+        "Javítás után újraellenőrzés történik?"
+      ],
+      "relations": [
+        "security.dependency_audit",
+        "security.secrets_management",
+        "testing_qa.ci_test"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,782 @@
+{
+  "group": "devops_deploy",
+  "keywords": [
+    {
+      "id": "devops_deploy.ci_cd",
+      "label": "ci_cd",
+      "group": "devops_deploy",
+      "description": "Folyamatos integráció és szállítás, amely a commitból ellenőrzött, ismételhető release-folyamatot épít.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a CI/CD folyamatot úgy, hogy minden commitnál legyen build, teszt, biztonsági ellenőrzés és környezetfüggő deploy döntés.",
+        "Írd le, milyen minőségi kapukon kell átmennie egy változtatásnak, mielőtt stagingre vagy productionre kerülhet.",
+        "Segíts elkülöníteni a gyors pull request ellenőrzéseket a hosszabb release előtti validációktól.",
+        "Javasolj olyan pipeline felépítést, amelyben a hibák korán látszanak, a release pedig visszakövethető marad.",
+        "Fogalmazd meg, mikor legyen automatikus és mikor manuálisan jóváhagyott a deploy."
+      ],
+      "anti_patterns": [
+        "mindig_zold_pipeline: A pipeline csak látszólag ellenőriz, mert a hibás tesztek vagy figyelmeztetések nem állítják meg a folyamatot.",
+        "osszekevert_felelossegek: Ugyanaz a job épít, tesztel, migrál és deployol, ezért nehéz megérteni, hol romlott el a release.",
+        "kornyezetfuggo_build: A build eredménye attól függ, hogy melyik runneren vagy milyen lokális cache mellett fut.",
+        "joahagyas_nelkul_elesit: Production deploy indulhat emberi döntés vagy egyértelmű release szabály nélkül.",
+        "nincs_pipeline_telemetria: Nem derül ki, melyik lépés lassú, törékeny vagy gyakran sikertelen."
+      ],
+      "checklist": [
+        "A pipeline külön kezeli a build, teszt, audit, csomagolás és deploy lépéseket?",
+        "Minden release összeköthető konkrét committal, artifacttal és környezettel?",
+        "A hibás minőségi kapuk ténylegesen blokkolják a továbblépést?",
+        "Van külön gyors PR-ellenőrzés és mélyebb release validáció?",
+        "A production deploy jóváhagyási szabályai egyértelműek?",
+        "A pipeline futási ideje és hibaaránya mérhető?"
+      ],
+      "relations": [
+        "testing_qa.regression_test",
+        "testing_qa.smoke_test",
+        "security.dependency_audit",
+        "devops_deploy.build",
+        "devops_deploy.deploy",
+        "observability.metrics"
+      ]
+    },
+    {
+      "id": "devops_deploy.github_actions",
+      "label": "github_actions",
+      "group": "devops_deploy",
+      "description": "GitHub repositoryhoz kötött automatizált workflow-k rendszere buildhez, teszthez, ellenőrzéshez és kiadáshoz.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Állíts össze GitHub Actions workflow-t pull request, main branch és tag alapú release eseményekre bontva.",
+        "Magyarázd el, mely jogosultságokra van tényleg szüksége az egyes workflow-knak, és hol kell szűkíteni az alapértelmezést.",
+        "Javasolj cache-elési és párhuzamosítási stratégiát, amely gyorsítja a futást anélkül, hogy elrejtené a hibákat.",
+        "Segíts különválasztani az újrafelhasználható workflow-kat a projekt-specifikus ellenőrzésektől.",
+        "Tervezd meg, hogyan jelenjen meg a deploy státusza és eredménye a pull request review során."
+      ],
+      "anti_patterns": [
+        "tul_szeles_token: A workflow minden jobban írási jogosultságot kap, még ott is, ahol csak olvasás kellene.",
+        "titok_logban: A secret értéke véletlenül kiíródik a naplóba hibakeresés vagy parancssori echo miatt.",
+        "branch_szabalyt_kerul: A workflow közvetlenül élesít olyan branchről, amelyen nincs review vagy védelmi szabály.",
+        "cache_mindent_elfed: A túl agresszív cache miatt régi függőségek vagy hibás build artifactok maradnak használatban.",
+        "matrix_robbanas: A matrix build indokolatlanul sok kombinációt futtat, és a várakozási idő elnyomja a visszajelzés értékét."
+      ],
+      "checklist": [
+        "A workflow eseményindítói illeszkednek a branch- és release-stratégiához?",
+        "A jobonkénti permissions beállítás a minimálisan szükséges jogosultságot adja?",
+        "A secret-ek csak azokban a lépésekben érhetők el, ahol tényleg kelleni fognak?",
+        "A cache kulcsai függnek a lockfile-tól vagy más valós verziójelzőtől?",
+        "A kötelező ellenőrzések látszanak a pull request státuszában?",
+        "A workflow újrafuttatása nem hoz létre duplikált vagy ellentmondó release mellékhatást?"
+      ],
+      "relations": [
+        "devops_deploy.ci_cd",
+        "security.secrets_management",
+        "security.audit_trail",
+        "testing_qa.unit_test",
+        "testing_qa.integration_test",
+        "devops_deploy.preview_deployment"
+      ]
+    },
+    {
+      "id": "devops_deploy.docker",
+      "label": "docker",
+      "group": "devops_deploy",
+      "description": "Konténerizációs alap, amely az alkalmazást és futtatási környezetét hordozható, verziózható egységbe zárja.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írd le, milyen szempontok alapján legyen kicsi, biztonságos és reprodukálható az alkalmazás konténerképe.",
+        "Segíts szétválasztani a fejlesztői kényelmi beállításokat a production konténer elvárásaitól.",
+        "Javasolj konténerképesítési stratégiát, amelyben a build artifact ugyanaz marad stagingen és productionön.",
+        "Mutasd be, milyen runtime konfigurációkat ne süssünk bele az image-be.",
+        "Adj ellenőrzési szempontokat a base image, felhasználói jogosultság és rétegméret felülvizsgálatához."
+      ],
+      "anti_patterns": [
+        "latest_tag_mindenhol: A konténer mindig lebegő verziótagre épül, ezért a build idővel észrevétlenül megváltozhat.",
+        "root_futtatas: Az alkalmazás feleslegesen root felhasználóként fut a konténerben.",
+        "titok_imageben: API kulcs vagy jelszó bekerül a képrétegbe, és később sem törölhető biztonságosan.",
+        "fejlesztoi_szemet: Tesztadatok, lokális cache-ek vagy editor fájlok bekerülnek a production image-be.",
+        "tul_nagy_image: A konténerkép tele van build eszközökkel és nem használt csomagokkal, ezért lassú és nagy támadási felületű."
+      ],
+      "checklist": [
+        "A base image konkrét verzióhoz vagy digesthez kötött?",
+        "A production image csak a futtatáshoz szükséges állományokat tartalmazza?",
+        "Az alkalmazás nem root felhasználóval indul?",
+        "A konfiguráció runtime-ból érkezik, nem image-be égetve?",
+        "A konténerkép sérülékenység-vizsgálata része a release folyamatnak?",
+        "A build és futtatási rétegek szétválasztása csökkenti a méretet?"
+      ],
+      "relations": [
+        "devops_deploy.build",
+        "devops_deploy.docker_compose",
+        "devops_deploy.kubernetes",
+        "security.vulnerability_scan",
+        "security.secrets_management",
+        "performance.bundle_size"
+      ]
+    },
+    {
+      "id": "devops_deploy.docker_compose",
+      "label": "docker_compose",
+      "group": "devops_deploy",
+      "description": "Több lokális vagy kisebb környezeti szolgáltatás összehangolt futtatása deklaratív konténerkonfigurációval.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a docker-compose környezetet úgy, hogy a fejlesztők gyorsan indíthassák az appot és a függő szolgáltatásokat.",
+        "Segíts elkülöníteni a lokális kényelmi beállításokat a staging vagy production deploytól.",
+        "Írd le, hogyan legyenek kezelve a hálózatok, volume-ok és környezeti változók több szolgáltatás között.",
+        "Javasolj egészségellenőrzési és indulási sorrend elveket adatbázis, backend és worker szolgáltatásokhoz.",
+        "Fogalmazd meg, mely compose beállításokat nem érdemes éles üzemeltetésre továbbvinni."
+      ],
+      "anti_patterns": [
+        "prod_compose_veletlenul: Lokális fejlesztésre szánt compose fájlt használnak production környezetben kontroll nélkül.",
+        "depends_on_felreertve: Az indulási sorrendet készenléti garanciának tekintik, pedig a szolgáltatás még nem biztos, hogy használható.",
+        "kozos_volume_kavarodas: Több szolgáltatás ugyanazt az írható volume-ot használja világos tulajdonos nélkül.",
+        "port_utkozes: Fix host portok miatt a fejlesztői gépeken és CI környezetben kiszámíthatatlanul törik az indítás.",
+        "rejtett_allapot: A lokális volume-ban maradt adat elfedi a friss migrációs vagy seedelési hibákat."
+      ],
+      "checklist": [
+        "A compose fájl célja egyértelműen lokális, teszt vagy kis környezeti futtatás?",
+        "A szolgáltatások saját hálózati nevekkel érik el egymást?",
+        "A volume-ok tulajdonosa és élettartama dokumentált?",
+        "Van healthcheck vagy readiness szemlélet az egymástól függő konténerekhez?",
+        "A környezeti változók példái nem tartalmaznak valódi titkokat?",
+        "A CI-ben futó compose környezet tiszta állapotból is működik?"
+      ],
+      "relations": [
+        "devops_deploy.docker",
+        "database.postgresql",
+        "database.redis",
+        "backend.worker",
+        "devops_deploy.environment_config",
+        "devops_deploy.health_check"
+      ]
+    },
+    {
+      "id": "devops_deploy.kubernetes",
+      "label": "kubernetes",
+      "group": "devops_deploy",
+      "description": "Konténerek orkhesztrációja skálázható, önjavító és deklaratívan kezelt futtatási környezetben.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Segíts megtervezni a Kubernetes erőforrásokat deployment, service, ingress, config és secret határok szerint.",
+        "Írd le, milyen readiness, liveness és startup probe illik ehhez az alkalmazáshoz.",
+        "Javasolj namespace, resource limit és jogosultsági modellt több környezet vagy csapat számára.",
+        "Magyarázd el, hogyan történjen rolling update, visszaállás és skálázás felhasználói kiesés nélkül.",
+        "Adj szempontokat ahhoz, mikor indokolt Kubernetes, és mikor lenne túl nagy üzemeltetési teher."
+      ],
+      "anti_patterns": [
+        "manifest_spagetti: Minden erőforrás egyetlen átláthatatlan YAML halmazban él, környezeti határok nélkül.",
+        "nincs_resource_limit: A podok korlátlanul fogyaszthatnak memóriát vagy CPU-t, ami más workloadokat is veszélyeztet.",
+        "probe_masolva: A health probe csak másolt végpontot üt, és nem tükrözi az alkalmazás valódi készenlétét.",
+        "cluster_admin_appnak: Az alkalmazás service accountja indokolatlanul széles cluster jogosultságot kap.",
+        "allando_kubectl_kezzel: A cluster állapotát kézi parancsokkal javítgatják, így a deklarált konfiguráció és a valóság eltér."
+      ],
+      "checklist": [
+        "A namespace-ek és erőforrásnevek tükrözik a környezetet és tulajdonost?",
+        "Minden workloadhoz van CPU és memória request, illetve limit?",
+        "A readiness és liveness probe külön célt szolgál?",
+        "A config és secret kezelés illeszkedik a szervezet biztonsági modelljéhez?",
+        "A rolling update paraméterei kezelik a kapacitást és a leállási időt?",
+        "A cluster állapotát Gitben vagy más deklaratív forrásban tartjátok?"
+      ],
+      "relations": [
+        "devops_deploy.docker",
+        "devops_deploy.autoscaling",
+        "devops_deploy.load_balancer",
+        "devops_deploy.health_check",
+        "security.zero_trust",
+        "observability.monitoring"
+      ]
+    },
+    {
+      "id": "devops_deploy.build",
+      "label": "build",
+      "group": "devops_deploy",
+      "description": "Forráskódból ellenőrzött, verziózható és futtatható artifact készítése deploy előtt.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Fogalmazd meg, hogyan legyen a build determinisztikus különböző fejlesztői és CI környezetekben.",
+        "Segíts meghatározni, milyen artifactokat kell megőrizni a release nyomon követéséhez.",
+        "Javasolj build gyorsítási pontokat úgy, hogy a cache ne rontsa a megbízhatóságot.",
+        "Írd le, hogyan különüljön el a fordítás, csomagolás, minifikálás és image-készítés felelőssége.",
+        "Adj checklistet a build output méretének, licencének és sérülékenységeinek vizsgálatához."
+      ],
+      "anti_patterns": [
+        "nem_reprodukalhato_build: Ugyanabból a commitból eltérő artifact készül attól függően, mikor vagy hol fut a build.",
+        "lokalis_gep_release: Az éles artifact fejlesztői gépen készül, nem ellenőrzött CI környezetben.",
+        "cache_vakon: A build cache nincs lockfile-hoz vagy verzióhoz kötve, ezért régi függőségek maradhatnak benne.",
+        "artifact_nincs_megorizve: Deploy után nem deríthető ki pontosan, milyen csomag vagy image került ki.",
+        "buildbe_rejtett_config: Környezeti beállítások fordításkor kerülnek be, így ugyanaz az artifact nem mozgatható környezetek között."
+      ],
+      "checklist": [
+        "A build ugyanabból a forrásból ismételhetően ugyanazt az artifactot adja?",
+        "A függőségek lockoltak vagy más módon verzióhoz kötöttek?",
+        "Az artifact metaadatai tartalmazzák a commitot, verziót és build időpontot?",
+        "A build output külön auditálható deploy előtt?",
+        "A cache gyorsít, de nem dönt a build helyességéről?",
+        "A runtime konfiguráció nem a build pillanatában dől el?"
+      ],
+      "relations": [
+        "devops_deploy.ci_cd",
+        "devops_deploy.docker",
+        "testing_qa.unit_test",
+        "security.dependency_audit",
+        "performance.bundle_size",
+        "frontend_architecture.typescript"
+      ]
+    },
+    {
+      "id": "devops_deploy.deploy",
+      "label": "deploy",
+      "group": "devops_deploy",
+      "description": "Ellenőrzött artifact eljuttatása és aktiválása egy célkörnyezetben a felhasználói működés védelmével.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a deploy folyamatot artifact kiválasztástól health checkig és visszaállási döntésig.",
+        "Írd le, milyen előfeltételeknek kell teljesülniük staging és production deploy előtt.",
+        "Segíts megkülönböztetni az alkalmazás deployt, az adatbázis migrációt és a konfigurációváltást.",
+        "Javasolj kommunikációs és audit nyomot egy éles release követéséhez.",
+        "Adj döntési pontokat arra, mikor álljon meg automatikusan a deploy."
+      ],
+      "anti_patterns": [
+        "minden_egyszerre: Kód, adatbázis, infrastruktúra és konfiguráció egyszerre változik, ezért hiba esetén nincs fogódzó.",
+        "ellenorzes_utolag: A deploy sikeresnek számít, mielőtt a szolgáltatás állapota vagy fő felhasználói útvonala validált lenne.",
+        "kezi_hotfix_elesben: Production állapotot kézzel módosítanak, majd a változás nem kerül vissza a verziózott forrásba.",
+        "nincs_release_naplo: Nem látszik, ki, mikor, mit és milyen indokkal élesített.",
+        "fuggosegi_sorrend_hibas: A szolgáltatások frissítési sorrendje nem veszi figyelembe a kompatibilitási ablakot."
+      ],
+      "checklist": [
+        "A deploy mindig azonosított és megőrzött artifactból indul?",
+        "A környezeti előfeltételek és blokkoló feltételek egyértelműek?",
+        "A migrációk kompatibilisek a régi és új alkalmazásverzióval?",
+        "A deploy után fut smoke check vagy üzleti kritikus ellenőrzés?",
+        "A release auditálható ember, időpont, commit és környezet szerint?",
+        "A hibás deploy megállítható vagy visszafordítható elfogadható időn belül?"
+      ],
+      "relations": [
+        "devops_deploy.ci_cd",
+        "devops_deploy.rollback",
+        "devops_deploy.health_check",
+        "database.migration",
+        "testing_qa.smoke_test",
+        "observability.uptime"
+      ]
+    },
+    {
+      "id": "devops_deploy.staging",
+      "label": "staging",
+      "group": "devops_deploy",
+      "description": "Éles előtti környezet, ahol a release valósághű konfigurációval és adatokkal validálható kockázat nélkül.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írd le, milyen mértékben kell a staging környezetnek tükröznie productiont ahhoz, hogy a release döntés megbízható legyen.",
+        "Segíts meghatározni, milyen adatokkal és integrációkkal szabad stagingen tesztelni.",
+        "Javasolj staging validációs folyamatot smoke, regressziós és elfogadási ellenőrzésekkel.",
+        "Fogalmazd meg, hogyan kezeljük a staging konfigurációt anélkül, hogy éles titkok vagy felhasználói adatok szivárognának.",
+        "Adj szempontokat a staging drift felismeréséhez és csökkentéséhez."
+      ],
+      "anti_patterns": [
+        "staging_diszlet: A staging annyira eltér productiontől, hogy a sikeres próba hamis biztonságérzetet ad.",
+        "eles_adat_maszkolas_nelkul: Valódi felhasználói adat kerül nem éles környezetbe megfelelő védelem nélkül.",
+        "manualis_allapotjavitas: Staginget kézi módosításokkal tartják működőképesen, ezért nem reprodukálható.",
+        "integracio_vakfolt: Külső szolgáltatások vagy webhookok stagingen nincsenek modellezve, így élesben derül ki a törés.",
+        "staging_mindig_foglalt: A környezetet több csapat egyszerre használja szabályok nélkül, ezért a teszteredmény zajos."
+      ],
+      "checklist": [
+        "A staging konfiguráció lényeges paraméterei productionhöz hasonlóak?",
+        "A tesztadatok maszkoltak vagy szintetikusak?",
+        "A staging deploy ugyanazon pipeline logikán megy át, mint production?",
+        "A külső integrációk tesztmódja vagy mockolt párja dokumentált?",
+        "A környezet driftje rendszeresen felismerhető?",
+        "A staging validáció eredménye beleszámít a release döntésbe?"
+      ],
+      "relations": [
+        "devops_deploy.production",
+        "devops_deploy.environment_config",
+        "testing_qa.acceptance_test",
+        "testing_qa.regression_test",
+        "security.environment_variables",
+        "database.backup"
+      ]
+    },
+    {
+      "id": "devops_deploy.production",
+      "label": "production",
+      "group": "devops_deploy",
+      "description": "Éles környezet, ahol a felhasználói forgalom, adatvédelem, megbízhatóság és üzleti hatás elsődleges szempont.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Segíts production readiness szempontrendszert írni deploy, observability, biztonság és visszaállás szerint.",
+        "Fogalmazd meg, milyen változtatások igényelnek külön élesítési ablakot vagy manuális jóváhagyást.",
+        "Javasolj production üzemeltetési elveket jogosultság, konfiguráció, mentés és incidenskezelés mentén.",
+        "Írd le, hogyan legyen az éles rendszer állapota látható release közben és után.",
+        "Adj ellenőrzőpontokat, amelyek védik az ügyféladatot és a rendelkezésre állást."
+      ],
+      "anti_patterns": [
+        "prod_mint_tesztpad: Éles környezetben próbálnak ki nem validált konfigurációt vagy migrációt.",
+        "tul_sok_kezi_hozzaferes: Sok ember tud közvetlenül productiont módosítani auditált folyamat nélkül.",
+        "nincs_kapacitas_tartalek: Az éles rendszer normál forgalomnál is a határán fut, így deploy közben könnyen romlik.",
+        "riasztas_nelkul_hiba: Felhasználók jelzik először a production hibát, nem a monitoring.",
+        "mentes_nem_probalt: Van backup, de a restore folyamatot soha nem gyakorolták."
+      ],
+      "checklist": [
+        "Production hozzáférések szerepkörhöz és audit nyomhoz kötöttek?",
+        "A release előtt ismert a várható kockázat és visszaállási út?",
+        "A monitoring és alerting lefedi a kritikus felhasználói útvonalakat?",
+        "A kapacitás elegendő rolling vagy canary deploy közben is?",
+        "A backup és restore eljárás bizonyítottan működik?",
+        "Az éles titkok és személyes adatok kezelése megfelel a biztonsági elvárásoknak?"
+      ],
+      "relations": [
+        "devops_deploy.staging",
+        "devops_deploy.rollback",
+        "observability.alerting",
+        "observability.slo",
+        "security.audit_trail",
+        "database.restore"
+      ]
+    },
+    {
+      "id": "devops_deploy.preview_deployment",
+      "label": "preview_deployment",
+      "group": "devops_deploy",
+      "description": "Pull requesthez vagy feature branchhez létrehozott ideiglenes környezet, amely a változást review előtt kipróbálhatóvá teszi.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg, hogyan kapjon minden releváns pull request saját preview környezetet elkülönített URL-lel és konfigurációval.",
+        "Írd le, milyen adatokat, titkokat és külső integrációkat szabad preview környezetben használni.",
+        "Javasolj automatikus létrehozási és takarítási szabályokat, hogy a preview deploy ne hagyjon hátra költséget vagy állapotot.",
+        "Segíts összekötni a preview linket a review, QA és product visszajelzési folyamattal.",
+        "Adj szempontokat ahhoz, mikor legyen teljes stack preview és mikor elég statikus vagy részleges környezet."
+      ],
+      "anti_patterns": [
+        "preview_orokke_el: A branch lezárása után a környezet és erőforrásai futva maradnak.",
+        "kozos_adatbazis_irasa: Több preview ugyanabba az állapotba ír, ezért a tesztelés egymást zavarja.",
+        "eles_secret_previewban: Production titkok kerülnek ideiglenes, szélesebben hozzáférhető környezetbe.",
+        "review_link_nem_frissul: A pull requestben lévő preview hivatkozás régi deployra mutat.",
+        "minden_pr_tul_draga: Minden apró változás teljes infrastruktúrát indít, költség- és kvótakorlát nélkül."
+      ],
+      "checklist": [
+        "A preview környezet automatikusan létrejön és megszűnik a PR életciklusával?",
+        "A preview URL és deploy státusz jól látszik a pull requestben?",
+        "Az adatbázis, fájltár és külső integráció elkülönített vagy biztonságosan mockolt?",
+        "A preview titkok nem egyeznek a production secret-ekkel?",
+        "Van költség- vagy időkorlát az elhagyott környezetekre?",
+        "A review során ismert, mely commit áll a preview mögött?"
+      ],
+      "relations": [
+        "devops_deploy.github_actions",
+        "devops_deploy.staging",
+        "devops_deploy.environment_config",
+        "testing_qa.acceptance_test",
+        "security.secrets_management",
+        "frontend_architecture.routing"
+      ]
+    },
+    {
+      "id": "devops_deploy.blue_green_deployment",
+      "label": "blue_green_deployment",
+      "group": "devops_deploy",
+      "description": "Két párhuzamos production-szerű környezet közötti forgalomváltás, amely gyors visszafordítást és alacsony kiesést támogat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Magyarázd el, hogyan épülne fel blue-green deploy ennél a rendszernél forgalomirányítás, adatbázis és ellenőrzés szempontjából.",
+        "Segíts meghatározni, milyen feltételek után lehet a forgalmat az új környezetre váltani.",
+        "Javasolj visszaváltási tervet arra az esetre, ha a zöld környezet hibásnak bizonyul.",
+        "Írd le, hogyan kell kezelni a stateful komponenseket, migrációkat és hosszú életű kapcsolatokat blue-green esetben.",
+        "Adj döntési szempontokat, mikor jobb a blue-green, mint a rolling vagy canary deploy."
+      ],
+      "anti_patterns": [
+        "adatbazis_egyiranyu_tores: A migráció csak az új verzióval kompatibilis, ezért visszaváltáskor a régi környezet hibázik.",
+        "zold_nincs_bemelegitve: A friss környezet cache, kapcsolatpool vagy háttérfolyamat nélkül kap hirtelen teljes forgalmat.",
+        "dns_lassu_valtas: A forgalomváltást lassan terjedő DNS-re bízzák, így a kontroll nem az üzemeltetés kezében van.",
+        "ket_eles_allapot: Mindkét környezet írhat ugyanabba az állapotba összehangolás nélkül.",
+        "validacio_csak_ping: A váltás előtt csak felületes elérhetőségi ellenőrzés fut, nem valódi felhasználói útvonal."
+      ],
+      "checklist": [
+        "A kék és zöld környezet ugyanabból az artifactból, de külön életciklussal kezelhető?",
+        "A forgalomváltás gyorsan és mérhetően végrehajtható?",
+        "Az adatbázisváltozások visszafelé kompatibilisek a váltási ablakban?",
+        "A zöld környezet bemelegítése és smoke validációja megtörténik váltás előtt?",
+        "A visszaváltási döntéshez vannak metrikák és küszöbök?",
+        "A hosszú kapcsolatok és háttérmunkák kezelése dokumentált?"
+      ],
+      "relations": [
+        "devops_deploy.rollback",
+        "devops_deploy.load_balancer",
+        "devops_deploy.health_check",
+        "database.migration",
+        "observability.latency",
+        "observability.error_rate"
+      ]
+    },
+    {
+      "id": "devops_deploy.canary_deployment",
+      "label": "canary_deployment",
+      "group": "devops_deploy",
+      "description": "Fokozatos release stratégia, amely az új verziót először kis forgalmi vagy felhasználói szeletnek teszi elérhetővé.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a canary rollout lépéseit forgalmi arányokkal, megfigyelési időablakokkal és automatikus megállási feltételekkel.",
+        "Írd le, milyen metrikák alapján dönthető el, hogy a canary bővíthető vagy visszavonandó.",
+        "Segíts kiválasztani, hogy felhasználói csoport, régió, szolgáltatáspéldány vagy feature flag szerint történjen a fokozatos kiadás.",
+        "Javasolj kommunikációs és support tervet részleges élesítéshez.",
+        "Adj szempontokat ahhoz, mikor veszélyes canaryt használni állapotfüggő vagy adatmodell-váltó release-nél."
+      ],
+      "anti_patterns": [
+        "metrika_nelkuli_canary: A forgalom fokozatosan nő, de nincs objektív jel, ami megállítaná a rolloutot.",
+        "nem_reprezentativ_minta: A canary csoport nem hasonlít a valós felhasználói forgalomra, ezért nem mutatja ki a hibát.",
+        "keveredett_session: A felhasználó egy munkameneten belül régi és új verzió között ugrál, ami inkonzisztens állapotot okoz.",
+        "manualis_aranytekeres: A rollout arányait kézzel állítgatják naplózott döntések és visszaállási pontok nélkül.",
+        "adatmodell_tores: Az új verzió olyan adatot ír, amelyet a régi verzió már nem tud kezelni."
+      ],
+      "checklist": [
+        "Van előre meghatározott metrika a siker, romlás és rollback eldöntésére?",
+        "A canary közönség elég kicsi, de reprezentatív?",
+        "A felhasználói sessionök stabilan ugyanahhoz a verzióhoz kerülnek?",
+        "A rollout lépcsői és várakozási idők dokumentáltak?",
+        "Az adatmodell kompatibilis a párhuzamos régi és új verzióval?",
+        "A support és incident csapat látja, kik érintettek a canaryban?"
+      ],
+      "relations": [
+        "devops_deploy.rollback",
+        "devops_deploy.autoscaling",
+        "observability.metrics",
+        "observability.error_rate",
+        "observability.slo",
+        "backend.circuit_breaker"
+      ]
+    },
+    {
+      "id": "devops_deploy.rollback",
+      "label": "rollback",
+      "group": "devops_deploy",
+      "description": "Hibás release gyors és kontrollált visszavonása korábbi működő állapot vagy biztonságos alternatíva felé.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj rollback tervet, amely külön kezeli az alkalmazásverziót, konfigurációt, adatbázist és külső integrációkat.",
+        "Segíts meghatározni, milyen jelek alapján kell automatikusan vagy manuálisan visszaállni.",
+        "Javasolj gyakorolható rollback forgatókönyvet éles kockázat nélkül.",
+        "Fogalmazd meg, hogyan legyen a rollback döntés auditálható és kommunikálható incident közben.",
+        "Adj szempontokat, amikor a roll forward biztonságosabb, mint a visszaállás."
+      ],
+      "anti_patterns": [
+        "rollback_csak_remeny: A csapat feltételezi, hogy vissza lehet állni, de ezt soha nem próbálta ki.",
+        "migracio_visszaut_nelkul: Az adatbázisváltozás nem kompatibilis visszafelé, ezért az app rollback önmagában kevés.",
+        "artifact_eltunt: A korábbi működő verzió csomagja vagy konfigurációja már nem érhető el.",
+        "kesoi_dontes: A rollback akkor indul, amikor a hiba már rég túllépte az elfogadható hatást.",
+        "kommunikacio_ures: Senki nem tudja, ki dönthet rollbackről és kit kell értesíteni."
+      ],
+      "checklist": [
+        "A legutóbbi ismert jó artifact és konfiguráció gyorsan elérhető?",
+        "A rollback lépései környezetenként le vannak írva és gyakorolva vannak?",
+        "Az adatbázis és külső állapot kompatibilitása tisztázott?",
+        "Vannak objektív küszöbök, amelyek rollbacket indokolnak?",
+        "A döntési felelős és kommunikációs csatorna ismert?",
+        "Rollback után van validáció és postmortem folyamat?"
+      ],
+      "relations": [
+        "devops_deploy.deploy",
+        "devops_deploy.production",
+        "database.rollback",
+        "database.restore",
+        "observability.alerting",
+        "observability.incident_report"
+      ]
+    },
+    {
+      "id": "devops_deploy.health_check",
+      "label": "health_check",
+      "group": "devops_deploy",
+      "description": "Automatikusan lekérdezhető állapotjelzés, amely megkülönbözteti az elérhetőséget, készenlétet és üzleti működőképességet.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz health check szemléletet külön liveness, readiness és mélyebb üzleti smoke ellenőrzésekre bontva.",
+        "Írd le, mely függőségek kiesése miatt legyen a szolgáltatás nem kész, és melyeknél elég degradált állapotot jelezni.",
+        "Segíts elkerülni, hogy a health check túl drága, túl lassú vagy túl felszínes legyen.",
+        "Javasolj health jelzéseket load balancer, orchestrator és monitoring használatra külön-külön.",
+        "Fogalmazd meg, milyen információ ne kerüljön nyilvános health válaszba."
+      ],
+      "anti_patterns": [
+        "mindig_ok: A health endpoint statikus siker választ ad, akkor is, ha az app nem tud kiszolgálni.",
+        "tul_mely_probe: Minden health hívás adatbázist, külső API-t és nehéz lekérdezést futtat, ezért maga okoz terhelést.",
+        "titok_statuszban: A válasz belső hostneveket, verziórészleteket vagy érzékeny konfigurációt árul el.",
+        "readiness_liveness_egyben: Ugyanaz a jel dönt újraindításról és forgalomfogadásról, ami hibás restart hurkot okozhat.",
+        "nincs_degradalt_allapot: A rendszer csak egészséges vagy halott lehet, részleges hiba esetén nincs hasznos jelzés."
+      ],
+      "checklist": [
+        "Külön van választva az életjel, a forgalomfogadási készenlét és a mélyebb smoke ellenőrzés?",
+        "A health check gyors, olcsó és idempotens?",
+        "A válasz nem szivárogtat érzékeny infrastruktúra- vagy konfigurációs adatot?",
+        "A függőségek hibája megfelelően jelzi a degradált vagy nem kész állapotot?",
+        "Az orchestrator és a load balancer ugyanazt a szemantikát érti?",
+        "A monitoring metrikaként és riasztási alapként is tudja használni az állapotot?"
+      ],
+      "relations": [
+        "observability.uptime",
+        "observability.monitoring",
+        "observability.alerting",
+        "devops_deploy.load_balancer",
+        "devops_deploy.kubernetes",
+        "testing_qa.smoke_test"
+      ]
+    },
+    {
+      "id": "devops_deploy.environment_config",
+      "label": "environment_config",
+      "group": "devops_deploy",
+      "description": "Környezetfüggő beállítások szabályozott kezelése úgy, hogy az artifact változatlan, a runtime viselkedés pedig átlátható maradjon.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Segíts rendszerezni az alkalmazás környezeti konfigurációit local, preview, staging és production szinteken.",
+        "Írd le, mely beállítások legyenek publikus konfigurációk, melyek secret-ek, és melyek feature vagy rollout kapcsolók.",
+        "Javasolj validációt hiányzó, hibás típusú vagy veszélyesen alapértelmezett környezeti változókra.",
+        "Fogalmazd meg, hogyan lehet elkerülni a staging és production konfigurációs driftet.",
+        "Adj ellenőrző szempontokat runtime config, build-time config és kliensoldalra kerülő config elkülönítéséhez."
+      ],
+      "anti_patterns": [
+        "default_prod_veszely: Hiányzó környezeti változó esetén az app csendben production-szerű alapértékre esik vissza.",
+        "config_szetszorva: A beállítások több fájlban, pipeline változóban és kézi dashboardon élnek egységes nyilvántartás nélkül.",
+        "secret_confignak_nezve: Érzékeny értékek publikus konfigurációként vagy kliensoldali változóként terjednek.",
+        "buildtime_fogsag: Környezetfüggő értékek buildkor kerülnek be, ezért ugyanaz az artifact nem telepíthető több helyre.",
+        "nincs_schema: A konfiguráció nincs típusosan vagy induláskor validálva, így hiba csak forgalom alatt derül ki."
+      ],
+      "checklist": [
+        "Minden kötelező környezeti változó dokumentált és induláskor validált?",
+        "A secret, publikus config és feature kapcsoló külön kezelési csatornát kap?",
+        "Ugyanaz az artifact használható stagingen és productionön eltérő runtime configgal?",
+        "A konfigurációs változások auditálhatók?",
+        "A kliensoldalra kerülő értékek nem tartalmaznak érzékeny adatot?",
+        "Van folyamat a környezetek közti drift felismerésére?"
+      ],
+      "relations": [
+        "security.environment_variables",
+        "security.secrets_management",
+        "devops_deploy.staging",
+        "devops_deploy.production",
+        "devops_deploy.preview_deployment",
+        "frontend_architecture.server_components"
+      ]
+    },
+    {
+      "id": "devops_deploy.secrets",
+      "label": "secrets",
+      "group": "devops_deploy",
+      "description": "Jelszavak, tokenek, tanúsítványok és privát kulcsok életciklusának biztonságos kezelése deploy környezetekben.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a secret kezelést úgy, hogy a fejlesztői, CI és production hozzáférések elkülönüljenek.",
+        "Írd le, hogyan történjen secret rotáció, visszavonás és incidens utáni csere.",
+        "Segíts felmérni, mely pipeline lépéseknek van ténylegesen szükségük érzékeny értékekre.",
+        "Javasolj naplózási és maszkolási elveket, hogy a secret ne jelenjen meg build vagy deploy logban.",
+        "Adj szempontokat a rövid életű credentialök és környezeti secret store használatához."
+      ],
+      "anti_patterns": [
+        "secret_gitben: Titok kerül repositoryba, példa konfigurációba vagy korábbi commit történetbe.",
+        "orok_token: Lejárat nélküli hozzáférési kulcsok élnek hosszú ideig rotációs terv nélkül.",
+        "mindenki_latja: A secret túl sok környezetben, jobban vagy emberi szerepkörben hozzáférhető.",
+        "logban_kiszivarog: Hibakeresés közben a secret értéke teljesen vagy részben megjelenik naplóban.",
+        "egy_secret_mindenre: Ugyanaz a kulcs használatos local, staging és production hozzáféréshez."
+      ],
+      "checklist": [
+        "A secret-ek központi, auditálható secret store-ban vagy platform secret kezelésben vannak?",
+        "Környezetenként és célonként külön credentialt használtok?",
+        "Van rotációs, visszavonási és incidens utáni cserefolyamat?",
+        "A CI jobok csak szükség esetén és minimális ideig férnek hozzá secrethez?",
+        "A logok és hibajelentések maszkolják az érzékeny értékeket?",
+        "A fejlesztői gépek nem hordoznak production secretet?"
+      ],
+      "relations": [
+        "security.secrets_management",
+        "security.environment_variables",
+        "security.audit_trail",
+        "security.tls",
+        "devops_deploy.github_actions",
+        "devops_deploy.environment_config"
+      ]
+    },
+    {
+      "id": "devops_deploy.cdn",
+      "label": "cdn",
+      "group": "devops_deploy",
+      "description": "Tartalomszolgáltató hálózat statikus és gyorsítótárazható tartalmak földrajzilag közeli, skálázható kiszolgálására.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Segíts CDN stratégiát készíteni statikus assetekre, képekre, letöltésekre és gyorsítótárazható API válaszokra.",
+        "Írd le, milyen cache szabályok illenek verziózott fájlokhoz, gyakran változó tartalomhoz és személyre szabott válaszokhoz.",
+        "Javasolj invalidációs tervet release esetére, hogy ne maradjon kint régi vagy hibás asset.",
+        "Fogalmazd meg, hogyan mérjük a CDN találati arányát, késleltetését és hibáit.",
+        "Adj biztonsági szempontokat TLS, headerök, eredetszerver védelem és privát tartalom kiszolgálása kapcsán."
+      ],
+      "anti_patterns": [
+        "cache_mindent: Személyre szabott vagy jogosultságfüggő válaszok is publikus CDN cache-be kerülnek.",
+        "nincs_verziozott_asset: A fájlnevek nem tartalmaznak verziót vagy hash-t, ezért release után régi assetek keveredhetnek.",
+        "invalidacio_panikban: Csak hiba után derül ki, hogyan lehet a CDN cache-t biztonságosan üríteni.",
+        "origin_vedtelen: Az eredetszerver közvetlenül elérhető marad, így a CDN védelme és rate limitje megkerülhető.",
+        "ttl_veletlenszeru: A cache lejárati idők nincsenek tartalomtípushoz és üzleti frissüléshez igazítva."
+      ],
+      "checklist": [
+        "A cache szabályok külön kezelik a publikus, privát és személyre szabott tartalmat?",
+        "A statikus assetek verziózott vagy tartalomhash alapú névvel kerülnek ki?",
+        "Van előre ismert invalidációs vagy rollback stratégia hibás release esetére?",
+        "A CDN metrikák mutatják a találati arányt, késleltetést és origin terhelést?",
+        "Az origin hozzáférése korlátozott és TLS-sel védett?",
+        "A biztonsági headerök és CORS szabályok nem sérülnek CDN mögött?"
+      ],
+      "relations": [
+        "performance.cdn_caching",
+        "performance.image_optimization",
+        "security.tls",
+        "security.security_headers",
+        "devops_deploy.edge_function",
+        "observability.latency"
+      ]
+    },
+    {
+      "id": "devops_deploy.serverless",
+      "label": "serverless",
+      "group": "devops_deploy",
+      "description": "Futtatási modell, ahol az infrastruktúra jelentős része platform által kezelt, a csapat pedig eseményekre és funkciókra fókuszál.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Segíts eldönteni, mely backend feladatok illenek serverless modellbe és melyek igényelnek tartós szolgáltatást.",
+        "Írd le a cold start, timeout, concurrency és költség kockázatait ennél az alkalmazásnál.",
+        "Javasolj megfigyelési és hibakezelési stratégiát eseményvezérelt serverless folyamatokra.",
+        "Fogalmazd meg, hogyan kell kezelni a környezeti konfigurációt és secret-eket platformfüggő futtatásban.",
+        "Adj szempontokat queue, cron, webhook és API handler serverless megvalósításához."
+      ],
+      "anti_patterns": [
+        "hosszu_folyamat_functionben: Percekig vagy órákig futó üzleti folyamatot egy rövid timeoutos function próbál kezelni.",
+        "cold_start_meglepetes: A késleltetési elvárás nem számol hidegindulással és regionális indulási különbségekkel.",
+        "kapcsolatpool_elfogy: Minden function példány külön adatbázis-kapcsolatot nyit kontroll nélkül.",
+        "platform_lockin_vakon: A megoldás mélyen platformfüggő lesz anélkül, hogy ezt tudatos döntésként kezelték volna.",
+        "koltseg_riasztas_nelkul: Forgalmi vagy retry hiba elszabadítja a futási költséget, mert nincs költségfigyelés."
+      ],
+      "checklist": [
+        "A feladat belefér a platform timeout, memória és csomagméret korlátaiba?",
+        "A cold start hatása elfogadható a felhasználói útvonalon?",
+        "Az adatbázis-kapcsolatok és külső API limitek védve vannak concurrency mellett?",
+        "A retry, idempotencia és dead-letter kezelés tisztázott eseményvezérelt esetben?",
+        "A költség, hibaarány és futási idő monitorozott?",
+        "A platformfüggő döntések dokumentáltak?"
+      ],
+      "relations": [
+        "backend.worker",
+        "backend.webhook",
+        "backend.retry_policy",
+        "backend.idempotency",
+        "database.connection_pooling",
+        "observability.tracing"
+      ]
+    },
+    {
+      "id": "devops_deploy.edge_function",
+      "label": "edge_function",
+      "group": "devops_deploy",
+      "description": "Felhasználóhoz közeli futtatási ponton végrehajtott logika alacsony késleltetésű routinghoz, személyre szabáshoz vagy könnyű API feladatokhoz.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Segíts eldönteni, mely logika kerüljön edge functionbe és mely maradjon regionális vagy központi backendben.",
+        "Írd le az edge runtime korlátait fájlrendszer, hálózat, csomagméret, titokkezelés és futási idő szempontjából.",
+        "Javasolj cache és routing mintát, amely kihasználja a felhasználóhoz közeli futtatást.",
+        "Fogalmazd meg, hogyan mérjük az edge válaszidőt és hibákat régiónként.",
+        "Adj biztonsági szempontokat hitelesítés, header kezelés és személyes adat edge-en történő feldolgozásához."
+      ],
+      "anti_patterns": [
+        "edge_mindent_visz: Nehéz üzleti logika, adatbázis tranzakció és nagy függőségcsomag kerül edge runtime-ba.",
+        "regionalis_allapot_fugg: Az edge function olyan központi állapotra vár, amely elveszi a késleltetési előnyt.",
+        "titok_szetteritve: Érzékeny kulcsok sok edge régióban terülnek szét szükségtelenül.",
+        "cache_auth_keveredik: Jogosultságfüggő válaszok cache-elése nem veszi figyelembe a felhasználói kontextust.",
+        "regio_vakfolt: Csak globális hibaarány látszik, ezért egyetlen edge régió problémája rejtve marad."
+      ],
+      "checklist": [
+        "A feladat valóban profitál a felhasználóhoz közeli futtatásból?",
+        "Az edge runtime korlátai mellett is stabil a függőségkészlet?",
+        "A cache kulcsok figyelembe veszik a jogosultságot és személyre szabást?",
+        "Az edge logok és metrikák régió szerint vizsgálhatók?",
+        "A titokkezelés minimális és célhoz kötött?",
+        "Van fallback vagy központi útvonal edge hiba esetére?"
+      ],
+      "relations": [
+        "devops_deploy.cdn",
+        "performance.caching_strategy",
+        "observability.latency",
+        "security.security_headers",
+        "security.content_security_policy",
+        "observability.tracing"
+      ]
+    },
+    {
+      "id": "devops_deploy.autoscaling",
+      "label": "autoscaling",
+      "group": "devops_deploy",
+      "description": "Erőforrások automatikus növelése vagy csökkentése terhelési, kapacitási vagy ütemezett jelek alapján.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg az autoscaling szabályokat forgalom, CPU, memória, queue mélység és üzleti aktivitás alapján.",
+        "Írd le, milyen minimum, maximum és hűlési idő beállítások védik a rendszert skálázási kilengéstől.",
+        "Segíts megkülönböztetni a horizontális skálázást, vertikális kapacitást és előmelegített tartalékot.",
+        "Javasolj terheléses validációt, amely bizonyítja, hogy a skálázás időben reagál.",
+        "Fogalmazd meg, hogyan látszódjon a skálázás hatása költségben, latencyben és hibaarányban."
+      ],
+      "anti_patterns": [
+        "cpu_az_egy_jel: Csak CPU alapján skáláz a rendszer, miközben a valós szűk keresztmetszet memória, I/O vagy queue mélység.",
+        "skala_hintazas: Túl rövid hűlési idő miatt a példányszám folyamatosan fel-le ugrál.",
+        "nincs_minimum_kapacitas: A rendszer nulláról vagy túl alacsony szintről indul, ezért forgalmi csúcsnál későn reagál.",
+        "koltseg_plafon_nelkul: Hibás forgalom vagy retry vihar korlátlan erőforrást indíthat.",
+        "allapotos_app_skalazva: A szolgáltatás lokális állapotot feltételez, ezért több példányon inkonzisztensen működik."
+      ],
+      "checklist": [
+        "A skálázási metrika valóban a felhasználói élményt vagy feldolgozási kapacitást tükrözi?",
+        "Be van állítva minimum, maximum és hűlési idő?",
+        "A szolgáltatás stateless vagy skálázásbarát állapotkezelést használ?",
+        "A load test igazolja, hogy a skálázás időben és stabilan történik?",
+        "A költség- és kvótakorlátok védik a rendszert runaway skálázástól?",
+        "A skálázási események megjelennek a monitoringban és incident elemzésben?"
+      ],
+      "relations": [
+        "devops_deploy.kubernetes",
+        "devops_deploy.load_balancer",
+        "testing_qa.load_test",
+        "testing_qa.stress_test",
+        "observability.throughput",
+        "performance.performance_budget"
+      ]
+    },
+    {
+      "id": "devops_deploy.load_balancer",
+      "label": "load_balancer",
+      "group": "devops_deploy",
+      "description": "Forgalomelosztási réteg, amely példányok, régiók vagy szolgáltatásverziók között irányítja a kéréseket egészségi és kapacitási jelek alapján.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Segíts load balancer stratégiát választani HTTP, TCP, regionális és belső szolgáltatásforgalomhoz.",
+        "Írd le, hogyan használja a terheléselosztó a health checket, session tapadást és forgalmi súlyokat.",
+        "Javasolj beállításokat rolling, blue-green vagy canary deploy támogatására.",
+        "Fogalmazd meg, hogyan kell kezelni TLS lezárást, header továbbítást és eredeti kliens IP-t.",
+        "Adj ellenőrzőpontokat timeoutokra, retryokra és túlterhelés elleni védelemre."
+      ],
+      "anti_patterns": [
+        "halott_peldany_kap_forgalmat: A load balancer nem veszi ki időben a hibás vagy nem kész instance-ot.",
+        "session_tapadas_rejtett: Az alkalmazás titokban sticky sessionre támaszkodik, ezért skálázáskor vagy deploykor törik.",
+        "timeout_lanc_hibas: A load balancer timeoutja nincs összehangolva az alkalmazás és upstream szolgáltatások időzítésével.",
+        "tls_veletlenul_gyenge: TLS lezárásnál régi protokollok vagy rossz tanúsítványkezelés marad bent.",
+        "retry_vihar: A terheléselosztó automatikus retrya megsokszorozza a már amúgy is túlterhelt backend kéréseit."
+      ],
+      "checklist": [
+        "A health check alapján a nem kész vagy hibás példány kikerül a forgalomból?",
+        "A session kezelése működik több példány és deploy közben is?",
+        "A timeout, keep-alive és retry beállítások összehangoltak az alkalmazással?",
+        "A TLS tanúsítványok, protokollok és átirányítások biztonságosak?",
+        "A load balancer támogatja a választott release stratégiát?",
+        "A forgalomelosztási metrikák látszanak instance, útvonal és régió szerint?"
+      ],
+      "relations": [
+        "devops_deploy.health_check",
+        "devops_deploy.blue_green_deployment",
+        "devops_deploy.canary_deployment",
+        "devops_deploy.autoscaling",
+        "security.tls",
+        "observability.latency"
+      ]
+    }
+  ]
+}

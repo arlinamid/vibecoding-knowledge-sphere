@@ -1,0 +1,1013 @@
+{
+  "group": "frontend_ui",
+  "keywords": [
+    {
+      "id": "frontend_ui.wireframe",
+      "label": "wireframe",
+      "group": "frontend_ui",
+      "description": "Vázlatos felületterv, amely még a struktúrát, sorrendet és fő döntési pontokat tisztázza, nem a végső látványt.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts low-fidelity wireframe-et ehhez a képernyőhöz fő régiókkal, navigációval és elsődleges művelettel.",
+        "Rajzold le szövegesen a layout vázát: header, tartalom, melléksáv, CTA, empty és error állapot.",
+        "Ellenőrizd, hogy a wireframe-ben a felhasználói út fontosabb-e, mint a dekoráció."
+      ],
+      "anti_patterns": [
+        "visual_too_early: A vázlat túl hamar színekről és effektekről szól.",
+        "missing_priority: Nem derül ki, mi a képernyő elsődleges dolga.",
+        "layout_without_states: Csak az ideális tartalom látszik, állapotok nincsenek."
+      ],
+      "checklist": [
+        "Látszik a fő információs hierarchia?",
+        "Van elsődleges és másodlagos művelet?",
+        "Megjelennek a kritikus üres, loading és error állapotok?",
+        "A vázlat alapján megérthető a user flow?"
+      ],
+      "relations": [
+        "frontend_ui.mockup",
+        "ui_ux.visual_hierarchy",
+        "ui_ux.user_flow"
+      ]
+    },
+    {
+      "id": "frontend_ui.mockup",
+      "label": "mockup",
+      "group": "frontend_ui",
+      "description": "Részletesebb vizuális terv, ahol már látszik a stílus, tipográfia, színek és komponenshasználat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts high-fidelity mockup leírást tokenekkel, komponensekkel, spacinggel és állapotokkal.",
+        "Alakítsd át ezt a wireframe-et mockuppá úgy, hogy a vizuális hierarchia erősödjön.",
+        "Adj design review listát a mockuphoz kontraszt, ritmus, sűrűség és CTA fókusz szerint."
+      ],
+      "anti_patterns": [
+        "pretty_static_picture: A mockup szép kép, de nem gondol a működő állapotokra.",
+        "token_drift: A terv egyedi színeket és méreteket használ rendszer nélkül.",
+        "brand_over_usability: A látvány felülírja az olvashatóságot vagy a feladatot."
+      ],
+      "checklist": [
+        "Követi a design tokeneket?",
+        "Állapotokkal együtt mutatja a komponenseket?",
+        "Olvasható a vizuális hierarchia?",
+        "Fejlesztő számára átadható a terv?"
+      ],
+      "relations": [
+        "frontend_ui.wireframe",
+        "frontend_ui.design_system",
+        "accessibility.contrast_ratio"
+      ]
+    },
+    {
+      "id": "frontend_ui.prototype",
+      "label": "prototype",
+      "group": "frontend_ui",
+      "description": "Interaktív próbamodell, amellyel a flow, átmenetek, állapotok és döntési pontok kipróbálhatók fejlesztés előtt.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a prototype kattintható útvonalait: belépés, fő művelet, hiba, siker és visszalépés.",
+        "Írj prototípus tesztelési scenariókat új és gyakorlott felhasználóra.",
+        "Jelöld, mely interakciókat kell valóban kipróbálni, és melyek maradhatnak statikusak."
+      ],
+      "anti_patterns": [
+        "happy_path_prototype: Csak az ideális út kattintható.",
+        "fake_interaction_depth: Minden mozog, de semmi nem válaszol valós döntésre.",
+        "prototype_as_final_ui: A próbamodell korlátai átcsúsznak késztermékbe."
+      ],
+      "checklist": [
+        "Tartalmaz alternatív és hibaágat?",
+        "Tesztelhető benne a fő felhasználói út?",
+        "Látszik, hol kell valódi adat vagy állapot?",
+        "Megkülönbözteti a próba és a végleges döntéseket?"
+      ],
+      "relations": [
+        "frontend_ui.figma",
+        "ui_ux.usability_testing",
+        "ux_states.error_state"
+      ]
+    },
+    {
+      "id": "frontend_ui.design_system",
+      "label": "design_system",
+      "group": "frontend_ui",
+      "description": "Egységes szabályrendszer tokenekkel, komponensekkel, mintákkal és döntési elvekkel, hogy a felület ne képernyőnként találja ki magát.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts design system alapot színekre, tipográfiára, spacingre, radiusra, árnyékokra és komponensállapotokra.",
+        "Auditáld a UI-t design system drift alapján: hol tér el a spacing, szín, gomb vagy kártya viselkedése.",
+        "Írj komponens-szabályokat button, input, card, modal és toast elemekhez."
+      ],
+      "anti_patterns": [
+        "one_screen_design_system: A rendszer csak az aktuális képernyőre jó.",
+        "tokenless_styles: Minden szín és méret kézzel, lokálisan van beégetve.",
+        "component_without_rules: Van komponens, de nincs leírva, mikor melyik változat kell."
+      ],
+      "checklist": [
+        "Vannak használható design tokenek?",
+        "A komponensek állapotai dokumentáltak?",
+        "A szabályok segítik a döntést, nem csak listáznak?",
+        "Új képernyő építhető belőle következetesen?"
+      ],
+      "relations": [
+        "frontend_ui.component_library",
+        "frontend_ui.tailwind_css",
+        "ui_ux.consistency"
+      ]
+    },
+    {
+      "id": "frontend_ui.component_library",
+      "label": "component_library",
+      "group": "frontend_ui",
+      "description": "Újrafelhasználható UI komponensek gyűjteménye, egységes API-val, állapotokkal és vizuális szabályokkal.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a component library struktúráját alap komponensekre, összetett komponensekre és layout mintákra.",
+        "Írj props és variant javaslatot button, card, input, modal és table komponensekhez.",
+        "Auditáld, mely ismétlődő UI részletekből kell közös komponens."
+      ],
+      "anti_patterns": [
+        "copy_paste_components: Ugyanaz a komponens több helyen külön él.",
+        "variant_explosion: Túl sok variáns van, ezért senki nem tud választani.",
+        "component_api_leak: A komponens belső részletei kiszivárognak a használó felé."
+      ],
+      "checklist": [
+        "Van világos komponenshatár?",
+        "A variánsok tényleg használt eseteket fednek?",
+        "A komponens állapotai tesztelhetők?",
+        "A használata egyszerűbb, mint kézzel újraépíteni?"
+      ],
+      "relations": [
+        "frontend_ui.design_system",
+        "frontend_ui.atomic_design",
+        "frontend_architecture.react"
+      ]
+    },
+    {
+      "id": "frontend_ui.atomic_design",
+      "label": "atomic_design",
+      "group": "frontend_ui",
+      "description": "Komponensek rendszerezése kisebb építőelemekből összetettebb mintákig, hogy a UI rétegei érthetők maradjanak.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Bontsd ezt a képernyőt atomic design szintekre: atom, molekula, organizmus, template, page.",
+        "Javasolj, mely komponensek legyenek primitívek és melyek üzleti logikához kötött összetett elemek.",
+        "Készíts mappastruktúrát atomic design szemlélettel túlzott absztrakció nélkül."
+      ],
+      "anti_patterns": [
+        "taxonomy_for_its_own_sake: A besorolás fontosabbá válik, mint a használhatóság.",
+        "atoms_with_business_logic: Alap komponensbe kerül üzleti szabály.",
+        "organism_everywhere: Mindenből nagy, nehezen újrahasználható komponens lesz."
+      ],
+      "checklist": [
+        "A kisebb komponensek üzletileg semlegesek?",
+        "Az összetett elemeknek világos felelősségük van?",
+        "A mappastruktúra segíti a keresést?",
+        "Nem hoz létre felesleges rétegeket?"
+      ],
+      "relations": [
+        "frontend_ui.component_library",
+        "frontend_architecture.layout_system",
+        "documentation.function_map"
+      ]
+    },
+    {
+      "id": "frontend_ui.responsive_layout",
+      "label": "responsive_layout",
+      "group": "frontend_ui",
+      "description": "Képernyőmérethez, tartalomhosszhoz és beviteli módhoz alkalmazkodó elrendezés.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a responsive layoutot mobil, tablet, laptop és széles desktop nézetre.",
+        "Írj breakpointonkénti viselkedést navigációra, kártyákra, táblázatra és modalra.",
+        "Auditáld, hol törik a layout hosszú szöveg, kis kijelző vagy zoom mellett."
+      ],
+      "anti_patterns": [
+        "desktop_shrink: Az asztali UI csak összenyomódik mobilra.",
+        "breakpoint_patchwork: Minden töréspontra külön hack készül rendszer nélkül.",
+        "content_overflow_blindness: Hosszú cím, fordítás vagy nagy betűméret széttolja a felületet."
+      ],
+      "checklist": [
+        "Minden fő nézetnek van mobil és desktop logikája?",
+        "A tartalom nem lóg ki hosszú szöveggel sem?",
+        "A layout zoom mellett is használható?",
+        "A komponensek nem csak fix pixelméretre épülnek?"
+      ],
+      "relations": [
+        "frontend_ui.breakpoints",
+        "frontend_ui.mobile_first",
+        "accessibility.touch_target"
+      ]
+    },
+    {
+      "id": "frontend_ui.mobile_first",
+      "label": "mobile_first",
+      "group": "frontend_ui",
+      "description": "Mobilnézetből induló tervezés, ahol a legfontosabb tartalom és művelet szűk helyen is működik.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg ezt a képernyőt mobile-first módon, majd bővítsd tabletre és desktopra.",
+        "Döntsd el, mobilon mi marad első képernyőn, mi kerül drawerbe vagy másodlagos nézetbe.",
+        "Adj touch target, bottom action és görgetési szabályokat a mobil flow-hoz."
+      ],
+      "anti_patterns": [
+        "mobile_afterthought: Mobil csak a végén kap javítgatást.",
+        "tiny_desktop_controls: Asztali sűrűség kerül mobilra kis gombokkal.",
+        "hidden_primary_action: A fő művelet mobilon görgetés vagy menü mögé szorul."
+      ],
+      "checklist": [
+        "Az elsődleges művelet mobilon is gyorsan elérhető?",
+        "Az érintési célok elég nagyok?",
+        "A navigáció nem eszi meg a tartalmat?",
+        "Desktopon természetesen bővül a layout?"
+      ],
+      "relations": [
+        "frontend_ui.responsive_layout",
+        "frontend_ui.drawer",
+        "accessibility.touch_target"
+      ]
+    },
+    {
+      "id": "frontend_ui.desktop_first",
+      "label": "desktop_first",
+      "group": "frontend_ui",
+      "description": "Asztali nézetből induló tervezés, amely sűrűbb adatokat és több párhuzamos panelt kezel, de nem felejti el a kisebb nézeteket.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg az asztali munkafelületet több panellel, sűrű adatokkal és billentyűzetes használattal.",
+        "Írj szabályt, hogyan egyszerűsödjön ez a desktop-first UI tablet és mobil nézetre.",
+        "Auditáld, mely desktop affordance-ek nem működnek érintőképernyőn."
+      ],
+      "anti_patterns": [
+        "wide_screen_dependency: A termék csak nagy monitoron használható.",
+        "hover_required_workflow: Fontos műveletek csak hoverrel derülnek ki.",
+        "data_density_without_scanability: Sok adat van, de nem pásztázható."
+      ],
+      "checklist": [
+        "A desktop nézet kihasználja a rendelkezésre álló teret?",
+        "A sűrűség mellett olvasható marad?",
+        "Van terv kisebb nézetekre?",
+        "Billentyűzettel is hatékony?"
+      ],
+      "relations": [
+        "frontend_ui.dashboard",
+        "frontend_ui.sidebar",
+        "accessibility.keyboard_navigation"
+      ]
+    },
+    {
+      "id": "frontend_ui.breakpoints",
+      "label": "breakpoints",
+      "group": "frontend_ui",
+      "description": "Töréspontok, ahol a layout nem csak méretet vált, hanem más információs vagy interakciós modellt használ.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Határozd meg a breakpointokat tartalom és komponensviselkedés alapján, ne csak eszköznevek szerint.",
+        "Írj breakpoint táblát: mit vált a grid, nav, sidebar, card és modal.",
+        "Keress felesleges vagy túl sűrű breakpointokat a CSS-ben."
+      ],
+      "anti_patterns": [
+        "device_named_breakpoints: iPhone és laptop nevek vezetik a rendszert tartalomlogika helyett.",
+        "too_many_breakpoints: Minden szélességre külön kivétel készül.",
+        "forgotten_middle_width: Tablet vagy közepes laptop nézet szétesik."
+      ],
+      "checklist": [
+        "A töréspontokat tartalom indokolja?",
+        "Van közepes nézetre is terv?",
+        "A komponensek tudják, hogyan viselkednek breakpointonként?",
+        "Nincs túl sok lokális kivétel?"
+      ],
+      "relations": [
+        "frontend_ui.responsive_layout",
+        "frontend_ui.grid",
+        "frontend_ui.tailwind_css"
+      ]
+    },
+    {
+      "id": "frontend_ui.grid",
+      "label": "grid",
+      "group": "frontend_ui",
+      "description": "Rácsalapú elrendezés, amely sorokkal, oszlopokkal és arányokkal tart rendet nagyobb felületi régiók között.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg ezt a dashboardot CSS Grid alapú rácsban reszponzív oszlopszabályokkal.",
+        "Döntsd el, mely elemek tartoznak gridbe, és melyekhez jobb flexbox.",
+        "Adj grid-template javaslatot kártyalistára, sidebaros layoutre és bento nézetre."
+      ],
+      "anti_patterns": [
+        "grid_for_everything: Gridet használunk apró inline igazításra is.",
+        "magic_column_numbers: Oszlopszámok indoklás nélkül változnak breakpointonként.",
+        "unequal_card_chaos: Kártyák mérete és ritmusa szétesik a rácsban."
+      ],
+      "checklist": [
+        "A grid nagyobb régiókat vagy ismétlődő elemeket rendez?",
+        "A töréspontoknál értelmesen változik az oszlopszám?",
+        "A gap és alignment következetes?",
+        "A tartalom nem torzul be a rács miatt?"
+      ],
+      "relations": [
+        "frontend_ui.flexbox",
+        "frontend_ui.card_layout",
+        "frontend_ui.bento_grid"
+      ]
+    },
+    {
+      "id": "frontend_ui.flexbox",
+      "label": "flexbox",
+      "group": "frontend_ui",
+      "description": "Rugalmas CSS elrendezési modell egyirányú igazításra, sorokra, oszlopokra, toolbarokra és kisebb komponensbelsőkre.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Javasolj flexbox elrendezést ehhez a toolbarhoz, gombsorhoz vagy kártya belsejéhez.",
+        "Döntsd el, hol kell flex-wrap, gap, grow, shrink vagy basis.",
+        "Keress olyan flex hibát, ahol a hosszú szöveg szétnyomja a komponenst."
+      ],
+      "anti_patterns": [
+        "flex_every_layout: Minden layout flex, ezért kétdimenziós rácsok nehezen kezelhetők.",
+        "shrink_surprise: Fontos elem váratlanul összenyomódik.",
+        "manual_margin_spacing: Gap helyett kézi margók tartják össze a sort."
+      ],
+      "checklist": [
+        "Egyirányú elrendezésre használjuk?",
+        "A wrap és shrink szabályok kezelik a hosszú tartalmat?",
+        "Gap adja a távolságot, nem lokális margóhalom?",
+        "A fókusz- és hover állapot nem tolja el a sort?"
+      ],
+      "relations": [
+        "frontend_ui.grid",
+        "frontend_ui.navbar",
+        "frontend_ui.tailwind_css"
+      ]
+    },
+    {
+      "id": "frontend_ui.card_layout",
+      "label": "card_layout",
+      "group": "frontend_ui",
+      "description": "Kártyaalapú elrendezés ismétlődő, önálló tartalmi egységekhez, ahol a cím, metaadat, állapot és művelet jól pásztázható.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a card layoutot cím, leírás, meta, státusz, CTA és üres állapot szerint.",
+        "Írj szabályt, mikor legyen kártya, lista vagy táblázat ugyanarra az adatra.",
+        "Auditáld, hogy a kártyák ismétlődése nem rejti-e el a fontos különbségeket."
+      ],
+      "anti_patterns": [
+        "card_for_everything: Minden tartalom kártyába kerül, ezért zajos lesz az oldal.",
+        "card_inside_card: Kártyák egymásba ágyazódnak és elveszik a térhierarchia.",
+        "uniform_but_uninformative: Minden kártya egyforma, de nem segít összehasonlítani."
+      ],
+      "checklist": [
+        "A kártya önálló egységet képvisel?",
+        "A legfontosabb különbség gyorsan látszik?",
+        "Van stabil méret- és spacing szabály?",
+        "A műveletek nem versengenek a tartalommal?"
+      ],
+      "relations": [
+        "frontend_ui.grid",
+        "ui_ux.content_hierarchy",
+        "ux_states.empty_state"
+      ]
+    },
+    {
+      "id": "frontend_ui.bento_grid",
+      "label": "bento_grid",
+      "group": "frontend_ui",
+      "description": "Változó méretű kártyákból álló rács, amely kiemelést és ritmust ad, de könnyen dekoratív káosszá válhat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a bento gridet úgy, hogy minden nagyobb kártyának világos információs oka legyen.",
+        "Adj reszponzív bento szabályt: mely kártyák nőnek, melyek esnek egymás alá mobilon.",
+        "Auditáld, hogy a bento grid nem rejti-e el a fő CTA-t vagy legfontosabb adatot."
+      ],
+      "anti_patterns": [
+        "decorative_bento: A változó méret csak látvány, nem információs hierarchia.",
+        "mobile_bento_collapse: Mobilon végtelen, rossz sorrendű kártyafolyam lesz belőle.",
+        "hero_card_confusion: Több nagy kártya verseng elsődleges figyelemért."
+      ],
+      "checklist": [
+        "A méretkülönbség jelentést hordoz?",
+        "Mobilon jó sorrendben omlik össze?",
+        "A fő művelet nem veszik el?",
+        "A kártyák mérete stabil tartalomváltozáskor?"
+      ],
+      "relations": [
+        "frontend_ui.card_layout",
+        "frontend_ui.grid",
+        "ui_ux.visual_hierarchy"
+      ]
+    },
+    {
+      "id": "frontend_ui.hero_section",
+      "label": "hero_section",
+      "group": "frontend_ui",
+      "description": "Első viewportban lévő kiemelt szakasz, amely gyorsan megmutatja, mi ez, kinek szól és mi az első cselekvés.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a hero sectiont erős H1-gyel, támogató szöveggel, elsődleges CTA-val és következő szakasz jelzésével.",
+        "Írj hero variációt termékoldalra, app kezdőképernyőre és marketing landingre külön.",
+        "Auditáld, hogy a hero nem tolja-e túl mélyre a tényleges terméket vagy tartalmat."
+      ],
+      "anti_patterns": [
+        "hero_without_product: A hero hangulatos, de nem derül ki, mit kínál.",
+        "cta_confetti: Túl sok elsődlegesnek tűnő művelet van.",
+        "full_viewport_dead_end: Az első képernyő elfoglal mindent, és nem látszik, mi jön utána."
+      ],
+      "checklist": [
+        "Azonnal érthető a termék vagy ajánlat?",
+        "Egyértelmű az elsődleges CTA?",
+        "Látszik vagy sejthető a következő tartalom?",
+        "A hero nem dekorációként működik csupán?"
+      ],
+      "relations": [
+        "ui_ux.cta",
+        "ui_ux.visual_hierarchy",
+        "frontend_ui.responsive_layout"
+      ]
+    },
+    {
+      "id": "frontend_ui.navbar",
+      "label": "navbar",
+      "group": "frontend_ui",
+      "description": "Felső navigációs sáv, amely gyors tájékozódást, fő útvonalakat és gyakran globális műveleteket ad.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a navbar elemeit logóval, fő linkekkel, aktív állapottal, kereséssel és profil menüvel.",
+        "Írj mobil navbar viselkedést hamburger, drawer vagy bottom nav alternatívával.",
+        "Auditáld, mely linkek globális navigációba valók, és melyek maradjanak oldalszintű műveletek."
+      ],
+      "anti_patterns": [
+        "nav_as_junk_drawer: Minden link bekerül a felső sávba.",
+        "no_active_location: Nem látszik, hol jár a felhasználó.",
+        "mobile_nav_cram: A desktop navbar egyszerűen összenyomódik mobilra."
+      ],
+      "checklist": [
+        "A fő útvonalak gyorsan elérhetők?",
+        "Látszik az aktív hely?",
+        "Mobilon külön viselkedése van?",
+        "Nem keveri a navigációt és az oldalspecifikus akciókat?"
+      ],
+      "relations": [
+        "ui_ux.navigation_model",
+        "frontend_ui.drawer",
+        "ux_states.active_state"
+      ]
+    },
+    {
+      "id": "frontend_ui.sidebar",
+      "label": "sidebar",
+      "group": "frontend_ui",
+      "description": "Oldalsó navigációs vagy munkapanel, amely nagyobb appokban tartós tájékozódást és csoportosított funkciókat ad.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a sidebar információs architektúráját csoportokkal, aktív állapottal és összecsukható móddal.",
+        "Írj szabályt, mi kerüljön sidebarba, top navbarba vagy command palette-be.",
+        "Adj reszponzív viselkedést: desktop állandó sidebar, tablet collapsed, mobil drawer."
+      ],
+      "anti_patterns": [
+        "sidebar_dump: A sidebar rendezetlen funkciólista.",
+        "collapsed_icon_mystery: Összecsukva nem érthetők az ikonok.",
+        "sidebar_on_tiny_mobile: Mobilon is állandó helyet foglal az oldalsáv."
+      ],
+      "checklist": [
+        "A menüpontok értelmes csoportokban vannak?",
+        "Összecsukott állapotban is használható?",
+        "Mobilon nem szorítja ki a tartalmat?",
+        "Az aktív állapot egyértelmű?"
+      ],
+      "relations": [
+        "frontend_ui.drawer",
+        "frontend_ui.command_palette",
+        "ui_ux.information_architecture"
+      ]
+    },
+    {
+      "id": "frontend_ui.drawer",
+      "label": "drawer",
+      "group": "frontend_ui",
+      "description": "Oldalról beúszó panel navigációhoz, részletekhez vagy másodlagos műveletekhez, amely ideiglenes rétegként működik.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a drawer használatát mobil navigációhoz vagy részletpanelhez nyitás, zárás és fókuszkezeléssel.",
+        "Döntsd el, mikor jobb drawer, modal vagy teljes oldal.",
+        "Írj állapotokat drawerhez: loading, empty, dirty, confirm close és error."
+      ],
+      "anti_patterns": [
+        "drawer_as_modal_dump: Minden komplex feladat drawerbe kerül.",
+        "background_scroll_leak: Nyitott drawer mögött tovább görög az oldal.",
+        "no_focus_return: Bezárás után a fókusz nem tér vissza az indító elemre."
+      ],
+      "checklist": [
+        "A drawer célja ideiglenes és jól határolt?",
+        "Bezárható egérrel, billentyűzettel és mobil gesztussal?",
+        "Fókusz és háttérgörgetés kezelve van?",
+        "Nem túl keskeny komplex űrlaphoz?"
+      ],
+      "relations": [
+        "frontend_ui.sidebar",
+        "frontend_ui.modal",
+        "accessibility.focus_trap"
+      ]
+    },
+    {
+      "id": "frontend_ui.modal",
+      "label": "modal",
+      "group": "frontend_ui",
+      "description": "Fókuszált párbeszédablak olyan döntéshez vagy rövid feladathoz, amely ideiglenesen megszakíthatja az aktuális munkát.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a modal szerkezetét cím, leírás, body, elsődleges és másodlagos művelet szerint.",
+        "Írj confirm modal szöveget destruktív művelethez világos következménnyel.",
+        "Auditáld, hogy ez a feladat modalba, drawerbe vagy külön oldalra való-e."
+      ],
+      "anti_patterns": [
+        "modal_for_everything: Minden kisebb döntés megszakító ablakot kap.",
+        "unclear_close_loss: Nem derül ki, elveszik-e a beírt adat bezáráskor.",
+        "missing_focus_trap: A fókusz a háttérre jut nyitott modal mellett."
+      ],
+      "checklist": [
+        "A modal valóban megszakítást igényel?",
+        "A cím és CTA pontosan nevezi a döntést?",
+        "Bezáráskor kezeli a nem mentett változást?",
+        "Fókuszcsapda és Escape működik?"
+      ],
+      "relations": [
+        "frontend_ui.drawer",
+        "ui_ux.confirmation_dialog",
+        "accessibility.focus_trap"
+      ]
+    },
+    {
+      "id": "frontend_ui.tooltip",
+      "label": "tooltip",
+      "group": "frontend_ui",
+      "description": "Rövid, kiegészítő magyarázat olyan elemhez, amelynek jelentése nem teljesen egyértelmű, de nem hordozhat kritikus információt egyedül.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj tooltip szövegeket ikon gombokhoz rövid, cselekvésközpontú formában.",
+        "Döntsd el, mely magyarázat való tooltipbe, helper textbe vagy dokumentációba.",
+        "Auditáld, hogy a tooltip mobilon és billentyűzettel is elérhető-e."
+      ],
+      "anti_patterns": [
+        "tooltip_as_manual: Hosszú dokumentáció bújik tooltipbe.",
+        "hover_only_help: A segítség csak egérrel érhető el.",
+        "critical_tooltip: Fontos döntési információ csak ideiglenes tooltipben van."
+      ],
+      "checklist": [
+        "A tooltip rövid és konkrét?",
+        "Nem tartalmaz kritikus egyedüli információt?",
+        "Fókuszra is megjelenik?",
+        "Mobilon van alternatívája?"
+      ],
+      "relations": [
+        "ui_ux.microcopy",
+        "ux_states.hover_state",
+        "accessibility.aria_labels"
+      ]
+    },
+    {
+      "id": "frontend_ui.accordion",
+      "label": "accordion",
+      "group": "frontend_ui",
+      "description": "Kinyitható tartalmi szakasz, amely fokozatos feltárást ad, ha a címek önmagukban jól jelzik a mögöttes tartalmat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg az accordion szakaszokat gyakran ismételt kérdésekhez vagy haladó beállításokhoz.",
+        "Írj accordion címeket úgy, hogy konkrétan jelezzék, mi nyílik ki.",
+        "Auditáld, hogy a tartalom nem azért került-e accordionba, mert rosszul van rendezve."
+      ],
+      "anti_patterns": [
+        "accordion_landfill: Minden zavaró tartalom kinyitható részbe kerül.",
+        "vague_panel_titles: A szakaszcím nem mondja meg, mit találok bent.",
+        "hidden_primary_content: Fontos információ alapból el van rejtve."
+      ],
+      "checklist": [
+        "A címek konkrétak?",
+        "A rejtés nem árt a fő feladatnak?",
+        "Billentyűzettel nyitható és zárható?",
+        "Nyitott állapot vizuálisan egyértelmű?"
+      ],
+      "relations": [
+        "ux_states.progressive_disclosure",
+        "documentation.faq",
+        "accessibility.keyboard_navigation"
+      ]
+    },
+    {
+      "id": "frontend_ui.tabs",
+      "label": "tabs",
+      "group": "frontend_ui",
+      "description": "Azonos szintű nézetek közötti váltó, ahol a felhasználó egy kontextuson belül több kapcsolódó panelt nézhet.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a tab struktúrát egy beállítási vagy analitikai képernyőhöz.",
+        "Döntsd el, hogy a tartalom tab, filter, sidebar vagy külön oldal legyen.",
+        "Írj billentyűzetes és ARIA viselkedést tablist, tab és tabpanel elemekre."
+      ],
+      "anti_patterns": [
+        "tabs_as_navigation_dump: A tabok teljes app navigációt próbálnak helyettesíteni.",
+        "too_many_tabs: Több tab van, mint amennyit gyorsan át lehet látni.",
+        "state_loss_on_tab: Tabváltáskor elveszik a felhasználó munkája."
+      ],
+      "checklist": [
+        "A tabok azonos szintű tartalmat váltanak?",
+        "A tab címek rövidek és világosak?",
+        "Tabváltáskor nem vész el fontos állapot?",
+        "ARIA és billentyűzetes kezelés rendben van?"
+      ],
+      "relations": [
+        "frontend_ui.sidebar",
+        "ux_states.active_state",
+        "accessibility.aria_labels"
+      ]
+    },
+    {
+      "id": "frontend_ui.carousel",
+      "label": "carousel",
+      "group": "frontend_ui",
+      "description": "Lapozható tartalomsor, amely kevés, egymással egyenrangú elem bemutatására jó, de könnyen elrejti a fontos tartalmat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Döntsd el, indokolt-e carousel ehhez a tartalomhoz, vagy jobb lista/grid.",
+        "Tervezd meg a carousel vezérlőit: előző, következő, index, swipe, pause és billentyűzet.",
+        "Írj akadálymentes carousel szabályokat autoplay nélkül vagy kikapcsolható autoplayjal."
+      ],
+      "anti_patterns": [
+        "important_content_hidden: Fontos tartalom csak későbbi slide-on látszik.",
+        "autoplay_steals_control: A carousel magától mozog és zavarja az olvasást.",
+        "no_position_awareness: Nem derül ki, hány elem van és hol tartunk."
+      ],
+      "checklist": [
+        "Valóban indokolt a carousel?",
+        "Van látható pozíció és vezérlés?",
+        "Autoplay kikapcsolható vagy nincs?",
+        "Billentyűzettel és screen readerrel használható?"
+      ],
+      "relations": [
+        "accessibility.reduced_motion",
+        "accessibility.keyboard_navigation",
+        "frontend_ui.grid"
+      ]
+    },
+    {
+      "id": "frontend_ui.command_palette",
+      "label": "command_palette",
+      "group": "frontend_ui",
+      "description": "Gyors kereső- és parancsfelület haladó navigációhoz, gyakori műveletekhez és billentyűzetes munkához.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a command palette parancsait kategóriákkal, kereséssel, billentyűparanccsal és üres találati állapottal.",
+        "Írj ranking szabályt: milyen parancsok jelenjenek meg előre kontextus szerint.",
+        "Auditáld, hogy a command palette nem pótolja-e rosszul a hiányos navigációt."
+      ],
+      "anti_patterns": [
+        "palette_as_only_navigation: Fontos funkciók csak kereshető parancsként léteznek.",
+        "command_name_mismatch: A parancs neve nem egyezik a UI-ban használt nyelvvel.",
+        "no_empty_help: Nulla találatnál nincs javaslat vagy alternatíva."
+      ],
+      "checklist": [
+        "A parancsnevek kereshetőek és ismerősek?",
+        "Van billentyűparancs és fókuszkezelés?",
+        "Kezeli az üres találatot?",
+        "Kiegészíti, nem helyettesíti a fő navigációt?"
+      ],
+      "relations": [
+        "frontend_ui.sidebar",
+        "ui_ux.discoverability",
+        "ux_states.empty_state"
+      ]
+    },
+    {
+      "id": "frontend_ui.dashboard",
+      "label": "dashboard",
+      "group": "frontend_ui",
+      "description": "Áttekintő munkafelület, amely a legfontosabb állapotokat, trendeket, teendőket és riasztásokat teszi pásztázhatóvá.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a dashboard információs hierarchiáját KPI, trend, lista, riasztás és következő művelet szerint.",
+        "Írj dashboard empty, loading és stale data állapotokat.",
+        "Auditáld, mely kártyák díszadatok, és melyek vezetnek döntéshez."
+      ],
+      "anti_patterns": [
+        "metric_wall: Sok szám látszik, de nincs döntési sorrend.",
+        "vanity_dashboard: Látványos kártyák vannak, üzleti vagy felhasználói haszon nélkül.",
+        "stale_data_silence: Nem derül ki, mikori adatot látunk."
+      ],
+      "checklist": [
+        "A legfontosabb döntés elsőként látszik?",
+        "Az adatokhoz van frissesség vagy kontextus?",
+        "A kártyák cselekvéshez vezetnek?",
+        "Üres és hibaállapot is tervezett?"
+      ],
+      "relations": [
+        "frontend_ui.card_layout",
+        "ui_ux.visual_hierarchy",
+        "ux_states.loading_state"
+      ]
+    },
+    {
+      "id": "frontend_ui.dark_mode",
+      "label": "dark_mode",
+      "group": "frontend_ui",
+      "description": "Sötét téma, amely nem egyszerű színinverzió, hanem külön olvashatósági, kontraszt- és árnyékszabályokat igényel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts dark mode tokeneket háttérre, surface-re, szövegre, borderre, focusra és állapotszínekre.",
+        "Auditáld a dark mode kontrasztot, árnyékokat és disabled állapotokat.",
+        "Írj szabályt, mely illusztrációk, képek és grafikonok kapnak sötét témájú változatot."
+      ],
+      "anti_patterns": [
+        "inverted_theme: A light mode színei egyszerűen invertálva vannak.",
+        "glowing_everything: Minden elem túl erős fényt vagy kontrasztot kap.",
+        "dark_disabled_invisible: A disabled vagy border állapot eltűnik sötét háttéren."
+      ],
+      "checklist": [
+        "A kontraszt minden szövegszinten rendben van?",
+        "A surface rétegek elkülönülnek?",
+        "Az állapotszínek nem vakítanak?",
+        "Grafikonok és képek is működnek sötét témában?"
+      ],
+      "relations": [
+        "frontend_ui.light_mode",
+        "frontend_ui.theme_switcher",
+        "accessibility.contrast_ratio"
+      ]
+    },
+    {
+      "id": "frontend_ui.light_mode",
+      "label": "light_mode",
+      "group": "frontend_ui",
+      "description": "Világos téma, ahol a háttér, felület, border, árnyék és szövegszín tisztán rétegzett, nem kifakult.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts light mode tokeneket háttérre, surface-re, textre, muted textre, borderre és focusra.",
+        "Auditáld a light mode olvashatóságot erős nappali fény, projektor és kis kontraszt esetére.",
+        "Írj szabályt, hogyan maradjon könnyű a felület anélkül, hogy halvány lenne."
+      ],
+      "anti_patterns": [
+        "washed_out_ui: A világos téma túl halvány és nehezen olvasható.",
+        "shadow_as_structure: A rétegezés csak árnyékon múlik, border vagy surface szabály nélkül.",
+        "muted_text_overuse: Túl sok fontos információ muted színt kap."
+      ],
+      "checklist": [
+        "A fő és másodlagos szöveg olvasható?",
+        "A surface rétegek nem folynak össze?",
+        "A muted szín csak valóban másodlagos tartalomra megy?",
+        "Dark mode-ra párosíthatók a tokenek?"
+      ],
+      "relations": [
+        "frontend_ui.dark_mode",
+        "frontend_ui.design_system",
+        "accessibility.contrast_ratio"
+      ]
+    },
+    {
+      "id": "frontend_ui.theme_switcher",
+      "label": "theme_switcher",
+      "group": "frontend_ui",
+      "description": "Témaváltó vezérlő, amely kezeli a light, dark és system preferenciát, és stabilan megőrzi a választást.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a theme switcher állapotait: light, dark, system, betöltés és mentett preferencia.",
+        "Írj UI copyt és ikonhasználatot témaváltóhoz úgy, hogy egyértelmű legyen az aktuális mód.",
+        "Adj implementációs szabályt FOUC elkerülésre és localStorage vagy user setting kezelésre."
+      ],
+      "anti_patterns": [
+        "theme_flash: Betöltéskor felvillan a rossz téma.",
+        "binary_theme_only: Nincs system preferencia, csak kézi light/dark.",
+        "unclear_current_theme: Nem látszik, most melyik téma aktív."
+      ],
+      "checklist": [
+        "Támogatja a system preferenciát?",
+        "Megőrzi a választást?",
+        "Betöltéskor nincs zavaró villanás?",
+        "Accessible name és aktív állapot rendben van?"
+      ],
+      "relations": [
+        "frontend_ui.dark_mode",
+        "frontend_ui.light_mode",
+        "accessibility.aria_labels"
+      ]
+    },
+    {
+      "id": "frontend_ui.glassmorphism",
+      "label": "glassmorphism",
+      "group": "frontend_ui",
+      "description": "Áttetsző, üvegszerű vizuális stílus, amely csak erős kontraszt- és rétegszabályok mellett marad használható.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Javasolj visszafogott glassmorphism stílust úgy, hogy a szöveg és gombok olvashatók maradjanak.",
+        "Auditáld, mely üveghatású elemek rontják a kontrasztot vagy a fókuszt.",
+        "Írj fallbacket blur nélküli vagy low-performance környezetre."
+      ],
+      "anti_patterns": [
+        "blur_over_content: Áttetsző panel mögötti tartalom zavarja az olvasást.",
+        "glass_everywhere: Minden felület üveg, ezért nincs hierarchia.",
+        "contrast_lost_in_blur: A szöveg kontrasztja háttérfüggővé válik."
+      ],
+      "checklist": [
+        "A szöveg minden háttéren olvasható?",
+        "Az üveghatás csak kiemelt helyen jelenik meg?",
+        "Van fallback blur vagy transparency nélkül?",
+        "A fókusz és hover állapot nem vész el?"
+      ],
+      "relations": [
+        "accessibility.contrast_ratio",
+        "performance.performance_budget",
+        "frontend_ui.design_system"
+      ]
+    },
+    {
+      "id": "frontend_ui.neumorphism",
+      "label": "neumorphism",
+      "group": "frontend_ui",
+      "description": "Puha, domborított vizuális stílus, amely könnyen gyenge kontrasztúvá és nehezen értelmezhetővé válik.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Értékeld, használható-e neumorphism ezen a terméken kontraszt, állapot és akadálymentesség szempontból.",
+        "Adj neumorphism alternatívát, amely megtartja a puha hangulatot, de erősíti a határokat.",
+        "Írj gombállapotokat neumorphic stílushoz hover, active, disabled és focus esetén."
+      ],
+      "anti_patterns": [
+        "invisible_boundaries: A felületek határai alig látszanak.",
+        "state_by_shadow_only: Az aktív vagy nyomott állapot csak árnyékból derül ki.",
+        "low_contrast_aesthetic: Az esztétika felülírja az olvashatóságot."
+      ],
+      "checklist": [
+        "A határok kontrasztja elég erős?",
+        "Az állapotok nem csak árnyékból látszanak?",
+        "A fókusz külön jelölést kap?",
+        "A stílus illik a termék használati helyzetéhez?"
+      ],
+      "relations": [
+        "accessibility.contrast_ratio",
+        "ux_states.active_state",
+        "frontend_ui.light_mode"
+      ]
+    },
+    {
+      "id": "frontend_ui.microinteractions",
+      "label": "microinteractions",
+      "group": "frontend_ui",
+      "description": "Apró, jelentést hordozó reakciók, amelyek visszajelzik a műveletet, állapotváltozást vagy rendszerreakciót.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a microinteractionöket gombnyomásra, mentésre, validációra, dragre és állapotváltásra.",
+        "Írj szabályt, mely mikrointerakció legyen animáció, színváltás, ikon vagy szöveges visszajelzés.",
+        "Auditáld, hol hiányzik az azonnali feedback a felületen."
+      ],
+      "anti_patterns": [
+        "motion_without_meaning: Az animáció látványos, de nem ad információt.",
+        "feedback_delay: A rendszer későn reagál, ezért a felhasználó újra kattint.",
+        "microinteraction_noise: Túl sok apró mozgás verseng a figyelemért."
+      ],
+      "checklist": [
+        "A mikrointerakció konkrét állapotot jelez?",
+        "Azonnal reagál a felhasználói műveletre?",
+        "Reduced motion mellett is működik?",
+        "Nem vonja el a figyelmet a fő feladatról?"
+      ],
+      "relations": [
+        "ui_ux.feedback_loop",
+        "ux_states.active_state",
+        "accessibility.reduced_motion"
+      ]
+    },
+    {
+      "id": "frontend_ui.framer_motion",
+      "label": "framer_motion",
+      "group": "frontend_ui",
+      "description": "React animációs könyvtár belépő, kilépő, layout és gesztus animációkhoz, ha az animáció állapotot is magyaráz.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj Framer Motion animációt modal belépésre, lista reorderre vagy toast megjelenésre reduced motion támogatással.",
+        "Javasolj motion transition értékeket gyors, visszafogott SaaS UI-hoz.",
+        "Auditáld, mely animációk legyenek CSS transitionök, és melyek indokolják a Framer Motiont."
+      ],
+      "anti_patterns": [
+        "library_for_tiny_transition: Egyszerű hover miatt nagy animációs könyvtár kerül be.",
+        "layout_animation_jump: A layout animáció átmenet közben eltolja vagy olvashatatlanná teszi a tartalmat.",
+        "no_motion_preference: A prefers-reduced-motion figyelmen kívül marad."
+      ],
+      "checklist": [
+        "Az animáció indokolja a könyvtár használatát?",
+        "Van reduced motion ág?",
+        "Nem okoz layout shiftet vagy fókuszvesztést?",
+        "A transition gyors és nem öncélú?"
+      ],
+      "relations": [
+        "frontend_ui.microinteractions",
+        "accessibility.reduced_motion",
+        "performance.bundle_size"
+      ]
+    },
+    {
+      "id": "frontend_ui.tailwind_css",
+      "label": "tailwind_css",
+      "group": "frontend_ui",
+      "description": "Utility-first CSS keretrendszer, amely gyors UI építést ad, ha tokenekkel és komponensmintákkal együtt használjuk.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj Tailwind osztálystruktúrát ehhez a komponenshez olvasható csoportosítással és reszponzív állapotokkal.",
+        "Auditáld a Tailwind class listákat ismétlés, nem létező class és design token drift alapján.",
+        "Javasolj, mikor érdemes class variáns helper, komponens vagy token helyett raw utilityt használni."
+      ],
+      "anti_patterns": [
+        "class_string_wall: A komponens olvashatatlan hosszú className fal.",
+        "nonexistent_utility: Nem létező Tailwind classra épül a stílus.",
+        "utility_without_system: Utilityk vannak, de nincs közös token- vagy variánsrendszer."
+      ],
+      "checklist": [
+        "A classok létező Tailwind szabályok?",
+        "Ismétlődő minták komponensbe vagy helperbe kerültek?",
+        "A reszponzív és állapot classok áttekinthetők?",
+        "A design tokenekkel összhangban van?"
+      ],
+      "relations": [
+        "frontend_ui.design_system",
+        "frontend_ui.shadcn_ui",
+        "frontend_ui.breakpoints"
+      ]
+    },
+    {
+      "id": "frontend_ui.shadcn_ui",
+      "label": "shadcn_ui",
+      "group": "frontend_ui",
+      "description": "Másolható és testreszabható React komponensminta-rendszer, amely Tailwinddel és Radix alapokkal építkezik.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Javasolj shadcn/ui komponenseket ehhez a feladathoz, és mondd meg, melyeket kell testreszabni.",
+        "Írj shadcn alapú komponensstruktúrát formra, dialogra, table-re vagy command palette-re.",
+        "Auditáld, hol tértünk el a shadcn komponensek accessibility mintáitól."
+      ],
+      "anti_patterns": [
+        "shadcn_as_theme_only: Csak kinézetet veszünk át, a komponenslogikát nem.",
+        "unowned_copy_paste: Bemásolt komponensek vannak, de nincs karbantartási felelősség.",
+        "variant_sprawl: Minden képernyő saját shadcn variánst készít."
+      ],
+      "checklist": [
+        "A komponens tényleg illik a shadcn mintához?",
+        "A testreszabás megmarad rendszerben?",
+        "Az accessibility alapviselkedés megőrződik?",
+        "A bemásolt kód karbantartható?"
+      ],
+      "relations": [
+        "frontend_ui.tailwind_css",
+        "frontend_ui.component_library",
+        "accessibility.aria_labels"
+      ]
+    },
+    {
+      "id": "frontend_ui.material_design",
+      "label": "material_design",
+      "group": "frontend_ui",
+      "description": "Google design rendszere komponensekkel, mozgással, színnel és interakciós szabályokkal, főleg Android- és Google-ökoszisztéma-közeli felületeken.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Értékeld, illik-e a Material Design ehhez a termékhez platform, brand és komponensigény alapján.",
+        "Fordítsd le ezt a Material mintát saját design tokenekre anélkül, hogy Google-klón legyen.",
+        "Auditáld, mely Material komponensek térnek el a meglévő UI rendszerünktől."
+      ],
+      "anti_patterns": [
+        "google_skin_without_reason: A termék Google-szerű lesz stratégiai ok nélkül.",
+        "mixed_design_languages: Material, shadcn és saját komponensek keverednek szabály nélkül.",
+        "motion_spec_ignored: A Material csak vizuális bőrt jelent, interakciós szabályok nélkül."
+      ],
+      "checklist": [
+        "Illik a platformhoz és brandhez?",
+        "Nem ütközik a meglévő design systemmel?",
+        "A komponens- és motion szabályokat is figyelembe veszi?",
+        "Saját terméknyelvvé alakítható?"
+      ],
+      "relations": [
+        "frontend_ui.design_system",
+        "frontend_ui.component_library",
+        "ui_ux.consistency"
+      ]
+    },
+    {
+      "id": "frontend_ui.figma",
+      "label": "figma",
+      "group": "frontend_ui",
+      "description": "Felülettervezési és prototípuskészítő eszköz, ahol komponensek, variánsok, tokenek és átadási jegyzetek találkoznak.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts Figma átadási checklistet komponensekre, tokenekre, állapotokra és reszponzív viselkedésre.",
+        "Írj tervből kódba átvezető jegyzetet: mely layerből milyen komponens legyen.",
+        "Auditáld a Figma fájlt fejlesztői átadhatóság szerint: nevek, variánsok, auto layout, state-ek."
+      ],
+      "anti_patterns": [
+        "pretty_layers_no_system: A Figma fájl szép, de nincs komponens- vagy tokenrendszer.",
+        "handoff_guesswork: A fejlesztőnek találgatnia kell méretet, állapotot és viselkedést.",
+        "static_only_figma: Csak egy állapot látszik, interakciók és hibák nélkül."
+      ],
+      "checklist": [
+        "A layerek és komponensek érthetően vannak nevezve?",
+        "Vannak variánsok és állapotok?",
+        "Auto layout segíti a reszponzív viselkedést?",
+        "A fejlesztő látja a tokeneket és interakciókat?"
+      ],
+      "relations": [
+        "frontend_ui.prototype",
+        "frontend_ui.design_system",
+        "documentation.architecture_diagram"
+      ]
+    }
+  ]
+}

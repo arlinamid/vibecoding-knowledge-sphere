@@ -1,0 +1,408 @@
+{
+  "group": "accessibility",
+  "keywords": [
+    {
+      "id": "accessibility.a11y",
+      "label": "a11y",
+      "group": "accessibility",
+      "description": "Az akadálymentesség rövid neve: annak ellenőrzése, hogy a felület többféle képességgel, eszközzel és beállítással is használható marad.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld ezt a képernyőt a11y szempontból: billentyűzet, kontraszt, screen reader, fókusz és motion.",
+        "Írj akadálymentességi javítási listát súlyosság és becsült munka szerint rendezve.",
+        "Nézd meg, hol sérül a használhatóság egér nélkül, gyenge látással vagy képernyőolvasóval.",
+        "Adj fejlesztői acceptance criteriákat egy akadálymentes komponenshez."
+      ],
+      "anti_patterns": [
+        "a11y_afterthought: Az akadálymentesség csak a végén kerül elő, amikor már drága javítani.",
+        "visual_only_quality: Csak azt nézzük, szép-e a UI, nem azt, hogy használható-e.",
+        "checklist_theater: Kipipálunk néhány pontot valódi billentyűzetes vagy screen reader próba nélkül.",
+        "one_user_assumption: A felület egyetlen ideális felhasználási módra van tervezve."
+      ],
+      "checklist": [
+        "Használható egér nélkül?",
+        "A fő tartalom érthető képernyőolvasóval?",
+        "Megfelelő a szöveg és háttér kontrasztja?",
+        "Látható, hol van a fókusz?",
+        "A mozgás és animáció csökkenthető?"
+      ],
+      "relations": [
+        "accessibility.semantic_html",
+        "accessibility.keyboard_navigation",
+        "accessibility.wcag"
+      ]
+    },
+    {
+      "id": "accessibility.semantic_html",
+      "label": "semantic_html",
+      "group": "accessibility",
+      "description": "Jelentéssel bíró HTML elemek használata, hogy a böngésző, a billentyűzet és a segítő technológiák természetes kapaszkodókat kapjanak.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Nézd át ezt a JSX-et semantic HTML szempontból, és cseréld a felesleges div-eket megfelelő elemekre.",
+        "Javasolj heading, nav, main, section, button és form struktúrát ehhez az oldalhoz.",
+        "Mutasd meg, mely interaktív elemekhez kell natív button vagy link.",
+        "Írj semantic HTML refaktort úgy, hogy a vizuális megjelenés ne változzon."
+      ],
+      "anti_patterns": [
+        "div_soup: Minden doboz div, ezért a struktúra gépnek és embernek is homályos.",
+        "fake_button: Kattintható div vagy span helyettesíti a natív button elemet.",
+        "heading_jump: A címszintek ugrálnak, így a tartalomváz nehezen követhető.",
+        "landmark_missing: Nincs main, nav vagy header/footer tájékozódási pont."
+      ],
+      "checklist": [
+        "A kattintható műveletek button vagy link elemek?",
+        "Van logikus heading sorrend?",
+        "A fő régiók semantic elemekkel jelöltek?",
+        "Az űrlapmezők valódi labelt kapnak?",
+        "A markup jelentése érthető CSS nélkül is?"
+      ],
+      "relations": [
+        "accessibility.keyboard_navigation",
+        "frontend_ui.component_library",
+        "ux_states.focus_state"
+      ]
+    },
+    {
+      "id": "accessibility.aria_labels",
+      "label": "aria_labels",
+      "group": "accessibility",
+      "description": "ARIA címkék és attribútumok használata ott, ahol a natív HTML nem ad elég nevet, állapotot vagy kapcsolatot a segítő technológiáknak.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Adj aria-label vagy aria-labelledby javaslatokat ezekhez az ikon-only gombokhoz.",
+        "Ellenőrizd, hogy az ARIA attribútumok nem ismétlik-e feleslegesen a látható szöveget.",
+        "Írj ARIA mintát ehhez a custom comboboxhoz vagy tab komponenshez.",
+        "Magyarázd el, melyik elemnek kell accessible name és melyiknek nem."
+      ],
+      "anti_patterns": [
+        "aria_bandage: ARIA-val próbáljuk megjavítani azt, amit natív HTML-lel kellene megoldani.",
+        "label_mismatch: A screen reader mást mond, mint amit a felhasználó a képernyőn lát.",
+        "silent_icon_button: Ikonos gombnak nincs hozzáférhető neve.",
+        "over_aria: Túl sok szerep és attribútum zavarja a natív működést."
+      ],
+      "checklist": [
+        "Minden ikon-only gombnak van hozzáférhető neve?",
+        "Az ARIA nem mond ellent a látható UI-nak?",
+        "Natív elem használható lenne ARIA helyett?",
+        "A dinamikus állapotok frissülnek?",
+        "A címke rövid, konkrét és cselekvést nevez meg?"
+      ],
+      "relations": [
+        "accessibility.screen_reader",
+        "accessibility.form_accessibility",
+        "accessibility.error_announcement"
+      ]
+    },
+    {
+      "id": "accessibility.keyboard_navigation",
+      "label": "keyboard_navigation",
+      "group": "accessibility",
+      "description": "Billentyűzettel bejárható és működtethető felület, ahol Tab, Shift+Tab, Enter, Space és Escape kiszámíthatóan viselkedik.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg ennek a modalnak a billentyűzetes navigációját Tab, Shift+Tab, Enter és Escape kezelésével.",
+        "Auditáld a fókuszsorrendet ezen az oldalon, és jelöld a kihagyott vagy felesleges állomásokat.",
+        "Adj javítást olyan komponenshez, amely egérrel működik, billentyűzettel nem.",
+        "Írj teszt checklistet egér nélküli használathoz."
+      ],
+      "anti_patterns": [
+        "mouse_only_flow: A fő feladat csak egérrel végezhető el.",
+        "focus_lost: Művelet után a fókusz eltűnik vagy váratlan helyre ugrik.",
+        "tab_maze: Túl sok, nem fontos elem kerül a tab sorrendbe.",
+        "escape_missing: Modalból vagy menüből nem lehet Escape-pel kilépni."
+      ],
+      "checklist": [
+        "A fő műveletek Tab-bal elérhetők?",
+        "Enter és Space a várt műveletet indítja?",
+        "Escape bezárja a bezárható rétegeket?",
+        "A fókuszsorrend követi a vizuális és logikai sorrendet?",
+        "Művelet után értelmes helyre kerül vissza a fókusz?"
+      ],
+      "relations": [
+        "accessibility.focus_trap",
+        "ux_states.focus_state",
+        "frontend_ui.modal"
+      ]
+    },
+    {
+      "id": "accessibility.focus_trap",
+      "label": "focus_trap",
+      "group": "accessibility",
+      "description": "Fókusz kezelése modáloknál és ideiglenes panelekben: a fókusz belül marad, majd bezáráskor visszatér a kiinduló elemre.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj focus trap viselkedést ehhez a modalhoz nyitás, tab körbejárás és bezárás utáni fókusz-visszaállítás szerint.",
+        "Ellenőrizd, hogy a drawer nem engedi-e a fókuszt a háttértartalomra.",
+        "Adj React megoldást, amely megjegyzi a modal előtti aktív elemet.",
+        "Írj acceptance tesztet focus trap működésre."
+      ],
+      "anti_patterns": [
+        "background_focus: Nyitott modal mellett a háttér interaktív elemei is fókuszt kapnak.",
+        "focus_prison: A fókusz bezárás után sem jut vissza a normál oldalra.",
+        "initial_focus_random: Modal nyitásakor nem a címre vagy első releváns mezőre kerül a fókusz.",
+        "screen_reader_leak: A képernyőolvasó beolvassa a modal mögötti tartalmat is."
+      ],
+      "checklist": [
+        "Nyitáskor kontrollált helyre kerül a fókusz?",
+        "Tab és Shift+Tab a panelen belül körbejár?",
+        "Escape vagy bezárás után visszatér a fókusz az indító elemre?",
+        "A háttértartalom inert vagy más módon elérhetetlen?",
+        "Több egymásra nyíló réteg esetén is kiszámítható?"
+      ],
+      "relations": [
+        "accessibility.keyboard_navigation",
+        "frontend_ui.modal",
+        "frontend_ui.drawer"
+      ]
+    },
+    {
+      "id": "accessibility.screen_reader",
+      "label": "screen_reader",
+      "group": "accessibility",
+      "description": "Képernyőolvasóval értelmezhető felület, ahol a sorrend, címkék, állapotok és hibaüzenetek hallhatóan is követhetők.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld ezt a flow-t screen reader szemszögből: mit hall a felhasználó lépésről lépésre?",
+        "Írj hozzáférhető neveket, szerepeket és állapotokat ehhez a komponenshez.",
+        "Javasolj aria-live használatot dinamikusan frissülő eredményekhez.",
+        "Fogalmazd át a hibaüzeneteket úgy, hogy felolvasva is érthetők legyenek."
+      ],
+      "anti_patterns": [
+        "visual_context_only: A jelentés csak színből, ikonból vagy elhelyezésből derül ki.",
+        "announcement_spam: Minden kis változás felolvasódik, ezért zajossá válik a felület.",
+        "missing_state: Nem hallható, hogy egy elem nyitott, kiválasztott vagy hibás.",
+        "reading_order_drift: A DOM sorrend nem követi a vizuális munkamenetet."
+      ],
+      "checklist": [
+        "A felolvasási sorrend logikus?",
+        "A vezérlők neve, szerepe és állapota érthető?",
+        "Fontos dinamikus változás bejelentődik?",
+        "Nincs felesleges felolvasási zaj?",
+        "A hibaüzenet a mezőhöz vagy művelethez kapcsolódik?"
+      ],
+      "relations": [
+        "accessibility.aria_labels",
+        "accessibility.alt_text",
+        "accessibility.error_announcement"
+      ]
+    },
+    {
+      "id": "accessibility.contrast_ratio",
+      "label": "contrast_ratio",
+      "group": "accessibility",
+      "description": "Szöveg, ikon és háttér közötti kontraszt, amely meghatározza, mennyire olvasható a felület különböző látási körülmények között.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Ellenőrizd ezeknek a színpároknak a kontrasztját normál szöveg, nagy szöveg és ikon esetén.",
+        "Javasolj akadálymentes színpárokat a jelenlegi brand paletta megtartásával.",
+        "Keress low contrast kockázatot dark mode és light mode állapotban.",
+        "Írj design token szabályokat minimum kontrasztra."
+      ],
+      "anti_patterns": [
+        "pretty_but_faint: A UI esztétikus, de a szöveg túl halvány.",
+        "placeholder_as_label: Halvány placeholder hordozza az egyetlen mezőcímkét.",
+        "state_by_color_only: Hiba vagy siker csak színből derül ki.",
+        "dark_mode_regression: Dark mode-ban romlik el a korábban jó kontraszt."
+      ],
+      "checklist": [
+        "Normál szövegnél megvan a megfelelő kontraszt?",
+        "Ikonok és állapotjelzések is olvashatók?",
+        "A szín mellett van szöveg, ikon vagy forma is?",
+        "Light és dark módban is ellenőrzött?",
+        "A design tokenek tiltják a túl halvány kombinációkat?"
+      ],
+      "relations": [
+        "accessibility.wcag",
+        "frontend_ui.dark_mode",
+        "frontend_ui.design_system"
+      ]
+    },
+    {
+      "id": "accessibility.alt_text",
+      "label": "alt_text",
+      "group": "accessibility",
+      "description": "Képek alternatív szövege, amely röviden átadja a kép funkcióját vagy lényegi információját, ha a kép nem látható.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj alt textet ezekhez a képekhez úgy, hogy a dekoratív képeket üres altként jelöld.",
+        "Döntsd el, mely képek információhordozók, melyek csak dekorációk.",
+        "Fogalmazz alt szöveget termékképhez, diagramhoz és ikonhoz külön-külön.",
+        "Ellenőrizd, hogy az alt text nem ismétli-e feleslegesen a környező szöveget."
+      ],
+      "anti_patterns": [
+        "filename_alt: Az alt text fájlnév vagy generikus leírás.",
+        "decorative_noise: Dekoratív képek feleslegesen felolvasódnak.",
+        "missing_chart_summary: Diagramnál nincs rövid adatértelmezés.",
+        "keyword_stuffing_alt: SEO kulcsszavak kerülnek valódi leírás helyett."
+      ],
+      "checklist": [
+        "A kép funkciója vagy információja átjön?",
+        "Dekoratív képnél üres alt szerepel?",
+        "Diagramnál van adat- vagy trendösszefoglaló?",
+        "Az alt text nem ismétli a közvetlen környezetet?",
+        "Ikon esetén a művelet neve szerepel, nem az ikon alakja?"
+      ],
+      "relations": [
+        "accessibility.screen_reader",
+        "documentation.glossary",
+        "ui_ux.microcopy"
+      ]
+    },
+    {
+      "id": "accessibility.reduced_motion",
+      "label": "reduced_motion",
+      "group": "accessibility",
+      "description": "A felhasználó mozgáscsökkentési beállításának tiszteletben tartása animációknál, átmeneteknél és automatikus mozgásoknál.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Adj reduced motion változatot ezekhez az animációkhoz anélkül, hogy a funkció elveszne.",
+        "Ellenőrizd, mely motion effektek lehetnek zavaróak vagy rosszullétet kiváltók.",
+        "Írj CSS és React mintát prefers-reduced-motion kezelésre.",
+        "Tervezd át az automatikus mozgást úgy, hogy kikapcsolható és nem figyelemrabló legyen."
+      ],
+      "anti_patterns": [
+        "motion_required: A használathoz animációt kell követni.",
+        "infinite_autoplay: Végtelen mozgás fut kontroll nélkül.",
+        "reduced_motion_ignored: A rendszerbeállítás nem változtat semmit.",
+        "information_in_animation: Fontos állapot csak animációból derül ki."
+      ],
+      "checklist": [
+        "Figyeli a prefers-reduced-motion beállítást?",
+        "Az automatikus mozgás leállítható vagy csökkenthető?",
+        "A funkció animáció nélkül is érthető?",
+        "Nincs villogó vagy túl gyors átmenet?",
+        "A loading és skeleton állapotok nyugodtak reduced motion mellett?"
+      ],
+      "relations": [
+        "frontend_ui.framer_motion",
+        "ux_states.loading_state",
+        "accessibility.wcag"
+      ]
+    },
+    {
+      "id": "accessibility.touch_target",
+      "label": "touch_target",
+      "group": "accessibility",
+      "description": "Érinthető felületelemek mérete és távolsága, hogy mobilon és pontatlanabb mozdulatokkal is biztonságosan használhatók legyenek.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld a mobil UI touch target méreteit és a veszélyesen közeli gombokat.",
+        "Javasolj kompakt, de még érinthető toolbar elrendezést.",
+        "Adj CSS szabályokat minimum érintési felületre ikon gomboknál.",
+        "Nézd meg, mely destruktív műveletek vannak túl közel elsődleges gombokhoz."
+      ],
+      "anti_patterns": [
+        "tiny_icon_hitbox: Az ikon látszik, de a kattintható terület túl kicsi.",
+        "dangerous_neighbors: Mentés és törlés túl közel van egymáshoz.",
+        "desktop_density_on_mobile: Asztali sűrűség marad mobilon is.",
+        "hitbox_not_visual: A vizuális elem és a tényleges érintési terület nem fedi egymást."
+      ],
+      "checklist": [
+        "Az érintési cél elég nagy mobilon?",
+        "Van elég tér a szomszédos műveletek között?",
+        "Ikon gomboknál a hitbox nagyobb lehet az ikonnál?",
+        "Destruktív művelet nincs veszélyesen közel?",
+        "Zoom vagy nagyobb betűméret mellett sem esik szét?"
+      ],
+      "relations": [
+        "frontend_ui.mobile_first",
+        "ui_ux.affordance",
+        "accessibility.wcag"
+      ]
+    },
+    {
+      "id": "accessibility.form_accessibility",
+      "label": "form_accessibility",
+      "group": "accessibility",
+      "description": "Űrlapok akadálymentes kialakítása címkékkel, leírásokkal, hibákkal, fókuszkezeléssel és értelmes automatikus kitöltéssel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld ezt az űrlapot label, helper text, error message, autocomplete és fókuszsorrend alapján.",
+        "Írj hozzáférhető validációs mintát mezőszintű és összesített hibákkal.",
+        "Javasolj autocomplete attribútumokat login, checkout vagy profil űrlaphoz.",
+        "Fogalmazd át a hibákat úgy, hogy pontosan megmondják, mit kell javítani."
+      ],
+      "anti_patterns": [
+        "placeholder_label: A mező címkéje csak placeholder, ami gépeléskor eltűnik.",
+        "error_far_away: A hiba nem kapcsolódik a hibás mezőhöz.",
+        "autofill_blocked: Az űrlap megnehezíti a jelszókezelőt vagy automatikus kitöltést.",
+        "summary_without_focus: Hibás beküldés után nincs fókusz vagy ugrás a problémára."
+      ],
+      "checklist": [
+        "Minden mezőnek van tartós labelje?",
+        "A hiba szövege a mezőhöz kapcsolódik?",
+        "Beküldés után a felhasználó a hibához jut?",
+        "Autocomplete és input type megfelelő?",
+        "A validáció nem csak színnel jelöl hibát?"
+      ],
+      "relations": [
+        "accessibility.error_announcement",
+        "ux_states.inline_validation",
+        "accessibility.aria_labels"
+      ]
+    },
+    {
+      "id": "accessibility.error_announcement",
+      "label": "error_announcement",
+      "group": "accessibility",
+      "description": "Hibák és fontos állapotváltozások bejelentése úgy, hogy képernyőolvasóval is időben és érthetően észlelhetők legyenek.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj aria-live mintát formhibák és mentési hibák bejelentésére.",
+        "Tervezd meg, hogyan kapjon fókuszt az összesített hibalista beküldés után.",
+        "Ellenőrizd, hogy a toast hibák képernyőolvasóval is hallhatók-e.",
+        "Fogalmazz rövid, cselekvésorientált hibaüzeneteket akadálymentes felolvasáshoz."
+      ],
+      "anti_patterns": [
+        "silent_failure: A hiba vizuálisan megjelenik, de nem kerül bejelentésre.",
+        "toast_only_error: A hiba csak rövid toastban él, fókusz és tartós nyom nélkül.",
+        "assertive_noise: Minden apró hiba agresszíven megszakítja a felolvasást.",
+        "error_without_fix: A hiba nem mondja meg, mit kell tenni."
+      ],
+      "checklist": [
+        "A kritikus hiba felolvasódik?",
+        "A hibaüzenet konkrét javítási lépést ad?",
+        "A fókusz a problémára vagy hibalistára kerül?",
+        "Toast mellett marad tartós hibaállapot?",
+        "Az aria-live polite vagy assertive választás indokolt?"
+      ],
+      "relations": [
+        "accessibility.form_accessibility",
+        "ux_states.error_state",
+        "ux_states.toast_notification"
+      ]
+    },
+    {
+      "id": "accessibility.wcag",
+      "label": "wcag",
+      "group": "accessibility",
+      "description": "Web Content Accessibility Guidelines: ellenőrzési keretrendszer, amely segít mérhetővé tenni az akadálymentességi elvárásokat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts WCAG AA audit listát ehhez az oldalhoz, fejlesztői javítási javaslatokkal.",
+        "Rendeld a talált hibákat WCAG elvekhez: észlelhető, kezelhető, érthető, robusztus.",
+        "Írj acceptance criteriákat WCAG AA szinthez egy új komponenshez.",
+        "Prioritizáld a WCAG hibákat felhasználói hatás és javítási költség alapján."
+      ],
+      "anti_patterns": [
+        "wcag_name_drop: Csak hivatkozunk a WCAG-ra, de nincs konkrét mérés vagy kritérium.",
+        "aa_without_scope: Nem világos, mely képernyőkre vagy flow-kra vállalunk AA szintet.",
+        "automated_only: Csak automatizált audit fut, manuális billentyűzetes próba nincs.",
+        "compliance_over_usability: A cél a papírforma, nem a tényleges használhatóság."
+      ],
+      "checklist": [
+        "Meg van nevezve a célzott WCAG szint?",
+        "A hibák konkrét kritériumhoz vagy elvhez kötődnek?",
+        "Van manuális billentyűzetes ellenőrzés?",
+        "Automata audit mellett van emberi review?",
+        "A javítások felhasználói hatás szerint vannak priorizálva?"
+      ],
+      "relations": [
+        "accessibility.a11y",
+        "accessibility.contrast_ratio",
+        "accessibility.keyboard_navigation"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,649 @@
+{
+  "group": "database",
+  "keywords": [
+    {
+      "id": "database.postgresql",
+      "label": "postgresql",
+      "group": "database",
+      "description": "Erős, nyílt forrású relációs adatbázis, amely jól kezeli a tranzakciókat, összetett lekérdezéseket, indexeket és JSON adatokat is.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz PostgreSQL sémát ehhez a feature-höz táblákkal, kulcsokkal, indexekkel és migrációs lépésekkel.",
+        "Vizsgáld meg, mely lekérdezések igényelnek összetett indexet, partial indexet vagy JSONB mezőt.",
+        "Adj tranzakciós és backup stratégiát PostgreSQL környezetre staging és production használathoz."
+      ],
+      "anti_patterns": [
+        "jsonb_everywhere: A strukturált relációs adatokat is JSONB mezőbe öntjük sémafegyelem nélkül.",
+        "missing_constraints: Az alkalmazáskódra bízzuk az egyediséget és referenciális integritást.",
+        "untuned_default_pool: A connection pool alapértékei túl sok vagy túl kevés kapcsolatot nyitnak."
+      ],
+      "checklist": [
+        "A kulcsok, constraint-ek és indexek explicit módon definiáltak?",
+        "A JSONB mezők használata indokolt és indexelt, ha keresünk bennük?",
+        "A migrációk visszafordíthatók vagy biztonságosan újrafuttathatók?",
+        "A connection pool illik a szerver és adatbázis kapacitásához?"
+      ],
+      "relations": [
+        "database.schema",
+        "database.index",
+        "database.transaction"
+      ]
+    },
+    {
+      "id": "database.mysql",
+      "label": "mysql",
+      "group": "database",
+      "description": "Elterjedt relációs adatbázis, amely stabil választás webalkalmazásokhoz, jól ismert SQL ökoszisztémával és replikációs lehetőségekkel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts MySQL adattáblatervet megfelelő engine, charset, kulcsok és indexek megadásával.",
+        "Ellenőrizd, hol kell tranzakció, egyedi constraint és idegen kulcs MySQL környezetben.",
+        "Adj optimalizálási tervet lassú SELECT-ekhez EXPLAIN, indexek és lapozás alapján."
+      ],
+      "anti_patterns": [
+        "wrong_storage_engine: Olyan engine-t használunk, amely nem támogatja a szükséges tranzakciós vagy FK viselkedést.",
+        "charset_mismatch: Eltérő charset vagy collation miatt furcsa rendezés és összehasonlítás történik.",
+        "silent_truncation_risk: Túl rövid oszlopok vagy rossz SQL mód miatt adatvesztés maradhat észrevétlen."
+      ],
+      "checklist": [
+        "A táblák megfelelő engine-t és charsetet használnak?",
+        "Az egyediség és kapcsolatok adatbázisszinten is védettek?",
+        "A lassú queryk EXPLAIN alapján vannak javítva?",
+        "A dátum, időzóna és szöveges rendezés szabályai tiszták?"
+      ],
+      "relations": [
+        "database.table",
+        "database.foreign_key",
+        "database.query_optimization"
+      ]
+    },
+    {
+      "id": "database.sqlite",
+      "label": "sqlite",
+      "group": "database",
+      "description": "Fájlalapú, beágyazott SQL adatbázis, amely lokális appokhoz, prototípusokhoz, tesztekhez és kisebb kiszolgálókhoz egyszerűen használható.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Döntsd el, megfelelő-e SQLite ehhez az alkalmazáshoz írási terhelés, konkurencia és deploy környezet alapján.",
+        "Tervezz SQLite sémát migrációval, indexekkel és foreign key bekapcsolási szabállyal.",
+        "Adj backup és fájlzár-kezelési javaslatot lokális vagy edge környezethez."
+      ],
+      "anti_patterns": [
+        "server_scale_assumption: SQLite-ot választunk nagy párhuzamos írási terheléshez külön mérés nélkül.",
+        "foreign_keys_off: Idegen kulcsokat definiálunk, de a futtatási környezetben nincs bekapcsolva az ellenőrzés.",
+        "db_file_as_temp: Az adatbázisfájl nem tartós lemezre kerül, ezért deploy vagy restart után eltűnhet."
+      ],
+      "checklist": [
+        "A konkurens írási igény illik SQLite-hoz?",
+        "A foreign key ellenőrzés futáskor is aktív?",
+        "Az adatbázisfájl tartós és menthető helyen van?",
+        "A teszt és production migráció ugyanazt a sémát használja?"
+      ],
+      "relations": [
+        "database.migration",
+        "database.backup",
+        "testing_qa.integration_test"
+      ]
+    },
+    {
+      "id": "database.mongodb",
+      "label": "mongodb",
+      "group": "database",
+      "description": "Dokumentumalapú NoSQL adatbázis, ahol a rugalmas JSON-szerű dokumentumstruktúra jól illik változó vagy beágyazott adatokhoz.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a MongoDB collection struktúrát beágyazás, referenciázás és indexelés szempontjából.",
+        "Döntsd el, mely adatok kerüljenek egy dokumentumba, és melyek igényelnek külön collectiont.",
+        "Adj sémavalidációs, aggregációs és shardolási megfontolást növekvő adatmennyiséghez."
+      ],
+      "anti_patterns": [
+        "relational_model_copied: Relációs táblamodellt másolunk collectionökbe sok manuális joinnal.",
+        "unbounded_arrays: Egy dokumentumban korlátlanul nő egy beágyazott tömb.",
+        "missing_compound_index: Gyakori filter és sort kombináció index nélkül fut."
+      ],
+      "checklist": [
+        "A dokumentumhatár a lekérdezési mintákhoz igazodik?",
+        "A növekvő tömbök mérete kontrollált?",
+        "A gyakori aggregációk és filterek indexelve vannak?",
+        "Van sémavalidáció a kritikus mezőkre?"
+      ],
+      "relations": [
+        "database.collection",
+        "database.index",
+        "database.denormalization"
+      ]
+    },
+    {
+      "id": "database.redis",
+      "label": "redis",
+      "group": "database",
+      "description": "Memóriaalapú kulcs-érték tároló cache, session, rate limit, queue és gyors ideiglenes állapotok kezelésére.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz Redis kulcsstruktúrát prefixekkel, TTL-lel, memóriahasználattal és invalidálási szabályokkal.",
+        "Döntsd el, Redis cache, session store, rate limiter vagy queue szerepet kap-e ebben a rendszerben.",
+        "Adj fallback stratégiát arra, ha Redis lassú, ürül vagy átmenetileg nem elérhető."
+      ],
+      "anti_patterns": [
+        "redis_as_primary_db: Tartós, üzletileg kritikus adat csak Redisben él megfelelő perzisztencia nélkül.",
+        "no_ttl_keys: Ideiglenes kulcsok lejárat nélkül halmozódnak.",
+        "hot_key_bottleneck: Egyetlen túl gyakran olvasott vagy írt kulcs szűk keresztmetszetté válik."
+      ],
+      "checklist": [
+        "Minden ideiglenes kulcson van megfelelő TTL?",
+        "A kulcsnév tartalmazza a tenant vagy user kontextust, ha kell?",
+        "A memóriahasználat és eviction policy ismert?",
+        "A Redis kiesése nem rontja véglegesen az adatkonzisztenciát?"
+      ],
+      "relations": [
+        "backend.caching",
+        "backend.rate_limiting",
+        "database.connection_pooling"
+      ]
+    },
+    {
+      "id": "database.schema",
+      "label": "schema",
+      "group": "database",
+      "description": "Az adatbázis szerkezeti szerződése: táblák, mezők, típusok, kapcsolatok, constraint-ek és az adatok jelentése.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj adatbázis sématervet entitásokkal, mezőkkel, típusokkal, kapcsolatokkal és constraint-ekkel.",
+        "Ellenőrizd, hogy a séma a domain szabályokat védi-e, nem csak tárolási formát ad.",
+        "Adj migrációs tervet a séma bevezetésére meglévő adatok mellett."
+      ],
+      "anti_patterns": [
+        "schema_as_afterthought: A mezők menet közben szaporodnak domainmodell nélkül.",
+        "nullable_everything: Minden mező nullable, ezért az adatminőség csak alkalmazáskódból derül ki.",
+        "meaningless_names: Oszlopnevek nem mondják meg, üzletileg mit jelentenek az adatok."
+      ],
+      "checklist": [
+        "A séma üzleti fogalmakat nevez meg?",
+        "A kötelező és opcionális mezők indokoltak?",
+        "Constraint-ek védik az adatok alapvető igazságait?",
+        "A séma változásai migrációban követhetők?"
+      ],
+      "relations": [
+        "database.table",
+        "database.migration",
+        "backend.validation"
+      ]
+    },
+    {
+      "id": "database.table",
+      "label": "table",
+      "group": "database",
+      "description": "Relációs adatbázis táblája, amely sorokban tárol azonos szerkezetű rekordokat, oszlopokkal, kulcsokkal és constraint-ekkel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg ezt a táblát oszlopokkal, típusokkal, elsődleges kulccsal, idegen kulcsokkal és indexekkel.",
+        "Döntsd el, mely mezők legyenek kötelezőek, egyediek vagy default értékkel ellátottak.",
+        "Adj példát a tábla legfontosabb lekérdezési mintáira és az azokhoz szükséges indexekre."
+      ],
+      "anti_patterns": [
+        "wide_table_dump: Egy tábla túl sok, lazán kapcsolódó fogalmat tartalmaz.",
+        "no_primary_key: Nincs stabil rekordazonosító, ezért frissítés és audit nehézkes.",
+        "computed_state_stored_blindly: Levezethető állapotot tárolunk frissítési szabály nélkül."
+      ],
+      "checklist": [
+        "A tábla egy jól körülhatárolt entitást ír le?",
+        "Van elsődleges kulcs és szükséges egyediség?",
+        "Az oszloptípusok illenek az üzleti jelentéshez?",
+        "Az indexek a valós lekérdezésekből következnek?"
+      ],
+      "relations": [
+        "database.primary_key",
+        "database.foreign_key",
+        "database.index"
+      ]
+    },
+    {
+      "id": "database.collection",
+      "label": "collection",
+      "group": "database",
+      "description": "Dokumentumalapú adatbázis gyűjteménye, ahol hasonló célú, de rugalmas szerkezetű dokumentumok tárolódnak.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg ezt a collectiont dokumentumalak, beágyazott mezők, referenciák és indexek szerint.",
+        "Adj szabályt arra, mikor fér bele egy adat ugyanabba a dokumentumba, és mikor legyen külön collection.",
+        "Írd le, milyen sémavalidáció és verziómező kell a dokumentumok hosszú távú változásához."
+      ],
+      "anti_patterns": [
+        "anything_goes_collection: Ugyanabban a collectionben több, eltérő jelentésű dokumentumtípus keveredik.",
+        "unversioned_documents: A dokumentumforma változik, de régi és új rekordok kezelése nincs megtervezve.",
+        "manual_join_storm: Sok collection közötti kapcsolatot alkalmazáskódban rakunk össze tömeges lekérdezéssel."
+      ],
+      "checklist": [
+        "A collection határa lekérdezési mintákhoz igazodik?",
+        "A dokumentumoknak van elvárt minimális szerkezete?",
+        "A forma változására van verziózási vagy migrációs terv?",
+        "Az indexek lefedik a gyakori filter és sort használatot?"
+      ],
+      "relations": [
+        "database.mongodb",
+        "database.index",
+        "database.denormalization"
+      ]
+    },
+    {
+      "id": "database.primary_key",
+      "label": "primary_key",
+      "group": "database",
+      "description": "Egy rekord stabil, egyedi azonosítója, amelyre kapcsolatok, frissítések, auditok és külső hivatkozások épülhetnek.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Válassz primary key stratégiát ehhez az entitáshoz: UUID, autoincrement, snowflake vagy természetes kulcs.",
+        "Indokold meg, hogy a kulcs publikus URL-ben, belső táblában vagy integrációban fog-e megjelenni.",
+        "Vizsgáld meg, milyen hatása van a kulcstípusnak indexméretre, rendezésre és adatimportokra."
+      ],
+      "anti_patterns": [
+        "mutable_natural_key: Változó üzleti adatot használunk primary keyként.",
+        "public_guessable_ids: Könnyen kitalálható azonosítóval kiszivároghat rekordlétezés vagy sorrend.",
+        "mixed_id_types: Ugyanaz az entitás különböző rétegekben eltérő azonosítóformát kap."
+      ],
+      "checklist": [
+        "A primary key valóban stabil és egyedi?",
+        "A kulcs publikussága biztonsági szempontból elfogadható?",
+        "Az ID stratégia illik importhoz és replikációhoz?",
+        "A kapcsolódó táblák ugyanazt a kulcstípust használják?"
+      ],
+      "relations": [
+        "database.table",
+        "database.foreign_key",
+        "security.data_exposure"
+      ]
+    },
+    {
+      "id": "database.foreign_key",
+      "label": "foreign_key",
+      "group": "database",
+      "description": "Relációs kapcsolatot védő kulcs, amely biztosítja, hogy egy rekord csak létező másik rekordra hivatkozhasson.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz foreign key kapcsolatokat ehhez a sémához cascade, restrict vagy set null törlési szabályokkal.",
+        "Mutasd meg, mely kapcsolatok legyenek adatbázisszinten védettek, és hol kell üzleti logikai ellenőrzés is.",
+        "Adj migrációs tervet foreign key bevezetésére meglévő, esetleg hibás adatok mellett."
+      ],
+      "anti_patterns": [
+        "orphan_records: Kapcsolt rekordok maradnak szülő nélkül adatbázisvédelem hiányában.",
+        "cascade_surprise: Egy törlés váratlanul nagy adatmennyiséget töröl cascade miatt.",
+        "fk_added_without_cleanup: Constraint-et vezetünk be, de a meglévő hibás adatokat nem tisztítjuk."
+      ],
+      "checklist": [
+        "Minden fontos kapcsolatot véd foreign key vagy tudatos alternatíva?",
+        "A törlési és módosítási szabályok üzletileg indokoltak?",
+        "A meglévő adatok megfelelnek az új constraint-eknek?",
+        "Az indexek támogatják a kapcsolt lekérdezéseket?"
+      ],
+      "relations": [
+        "database.primary_key",
+        "database.table",
+        "database.soft_delete"
+      ]
+    },
+    {
+      "id": "database.index",
+      "label": "index",
+      "group": "database",
+      "description": "Adatstruktúra, amely gyorsítja a keresést, rendezést és kapcsolást, cserébe tárhelyet és írási költséget igényel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Javasolj indexeket ezekhez a lekérdezésekhez filter, sort, join és egyediség alapján.",
+        "Elemezd, hol kell compound, unique, partial vagy full-text index, és hol felesleges az index.",
+        "Adj EXPLAIN-alapú ellenőrzési tervet, hogy az adatbázis tényleg használja-e az indexet."
+      ],
+      "anti_patterns": [
+        "index_every_column: Minden oszlop kap indexet, ezért lassulnak az írások és nő a tárhely.",
+        "wrong_column_order: Összetett indexben rossz a mezősorrend a tényleges filter és sort mintához képest.",
+        "unused_index_rot: Régi indexek maradnak, amelyeket már semmilyen query nem használ."
+      ],
+      "checklist": [
+        "Az index valós query mintából következik?",
+        "A compound index mezősorrendje indokolt?",
+        "Mérve van az írási költség és tárhelyhatás?",
+        "Az indexhasználat EXPLAIN vagy metrika alapján igazolt?"
+      ],
+      "relations": [
+        "database.query_optimization",
+        "backend.filtering",
+        "backend.sorting"
+      ]
+    },
+    {
+      "id": "database.migration",
+      "label": "migration",
+      "group": "database",
+      "description": "Verziózott adatbázis-változtatás, amely biztonságosan módosít sémát vagy adatot fejlesztői, staging és production környezetben.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj migrációs tervet ehhez a séma-változáshoz forward lépéssel, rollback lehetőséggel és adatátalakítással.",
+        "Döntsd el, szükséges-e többfázisú deploy nullable mezővel, háttértöltéssel és későbbi constraint bevezetéssel.",
+        "Adj ellenőrző lépéseket arra, hogy a migráció production adatmennyiségen is biztonságos legyen."
+      ],
+      "anti_patterns": [
+        "destructive_one_step: Oszlopot vagy táblát törlünk azonnal, visszaállítási terv nélkül.",
+        "long_lock_migration: Nagy táblán zároló művelet fut csúcsidőben.",
+        "code_schema_mismatch: Új kód olyan sémát vár, amely még nincs minden környezetben lefuttatva."
+      ],
+      "checklist": [
+        "A migráció verziózott és ismételhető?",
+        "Van terv nagy táblák zárolásának csökkentésére?",
+        "A kód és séma többfázisú átmenete biztonságos?",
+        "A rollback vagy restore döntési pont ismert?"
+      ],
+      "relations": [
+        "database.schema",
+        "database.rollback",
+        "devops_deploy.staging"
+      ]
+    },
+    {
+      "id": "database.transaction",
+      "label": "transaction",
+      "group": "database",
+      "description": "Egy logikai egységként kezelt adatbázis-műveletsor, amely siker esetén együtt véglegesül, hiba esetén visszavonható.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg ennek a use case-nek a tranzakciós határát és a műveletek sorrendjét.",
+        "Döntsd el, milyen isolation level szükséges, és milyen race condition ellen véd.",
+        "Adj hibakezelést arra, mikor commitolunk, mikor rollbackelünk, és mit naplózunk."
+      ],
+      "anti_patterns": [
+        "transaction_too_wide: Hosszú külső API hívás is tranzakción belül fut, feleslegesen tartva lockokat.",
+        "partial_write_without_boundary: Több kapcsolt rekord módosul, de nincs közös tranzakció.",
+        "isolation_guessing: Konkurens írásoknál nincs átgondolva az isolation level."
+      ],
+      "checklist": [
+        "A tranzakció csak a szükséges adatbázis-műveleteket fogja össze?",
+        "A részleges írás hiba esetén nem marad meg?",
+        "A lockolási és isolation kockázatok tiszták?",
+        "A külső mellékhatások nem futnak rossz helyen tranzakción belül?"
+      ],
+      "relations": [
+        "database.rollback",
+        "backend.service_layer",
+        "debugging.race_condition"
+      ]
+    },
+    {
+      "id": "database.rollback",
+      "label": "rollback",
+      "group": "database",
+      "description": "Sikertelen vagy kockázatos adatbázis-művelet visszavonása tranzakcióban, migrációban vagy release folyamatban.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj rollback tervet ehhez a migrációhoz adatvesztési kockázatokkal és döntési pontokkal.",
+        "Tisztázd, mikor elég tranzakciós rollback, és mikor kell backupból restore vagy kompenzáló migráció.",
+        "Adj ellenőrző listát rollback után adatkonzisztencia, app verzió és cache állapot alapján."
+      ],
+      "anti_patterns": [
+        "rollback_assumed_not_tested: A visszaállítás elméletben létezik, de soha nem próbáltuk ki.",
+        "data_loss_down_migration: A down migráció törölt adatot próbál visszahozni, ami már nem áll rendelkezésre.",
+        "app_schema_split_brain: Rollback után az alkalmazás más sémát vár, mint ami az adatbázisban van."
+      ],
+      "checklist": [
+        "A rollback forgatókönyv tesztelve van stagingen?",
+        "Adatvesztő változásnál van backup vagy kompenzáló terv?",
+        "A kódverzió és adatbázisverzió együtt kezelhető?",
+        "Rollback után cache és worker állapot is rendezve van?"
+      ],
+      "relations": [
+        "database.migration",
+        "database.backup",
+        "devops_deploy.rollback"
+      ]
+    },
+    {
+      "id": "database.normalization",
+      "label": "normalization",
+      "group": "database",
+      "description": "Adatmodellezési elv, amely csökkenti az ismétlődést, védi a konzisztenciát, és külön tárolja az önálló fogalmakat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Normalizáld ezt az adatmodellt entitásokra, kapcsolatokra és ismétlődő mezők megszüntetésére.",
+        "Mutasd meg, mely ismétlődések okozhatnak inkonzisztenciát módosításkor.",
+        "Döntsd el, meddig érdemes normalizálni, és hol kezdődne túlzott bonyolítás."
+      ],
+      "anti_patterns": [
+        "duplicated_truth: Ugyanaz az üzleti adat több helyen él frissítési szabály nélkül.",
+        "over_normalized_queries: Apró fogalmak túl sok táblára esnek szét, gyakori lekérdezések drágává válnak.",
+        "lookup_table_cargo_cult: Minden enum és státusz külön táblát kap valós igény nélkül."
+      ],
+      "checklist": [
+        "Az önálló entitások külön tárolódnak?",
+        "Nincs több helyen karbantartott igazság?",
+        "A kapcsolatok érthetők és lekérdezhetők maradnak?",
+        "A normalizálás nem rontja aránytalanul a fő olvasási útvonalat?"
+      ],
+      "relations": [
+        "database.denormalization",
+        "database.foreign_key",
+        "database.schema"
+      ]
+    },
+    {
+      "id": "database.denormalization",
+      "label": "denormalization",
+      "group": "database",
+      "description": "Szándékos adatismétlés olvasási teljesítmény, egyszerűbb lekérdezés vagy dokumentumalapú modell miatt, frissítési szabályokkal együtt.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Javasolj denormalizációt csak ott, ahol mérhető olvasási vagy komplexitási nyereséget ad.",
+        "Írd le, hogyan frissül a másolt adat esemény, trigger, worker vagy tranzakció útján.",
+        "Adj konzisztencia-ellenőrzést arra, hogy a denormalizált mezők ne sodródjanak el."
+      ],
+      "anti_patterns": [
+        "copy_without_owner: Másolt adat keletkezik, de nem tiszta, melyik mező az igazság forrása.",
+        "premature_denormalization: Teljesítménygond nélkül is előre duplikáljuk az adatot.",
+        "stale_materialized_view: Előre számolt nézet frissítése nincs összekötve az írási folyamattal."
+      ],
+      "checklist": [
+        "A denormalizáció mérésből vagy konkrét lekérdezési igényből jön?",
+        "Ismert az igazság forrása?",
+        "A frissítési és javítási folyamat dokumentált?",
+        "Van ellenőrzés az elsodródott adatok felismerésére?"
+      ],
+      "relations": [
+        "database.normalization",
+        "database.mongodb",
+        "backend.event_driven_architecture"
+      ]
+    },
+    {
+      "id": "database.query_optimization",
+      "label": "query_optimization",
+      "group": "database",
+      "description": "Lekérdezések gyorsítása mérés, végrehajtási terv, indexelés, lapozás, adatmodell és cache stratégia összehangolásával.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Elemezd ezt a lassú queryt EXPLAIN terv, indexhasználat, sorbecslés és join sorrend alapján.",
+        "Adj javítási tervet index, lekérdezés-átírás, lapozás vagy adatmodell módosítás szerint.",
+        "Különítsd el, mi oldható adatbázisban, és mi igényel cache-t vagy backend válaszstruktúra-váltást."
+      ],
+      "anti_patterns": [
+        "optimization_without_plan: EXPLAIN vagy metrika nélkül találgatunk indexeket.",
+        "select_star_everywhere: Mindig minden oszlopot lekérünk, nagy listákon és kapcsolásokon is.",
+        "n_plus_one_hidden: Alkalmazáskód sok kis queryt indít egyetlen célhoz."
+      ],
+      "checklist": [
+        "Van mérés a lassú lekérdezésről?",
+        "Az EXPLAIN terv megmutatja a fő költséget?",
+        "A query csak szükséges oszlopokat és sorokat kér?",
+        "Az optimalizáció után újramértük a változást?"
+      ],
+      "relations": [
+        "database.index",
+        "backend.pagination",
+        "performance.n_plus_one_query"
+      ]
+    },
+    {
+      "id": "database.connection_pooling",
+      "label": "connection_pooling",
+      "group": "database",
+      "description": "Adatbázis-kapcsolatok újrahasznosítása, hogy a szerver ne nyisson minden kéréshez drága új kapcsolatot.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz connection pool beállítást példányszám, worker szám, adatbázis limit és forgalom alapján.",
+        "Ellenőrizd, hol szivároghat kapcsolat, és hogyan záródnak le hibás vagy timeoutolt műveletek.",
+        "Adj serverless és hagyományos szerver környezetre külön pooling stratégiát."
+      ],
+      "anti_patterns": [
+        "pool_per_request: Minden kérés új pool objektumot hoz létre.",
+        "max_connections_exhausted: Az app példányok együtt több kapcsolatot nyitnak, mint amit az adatbázis bír.",
+        "idle_leak: Hibás ágakon kapcsolatok maradnak foglalva."
+      ],
+      "checklist": [
+        "A pool méret számol az app példányok számával?",
+        "A kapcsolat mindig felszabadul siker és hiba esetén is?",
+        "Van timeout és health check a kapcsolatokra?",
+        "Serverless környezetben proxy vagy külön stratégia kezeli a sok rövid kapcsolatot?"
+      ],
+      "relations": [
+        "backend.circuit_breaker",
+        "observability.metrics",
+        "devops_deploy.serverless"
+      ]
+    },
+    {
+      "id": "database.backup",
+      "label": "backup",
+      "group": "database",
+      "description": "Adatmentés, amely rendszeres, ellenőrizhető másolatot készít a kritikus adatokról hiba, törlés vagy támadás esetére.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz backup stratégiát gyakorisággal, retention szabállyal, titkosítással és földrajzi elkülönítéssel.",
+        "Döntsd el, milyen RPO és RTO célok mellett milyen mentési módszer szükséges.",
+        "Adj ellenőrzési folyamatot arra, hogy a backup nem csak elkészül, hanem vissza is állítható."
+      ],
+      "anti_patterns": [
+        "backup_never_restored: Mentés készül, de restore próbát soha nem futtatunk.",
+        "same_account_only: A backup ugyanabban a fiókban vagy régióban van, mint az éles adat.",
+        "unencrypted_backup: A mentés érzékeny adatot tartalmaz titkosítás és hozzáféréskontroll nélkül."
+      ],
+      "checklist": [
+        "A mentés gyakorisága illik az adatvesztési toleranciához?",
+        "A backup titkosított és hozzáférésvédett?",
+        "Van retention és törlési szabály?",
+        "Rendszeresen tesztelt a restore folyamat?"
+      ],
+      "relations": [
+        "database.restore",
+        "database.rollback",
+        "security.secrets"
+      ]
+    },
+    {
+      "id": "database.restore",
+      "label": "restore",
+      "group": "database",
+      "description": "Adatok visszaállítása mentésből vagy pillanatképből úgy, hogy a rendszer konzisztens és újra használható állapotba kerüljön.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj restore runbookot lépésekkel, felelősökkel, ellenőrzésekkel és kommunikációs pontokkal.",
+        "Döntsd el, teljes adatbázis restore, point-in-time recovery vagy részleges visszaállítás kell-e.",
+        "Adj validációs listát restore után app verzió, migrációk, cache és külső integrációk állapotára."
+      ],
+      "anti_patterns": [
+        "restore_without_isolation: Éles rendszerre próbálunk visszaállítani teszt vagy izolált környezet nélkül.",
+        "unknown_recovery_point: Nem tudjuk, melyik időpontig állítható vissza adatvesztés nélkül.",
+        "cache_not_cleared: Restore után régi cache vagy index továbbra is hibás adatot szolgál ki."
+      ],
+      "checklist": [
+        "Ismert az RPO és a kiválasztott visszaállítási pont?",
+        "A restore folyamat biztonságosan gyakorolható stagingen?",
+        "A migrációk és alkalmazásverzió kompatibilisek a visszaállított adatokkal?",
+        "Restore után cache, search index és worker állapot rendezett?"
+      ],
+      "relations": [
+        "database.backup",
+        "database.audit_log",
+        "documentation.runbook"
+      ]
+    },
+    {
+      "id": "database.soft_delete",
+      "label": "soft_delete",
+      "group": "database",
+      "description": "Törlési minta, ahol a rekord fizikailag megmarad, de töröltként jelöljük audit, visszaállítás vagy jogi okokból.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz soft delete mezőket, lekérdezési szűrőket, restore folyamatot és végleges törlési szabályt.",
+        "Írd le, mely kapcsolt rekordok maradjanak láthatók, rejtettek vagy szintén törölt állapotúak.",
+        "Adj adatvédelmi megfontolást: mikor nem elég a soft delete, és mikor kell tényleges törlés."
+      ],
+      "anti_patterns": [
+        "forgotten_deleted_filter: Egy listázó query véletlenül törölt rekordokat is mutat.",
+        "soft_delete_as_privacy_delete: Jogilag törlendő személyes adat csak flaget kap.",
+        "unique_constraint_blocked_by_deleted: Régi törölt rekord miatt nem hozható létre új azonos értékű aktív rekord."
+      ],
+      "checklist": [
+        "Minden olvasási útvonal kezeli a törölt állapotot?",
+        "Van restore és végleges purge szabály?",
+        "Az egyedi constraint-ek működnek aktív rekordokra?",
+        "Adatvédelmi törlésnél nem marad meg tiltott személyes adat?"
+      ],
+      "relations": [
+        "database.audit_log",
+        "database.foreign_key",
+        "security.privacy"
+      ]
+    },
+    {
+      "id": "database.audit_log",
+      "label": "audit_log",
+      "group": "database",
+      "description": "Adatmódosítások, hozzáférések vagy fontos üzleti események visszakövethető naplója időponttal, szereplővel és változással.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz audit log sémát actor, action, target, timestamp, változásdiff és request ID mezőkkel.",
+        "Döntsd el, mely eseményeket kell auditálni compliance, hibakeresés és ügyféltámogatás miatt.",
+        "Adj megőrzési és hozzáféréskontroll szabályt, hogy az audit log ne legyen adatvédelmi kockázat."
+      ],
+      "anti_patterns": [
+        "audit_without_actor: Nem derül ki, ki vagy melyik rendszer indította a módosítást.",
+        "mutable_audit_log: Az audit rekordok utólag szabadon módosíthatók.",
+        "sensitive_payload_dump: Teljes request body bekerül auditba titkokkal és személyes adatokkal."
+      ],
+      "checklist": [
+        "Látszik az esemény szereplője, célja és ideje?",
+        "Az audit log védett az utólagos módosítástól?",
+        "Nem tárol felesleges titkot vagy érzékeny adatot?",
+        "A retention és hozzáférés szabályai dokumentáltak?"
+      ],
+      "relations": [
+        "observability.structured_logging",
+        "security.access_control",
+        "database.restore"
+      ]
+    },
+    {
+      "id": "database.vector_database",
+      "label": "vector_database",
+      "group": "database",
+      "description": "Embeddingek tárolására és hasonlósági keresésére használt adatbázis vagy index, RAG, szemantikus keresés és ajánlórendszerek alapjaként.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz vector database sémát embedding mezővel, metadata szűrőkkel, chunk ID-val és forráshivatkozással.",
+        "Döntsd el, milyen distance metrika, dimenziószám és index típus illik ehhez a keresési feladathoz.",
+        "Adj RAG frissítési tervet dokumentumváltozás, újraembeddingelés és törölt források kezelése mellett."
+      ],
+      "anti_patterns": [
+        "vectors_without_metadata: Embeddingek vannak, de nincs forrás, jogosultság vagy szűrési metadata.",
+        "mixed_embedding_models: Különböző modellek vektorai keverednek ugyanabban az indexben jelölés nélkül.",
+        "stale_chunks: Dokumentum törlődik vagy módosul, de régi chunkok maradnak a keresőben."
+      ],
+      "checklist": [
+        "Az embedding modell és dimenzió minden rekordnál következetes?",
+        "Van metadata jogosultsági és domain szűréshez?",
+        "A forrásdokumentum és chunk visszakereshető?",
+        "A frissítés, újraindexelés és törlés folyamata tiszta?"
+      ],
+      "relations": [
+        "ai_agentic.embedding",
+        "ai_agentic.rag",
+        "ai_agentic.semantic_search"
+      ]
+    }
+  ]
+}

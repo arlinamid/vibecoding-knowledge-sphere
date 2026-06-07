@@ -1,0 +1,1349 @@
+{
+  "group": "ui_ux",
+  "keywords": [
+    {
+      "id": "ui_ux.ui",
+      "label": "ui",
+      "group": "ui_ux",
+      "description": "A felhasználói felület látható és használható rétege: komponensek, elrendezés, állapotok, szövegek és interakciók együtt.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld ezt a UI-t úgy, hogy külön jelölöd a vizuális, interakciós és állapotkezelési hibákat.",
+        "Tervezd meg a képernyő UI szerkezetét komponensekkel, elsődleges művelettel és reszponzív viselkedéssel.",
+        "Írj UI javítási listát, amely nem csak szépít, hanem a feladat elvégzését gyorsítja."
+      ],
+      "anti_patterns": [
+        "paint_over_problem: A vizuális javítás elfedi, hogy a feladatlogika rossz.",
+        "controls_without_state: A komponenseknek nincs loading, error, disabled vagy success állapota.",
+        "ui_not_matching_task: A felület látványos, de nem a felhasználó fő műveletéhez igazodik."
+      ],
+      "checklist": [
+        "Látszik a képernyő elsődleges feladata?",
+        "A komponensek állapotai meg vannak tervezve?",
+        "A vizuális hierarchia irányítja a figyelmet?",
+        "Az alap akadálymentességi szempontok rendben vannak?"
+      ],
+      "relations": [
+        "frontend_ui.design_system",
+        "ui_ux.visual_hierarchy",
+        "accessibility.a11y"
+      ]
+    },
+    {
+      "id": "ui_ux.ux",
+      "label": "ux",
+      "group": "ui_ux",
+      "description": "A teljes felhasználói élmény: amit a felhasználó megért, érez, el tud végezni, és ami miatt később visszatér vagy lemorzsolódik.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Elemezd ezt a termékélményt a felhasználó célja, útja, akadályai és visszajelzései szerint.",
+        "Javasolj UX javítást úgy, hogy ne csak a képernyőt, hanem az előtte és utána lévő lépéseket is nézed.",
+        "Keresd meg, hol sérül a bizalom, érthetőség vagy lendület a flow-ban."
+      ],
+      "anti_patterns": [
+        "ux_as_pretty_ui: A UX-et puszta látványtervezésnek kezeljük.",
+        "internal_process_first: A folyamat a cég belső logikáját követi, nem a felhasználó gondolkodását.",
+        "no_real_user_context: Nincs feltételezés vagy adat arról, ki és miért használja."
+      ],
+      "checklist": [
+        "Világos a felhasználó célja?",
+        "A teljes útvonal követhető?",
+        "Vannak visszajelzések és mentőutak?",
+        "Mérhető, hogy jobb lett-e az élmény?"
+      ],
+      "relations": [
+        "ui_ux.user_journey",
+        "ui_ux.usability",
+        "ui_ux.pain_point"
+      ]
+    },
+    {
+      "id": "ui_ux.user_flow",
+      "label": "user_flow",
+      "group": "ui_ux",
+      "description": "A felhasználó konkrét lépéssora egy cél eléréséhez, döntési pontokkal, elágazásokkal és visszalépésekkel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Rajzold le a user flow-t a belépési ponttól a sikerállapotig, alternatív és hibaágakkal együtt.",
+        "Keresd meg, hol lehet rövidíteni vagy tisztázni ezt a felhasználói lépéssort.",
+        "Fordítsd a user flow-t képernyőlistára és szükséges UI állapotokra."
+      ],
+      "anti_patterns": [
+        "happy_path_only_flow: Csak az ideális út van megtervezve.",
+        "assumed_user_state: Feltételezzük, hogy a felhasználó be van lépve, van adata és érti a kontextust.",
+        "no_exit_or_recovery: Nincs visszalépés, megszakítás vagy hiba utáni folytatás."
+      ],
+      "checklist": [
+        "Van kezdőpont és sikerpont?",
+        "Látszanak az elágazások?",
+        "Kezeli a hibát és megszakítást?",
+        "Minden lépéshez tartozik képernyő vagy állapot?"
+      ],
+      "relations": [
+        "ui_ux.ux_flow",
+        "ui_ux.funnel",
+        "ui_ux.drop_off"
+      ]
+    },
+    {
+      "id": "ui_ux.ux_flow",
+      "label": "ux_flow",
+      "group": "ui_ux",
+      "description": "Felhasználói élményre optimalizált flow, amely a lépések mellett a megértést, érzelmi terhet és visszajelzéseket is figyeli.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Alakítsd át ezt a user flow-t UX flow-vá érzelmi pontokkal, bizonytalanságokkal és visszajelzésekkel.",
+        "Adj UX flow verziót kezdő és gyakorlott felhasználónak külön.",
+        "Jelöld, mely lépéseknél kell microcopy, progress, megerősítés vagy undo."
+      ],
+      "anti_patterns": [
+        "box_chart_only: A flow csak dobozokból áll, élmény és döntési teher nélkül.",
+        "emotion_blind_flow: Nem látszik, hol bizonytalanodik el vagy frusztrálódik a felhasználó.",
+        "no_recovery_path: A flow nem mondja meg, hogyan lehet visszajönni hibából."
+      ],
+      "checklist": [
+        "Látszik a felhasználó mentális állapota?",
+        "Van visszajelzés minden kritikus műveletnél?",
+        "Külön kezeli a kezdő és haladó használatot?",
+        "A hibaág nem zsákutca?"
+      ],
+      "relations": [
+        "ui_ux.user_flow",
+        "ui_ux.feedback_loop",
+        "ux_states.error_state"
+      ]
+    },
+    {
+      "id": "ui_ux.user_journey",
+      "label": "user_journey",
+      "group": "ui_ux",
+      "description": "A felhasználó teljes útja az első találkozástól a használaton át a visszatérésig vagy lemorzsolódásig.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Térképezd fel a user journey-t első érintkezés, regisztráció, első érték, visszatérés és lemorzsolódás szerint.",
+        "Írj journey szakaszokat célokkal, kérdésekkel, érzésekkel és termékoldali lehetőségekkel.",
+        "Keresd meg, hol veszít lendületet vagy bizalmat a felhasználó a teljes út során."
+      ],
+      "anti_patterns": [
+        "single_session_thinking: Csak egy munkamenetet nézünk, nem a kapcsolat egészét.",
+        "journey_without_channels: Nem látszanak az email, support, marketing vagy app érintkezési pontok.",
+        "no_aftercare: A sikeres első használat után nincs visszahívó vagy megtartási logika."
+      ],
+      "checklist": [
+        "Látszanak a fő szakaszok?",
+        "Minden szakaszhoz tartozik cél és akadály?",
+        "Megjelennek a terméken kívüli érintkezési pontok?",
+        "Kiderül, hol kell mérni vagy javítani?"
+      ],
+      "relations": [
+        "ui_ux.customer_journey_map",
+        "ui_ux.onboarding",
+        "ui_ux.retention"
+      ]
+    },
+    {
+      "id": "ui_ux.customer_journey_map",
+      "label": "customer_journey_map",
+      "group": "ui_ux",
+      "description": "Strukturált térkép a vásárlói vagy felhasználói útról, érintkezési pontokkal, érzésekkel, akadályokkal és lehetőségekkel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts customer journey mapet szakasz, cél, touchpoint, érzelem, pain point és opportunity oszlopokkal.",
+        "Jelöld meg, mely pontok feltételezések, és melyekhez kell kutatás vagy mérés.",
+        "Alakítsd át ezt a journey mapet termékfejlesztési backlog javaslatokká."
+      ],
+      "anti_patterns": [
+        "poster_not_tool: A journey map látványos poszter, de nem vezet döntéshez.",
+        "unsupported_emotions: Érzelmi görbe van, adat vagy kutatási alap nélkül.",
+        "touchpoints_without_owner: Nem derül ki, melyik csapat felel az érintkezési pontért."
+      ],
+      "checklist": [
+        "A szakaszok és touchpointok konkrétak?",
+        "Külön jelöltek a feltételezések?",
+        "Van pain point és lehetőség minden fontos szakasznál?",
+        "Átfordítható fejlesztési vagy kutatási feladatokká?"
+      ],
+      "relations": [
+        "ui_ux.user_journey",
+        "ui_ux.pain_point",
+        "ui_ux.retention"
+      ]
+    },
+    {
+      "id": "ui_ux.persona",
+      "label": "persona",
+      "group": "ui_ux",
+      "description": "Reprezentatív felhasználói profil célokkal, motivációkkal, korlátokkal és döntési helyzetekkel, nem kitalált marketingkarakterként.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts personát valós használati célok, trigger helyzetek, félelmek és sikerfeltételek alapján.",
+        "Írj persona ellenőrzést: mely állítás adat, mely feltételezés, mely sztereotípia.",
+        "Fordítsd a personát UI döntésekre: milyen információ, tempó és segítség kell neki?"
+      ],
+      "anti_patterns": [
+        "stock_photo_persona: A persona demográfiai díszlet, nem döntési eszköz.",
+        "one_persona_for_everyone: Egy kitalált felhasználóval magyarázunk minden igényt.",
+        "stereotype_driven_design: Sztereotípia vezeti a döntést kutatás vagy viselkedés helyett."
+      ],
+      "checklist": [
+        "Viselkedési célok szerepelnek benne?",
+        "El vannak választva az adatok és feltételezések?",
+        "Segít konkrét termékdöntést hozni?",
+        "Nem helyettesíti a valódi kutatást?"
+      ],
+      "relations": [
+        "ui_ux.job_to_be_done",
+        "ui_ux.use_case",
+        "ui_ux.usability_testing"
+      ]
+    },
+    {
+      "id": "ui_ux.use_case",
+      "label": "use_case",
+      "group": "ui_ux",
+      "description": "Konkrét használati helyzet, amely leírja, ki, milyen célból, milyen környezetben és milyen eredménnyel használja a rendszert.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj use case-t szereplővel, előfeltétellel, fő útvonallal, alternatív útvonalakkal és sikerfeltétellel.",
+        "Bontsd ezt az ötletet konkrét use case-ekre külön felhasználótípusok szerint.",
+        "Keress hiányzó edge case-eket és hibás előfeltételezéseket ebben a use case-ben."
+      ],
+      "anti_patterns": [
+        "feature_as_use_case: A use case csak funkciónév, nem felhasználói helyzet.",
+        "no_context_of_use: Nem derül ki, milyen környezetben történik a használat.",
+        "missing_preconditions: A flow feltételei nincsenek kimondva."
+      ],
+      "checklist": [
+        "Világos a szereplő és cél?",
+        "Szerepelnek előfeltételek?",
+        "Van fő és alternatív út?",
+        "Mérhető a sikeres kimenet?"
+      ],
+      "relations": [
+        "ui_ux.persona",
+        "ui_ux.user_flow",
+        "vibe_coding.prd"
+      ]
+    },
+    {
+      "id": "ui_ux.job_to_be_done",
+      "label": "job_to_be_done",
+      "group": "ui_ux",
+      "description": "A valódi feladat vagy előrelépés, amiért a felhasználó a terméket választja, függetlenül a konkrét funkciónevektől.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Fogalmazd meg a Job To Be Done állítást: amikor..., szeretném..., hogy...",
+        "Válaszd szét a felhasználó végső célját a termékfunkciótól.",
+        "Írj JTBD alapján termék- és UI prioritásokat: mi segíti leginkább az előrelépést?"
+      ],
+      "anti_patterns": [
+        "feature_as_job: A feladatot egy funkciónévvel azonosítjuk.",
+        "solution_baked_in: A megoldás már benne van a probléma megfogalmazásában.",
+        "no_progress_definition: Nem derül ki, milyen előrelépést akar a felhasználó."
+      ],
+      "checklist": [
+        "A megfogalmazás helyzetből indul?",
+        "Nem tartalmaz kész megoldást?",
+        "Látszik az elvárt előrelépés?",
+        "Segít priorizálni funkciókat?"
+      ],
+      "relations": [
+        "ui_ux.persona",
+        "ui_ux.pain_point",
+        "ui_ux.activation"
+      ]
+    },
+    {
+      "id": "ui_ux.pain_point",
+      "label": "pain_point",
+      "group": "ui_ux",
+      "description": "Konkrét felhasználói frusztráció, akadály vagy kockázat, amely lassítja, elbizonytalanítja vagy eltántorítja a használót.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Gyűjts pain pointokat ebből a flow-ból súlyosság, gyakoriság és javítási lehetőség szerint.",
+        "Fogalmazd át ezeket a panaszokat UX problémává és mérhető hipotézissé.",
+        "Keresd meg, mely pain point kezelhető microcopyval, melyik igényel folyamat- vagy termékváltozást."
+      ],
+      "anti_patterns": [
+        "complaint_dump: Panaszlista készül ok és prioritás nélkül.",
+        "symptom_only_fix: Csak a tünetet javítjuk, nem a mögöttes akadályt.",
+        "all_pain_equal: Minden probléma ugyanakkora súlyt kap."
+      ],
+      "checklist": [
+        "A pain point konkrét helyzethez kötődik?",
+        "Van súlyosság és gyakoriság becslés?",
+        "Kiderül a mögöttes ok?",
+        "Van javasolt beavatkozási szint?"
+      ],
+      "relations": [
+        "ui_ux.friction",
+        "ui_ux.usability_testing",
+        "ui_ux.job_to_be_done"
+      ]
+    },
+    {
+      "id": "ui_ux.friction",
+      "label": "friction",
+      "group": "ui_ux",
+      "description": "Minden felesleges súrlódás a flow-ban: extra döntés, várakozás, bizonytalanság, ismétlés vagy rossz időben kért adat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Keresd meg a friction pontokat ebben a regisztrációs vagy vásárlási flow-ban.",
+        "Rendezd a súrlódásokat: kognitív, technikai, bizalmi, formai és időzítési akadályok.",
+        "Javasolj friction csökkentést úgy, hogy ne sérüljön biztonság vagy üzleti kontroll."
+      ],
+      "anti_patterns": [
+        "frictionless_at_all_costs: Minden akadályt kivágunk, a szükséges kontrollokat is.",
+        "hidden_work_shift: A rendszer a felhasználóra tolja a belső munka terhét.",
+        "repeat_information: A felhasználónak ugyanazt az adatot többször kell megadnia."
+      ],
+      "checklist": [
+        "Azonosítva van a súrlódás típusa?",
+        "Megkülönböztetjük a hasznos és felesleges súrlódást?",
+        "Csökken a lépések vagy döntések száma?",
+        "Nem romlik a biztonság vagy bizalom?"
+      ],
+      "relations": [
+        "ui_ux.pain_point",
+        "ui_ux.cognitive_load",
+        "ui_ux.conversion_flow"
+      ]
+    },
+    {
+      "id": "ui_ux.cognitive_load",
+      "label": "cognitive_load",
+      "group": "ui_ux",
+      "description": "A mentális erőfeszítés, amit a felhasználónak be kell fektetnie, hogy megértse a helyzetet és jó döntést hozzon.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld a képernyőt kognitív terhelés szerint: döntések, szöveghossz, vizuális zaj és memóriaigény.",
+        "Csökkentsd a kognitív terhelést csoportosítással, progresszív feltárással és jobb microcopyval.",
+        "Jelöld, mely információk szükségesek most, később vagy egyáltalán nem."
+      ],
+      "anti_patterns": [
+        "decision_pileup: Túl sok döntés érkezik egyszerre.",
+        "memory_dependency: A felhasználónak fejben kell tartania korábbi adatokat vagy szabályokat.",
+        "label_noise: A szövegek hosszúak, de nem tisztítják a döntést."
+      ],
+      "checklist": [
+        "A döntések logikus csoportokban vannak?",
+        "A felhasználónak nem kell emlékezetből dolgoznia?",
+        "A szöveg rövidíti, nem növeli a terhet?",
+        "A haladó információ később is elérhető?"
+      ],
+      "relations": [
+        "ui_ux.progressive_disclosure",
+        "ui_ux.information_architecture",
+        "ui_ux.microcopy"
+      ]
+    },
+    {
+      "id": "ui_ux.information_architecture",
+      "label": "information_architecture",
+      "group": "ui_ux",
+      "description": "Az információk és funkciók rendszerezése úgy, hogy a felhasználó tudja, hol van, mit talál, és merre érdemes mennie.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg az információs architektúrát fő kategóriákkal, alcsoportokkal és navigációs címkékkel.",
+        "Auditáld, hol keveredik tartalom, beállítás, művelet és admin funkció ugyanabban a struktúrában.",
+        "Készíts kártyarendezési vagy tree-test hipotéziseket ehhez a menürendszerhez."
+      ],
+      "anti_patterns": [
+        "org_chart_ia: A struktúra a szervezet belső osztályait követi, nem a felhasználó gondolkodását.",
+        "category_overlap: Ugyanaz az elem több kategóriába is illene.",
+        "label_from_team_jargon: A menüpontok belső szakzsargont használnak."
+      ],
+      "checklist": [
+        "A kategóriák felhasználói nyelven vannak?",
+        "Kevés az átfedés?",
+        "A keresés és navigáció ugyanazt a modellt támogatja?",
+        "Tesztelhető a struktúra valódi feladatokkal?"
+      ],
+      "relations": [
+        "ui_ux.navigation_model",
+        "frontend_ui.sidebar",
+        "ui_ux.discoverability"
+      ]
+    },
+    {
+      "id": "ui_ux.navigation_model",
+      "label": "navigation_model",
+      "group": "ui_ux",
+      "description": "A termék tájékozódási rendszere: fő útvonalak, helyzetjelzés, visszatérés, keresés és gyors elérés együtt.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a navigation modelt top nav, sidebar, breadcrumbs, keresés és command palette szerepeivel.",
+        "Jelöld, mely útvonalak globálisak, melyek kontextuálisak és melyek gyorsparancsok.",
+        "Auditáld, hol nem tudja a felhasználó, hol jár vagy hogyan térjen vissza."
+      ],
+      "anti_patterns": [
+        "navigation_overlap: Több navigációs elem ugyanazt próbálja más néven.",
+        "lost_in_app: Nincs aktív állapot, visszaút vagy helyzetjelzés.",
+        "deep_feature_burial: Fontos funkció túl mélyre kerül a menüben."
+      ],
+      "checklist": [
+        "Világosak a fő és mellékútvonalak?",
+        "Látszik az aktuális hely?",
+        "Van gyors út gyakori műveletekre?",
+        "Mobilon és desktopon is működik a modell?"
+      ],
+      "relations": [
+        "ui_ux.information_architecture",
+        "frontend_ui.navbar",
+        "frontend_ui.command_palette"
+      ]
+    },
+    {
+      "id": "ui_ux.content_hierarchy",
+      "label": "content_hierarchy",
+      "group": "ui_ux",
+      "description": "A tartalmak fontossági sorrendje: mi kell először, mi segít dönteni, és mi lehet részlet vagy háttérinformáció.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Rendezd újra a képernyő tartalmait fontosság, döntési szerep és felhasználói cél szerint.",
+        "Jelöld, mely tartalom legyen elsődleges, másodlagos, rejtett vagy teljesen elhagyható.",
+        "Írj content hierarchy javaslatot dashboard kártyákhoz, termékoldalhoz vagy beállítási panelhez."
+      ],
+      "anti_patterns": [
+        "everything_equal_weight: Minden tartalom ugyanakkora hangsúlyt kap.",
+        "details_before_decision: A részletek megelőzik a döntéshez szükséges lényeget.",
+        "marketing_copy_blocks_task: A szöveg elfoglalja a helyet a tényleges feladat elől."
+      ],
+      "checklist": [
+        "A legfontosabb tartalom látszik először?",
+        "A részletek jó helyre vannak mélyítve?",
+        "A CTA a tartalmi sorrendből következik?",
+        "A hosszú szöveg nem töri meg a flow-t?"
+      ],
+      "relations": [
+        "ui_ux.visual_hierarchy",
+        "frontend_ui.card_layout",
+        "ui_ux.cognitive_load"
+      ]
+    },
+    {
+      "id": "ui_ux.visual_hierarchy",
+      "label": "visual_hierarchy",
+      "group": "ui_ux",
+      "description": "Vizuális súlyok rendszere, amely mérettel, térrel, kontraszttal, pozícióval és ritmussal vezeti a figyelmet.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld a vizuális hierarchiát: mi tűnik elsődlegesnek, és egyezik-e a termékcéllal.",
+        "Javasolj tipográfiai, spacing és kontraszt módosításokat a figyelem jobb vezetésére.",
+        "Rendezd át a képernyőt úgy, hogy a fő művelet és fő információ ne versenyezzen egymással."
+      ],
+      "anti_patterns": [
+        "loud_secondary_elements: Másodlagos elemek vizuálisan hangosabbak a fő célnál.",
+        "typography_flatline: Minden szöveg hasonló súlyú és méretű.",
+        "contrast_as_decoration: A kontraszt dekoráció, nem figyelemvezetés."
+      ],
+      "checklist": [
+        "A szem természetes útja a fő információra vezet?",
+        "A típusméretek és súlyok rendszert alkotnak?",
+        "A kontraszt funkcionális?",
+        "A vizuális hangsúly egyezik a prioritással?"
+      ],
+      "relations": [
+        "ui_ux.content_hierarchy",
+        "frontend_ui.mockup",
+        "accessibility.contrast_ratio"
+      ]
+    },
+    {
+      "id": "ui_ux.interaction_design",
+      "label": "interaction_design",
+      "group": "ui_ux",
+      "description": "A felhasználói műveletek, állapotváltások és rendszerreakciók megtervezése kattintástól a visszajelzésig.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg az interakciót lépésről lépésre: trigger, állapotváltás, visszajelzés, hiba és siker.",
+        "Írj interaction design szabályt drag, select, submit, filter vagy destructive action esetére.",
+        "Auditáld, hol hiányzik az azonnali rendszerreakció vagy hol félreérthető a művelet."
+      ],
+      "anti_patterns": [
+        "click_without_consequence: A felhasználó kattint, de nem látja, történt-e valami.",
+        "state_transition_gap: Az állapotváltások nincsenek megtervezve.",
+        "gesture_only_action: Fontos művelet csak rejtett gesztussal érhető el."
+      ],
+      "checklist": [
+        "Minden műveletnek van látható reakciója?",
+        "Az állapotváltások követhetők?",
+        "Van egér, billentyűzet és érintés viselkedés?",
+        "A hiba és siker külön kezelve van?"
+      ],
+      "relations": [
+        "ui_ux.feedback_loop",
+        "frontend_ui.microinteractions",
+        "ux_states.active_state"
+      ]
+    },
+    {
+      "id": "ui_ux.affordance",
+      "label": "affordance",
+      "group": "ui_ux",
+      "description": "Vizuális és viselkedési jelzés arról, hogy egy elem mire használható, kattintható-e, húzható-e vagy szerkeszthető-e.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld az affordance-eket: mely elemek tűnnek kattinthatónak, húzhatónak vagy szerkeszthetőnek?",
+        "Javasolj vizuális jeleket olyan műveletekhez, amelyeket most nem találnak meg a felhasználók.",
+        "Tervezd meg a hover, focus, active és disabled jelzéseket ugyanarra az interaktív elemre."
+      ],
+      "anti_patterns": [
+        "flat_clickability: Kattintható és nem kattintható elemek ugyanúgy néznek ki.",
+        "false_affordance: Egy elem műveletnek tűnik, de nem használható.",
+        "hidden_interaction: Fontos művelet csak véletlen felfedezéssel derül ki."
+      ],
+      "checklist": [
+        "Az interaktív elemek felismerhetők?",
+        "Nincs félrevezető kattinthatóság?",
+        "Az állapotok segítik a megértést?",
+        "Mobilon és billentyűzettel is működik a jelzés?"
+      ],
+      "relations": [
+        "ux_states.hover_state",
+        "ux_states.focus_state",
+        "ui_ux.discoverability"
+      ]
+    },
+    {
+      "id": "ui_ux.feedback_loop",
+      "label": "feedback_loop",
+      "group": "ui_ux",
+      "description": "A felhasználói műveletre adott gyors, érthető és arányos rendszerreakció, amely bezárja a bizonytalansági kört.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a feedback loopot: kattintás után mi történik azonnal, betöltés alatt, sikerkor és hibakor.",
+        "Írj visszajelzési szabályt mentésre, törlésre, importálásra és aszinkron folyamatokra.",
+        "Auditáld, hol marad bizonytalanságban a felhasználó egy művelet után."
+      ],
+      "anti_patterns": [
+        "silent_action: A rendszer nem jelzi, hogy elindult vagy befejeződött a művelet.",
+        "delayed_reassurance: A visszajelzés túl későn érkezik.",
+        "over_feedback: Apró műveletek túl hangos vagy zavaró jelzést kapnak."
+      ],
+      "checklist": [
+        "Van azonnali reakció?",
+        "A feedback arányos a művelet súlyával?",
+        "Külön látszik a folyamatban, sikeres és hibás állapot?",
+        "A felhasználó tudja, mi a következő lépés?"
+      ],
+      "relations": [
+        "ux_states.loading_state",
+        "ux_states.success_state",
+        "ui_ux.interaction_design"
+      ]
+    },
+    {
+      "id": "ui_ux.microcopy",
+      "label": "microcopy",
+      "group": "ui_ux",
+      "description": "Rövid UI szöveg, amely döntést segít, állapotot magyaráz, hibát javíthatóvá tesz vagy cselekvésre hív.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj microcopyt gombokra, üres állapotokra, hibákra és helper textekre ugyanazon hangnemben.",
+        "Rövidítsd és emberibbé ezt a UI szöveget úgy, hogy a cselekvés pontos maradjon.",
+        "Auditáld, hol túl technikai, túl homályos vagy túl marketinges a microcopy."
+      ],
+      "anti_patterns": [
+        "cute_but_unclear: A szöveg kedves, de nem mondja meg, mit kell tenni.",
+        "system_speaks: A UI belső technikai nyelven beszél.",
+        "generic_error_copy: Minden hiba ugyanazt a haszontalan mondatot kapja."
+      ],
+      "checklist": [
+        "A szöveg cselekvést vagy döntést segít?",
+        "Rövid, de nem homályos?",
+        "Illik a termék hangneméhez?",
+        "Hiba esetén javítási utat ad?"
+      ],
+      "relations": [
+        "ux_states.empty_state",
+        "ux_states.error_state",
+        "documentation.glossary"
+      ]
+    },
+    {
+      "id": "ui_ux.conversion_flow",
+      "label": "conversion_flow",
+      "group": "ui_ux",
+      "description": "Olyan felhasználói út, amely regisztrációhoz, vásárláshoz, ajánlatkéréshez vagy más üzleti célhoz vezet, felesleges nyomás nélkül.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld a conversion flow-t lépésenként: motiváció, bizalom, súrlódás, drop-off és CTA szerint.",
+        "Javasolj javításokat úgy, hogy ne dark patternnel, hanem tisztább értékajánlattal és kevesebb súrlódással növeljük a konverziót.",
+        "Írj alternatív flow-t új látogatónak, visszatérő felhasználónak és bizonytalan érdeklődőnek."
+      ],
+      "anti_patterns": [
+        "pressure_instead_of_value: A flow nyomást gyakorol, nem értéket tisztáz.",
+        "form_before_trust: Adatot kérünk, mielőtt bizalom vagy relevancia épülne.",
+        "conversion_only_metric: Csak az első konverzió számít, a későbbi elégedettség nem."
+      ],
+      "checklist": [
+        "A felhasználó érti, mit kap a konverzióért?",
+        "A bizalmi elemek jó helyen vannak?",
+        "A mezők és lépések szükségesek?",
+        "A mérés nem ösztönöz manipulációra?"
+      ],
+      "relations": [
+        "ui_ux.funnel",
+        "ui_ux.cta",
+        "ui_ux.trust_signal"
+      ]
+    },
+    {
+      "id": "ui_ux.onboarding",
+      "label": "onboarding",
+      "group": "ui_ux",
+      "description": "Új felhasználó bevezetése a termék első értékéig, nem hosszú kötelező túra vagy üres linkgyűjtemény.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg az onboardingot első belépés, első beállítás, első siker és későbbi folytatás szerint.",
+        "Írj onboarding microcopyt, amely vezet, de nem kezeli kezdőként örökké a felhasználót.",
+        "Javasolj kihagyható, kontextuális és progresszív onboarding elemeket."
+      ],
+      "anti_patterns": [
+        "tour_before_value: Hosszú bemutató indul, mielőtt a felhasználó értéket látna.",
+        "mandatory_everything: Minden lépést kötelező végigvinni.",
+        "same_onboarding_for_all: Minden felhasználó ugyanazt az útvonalat kapja célja vagy tudásszintje nélkül."
+      ],
+      "checklist": [
+        "Az első érték gyorsan elérhető?",
+        "Kihagyható vagy folytatható később?",
+        "A felhasználó céljához igazodik?",
+        "Nem zavarja a visszatérő vagy haladó használót?"
+      ],
+      "relations": [
+        "ux_states.onboarding_flow",
+        "ux_states.first_run_experience",
+        "ui_ux.activation"
+      ]
+    },
+    {
+      "id": "ui_ux.activation",
+      "label": "activation",
+      "group": "ui_ux",
+      "description": "Az első valódi értékpillanat, amikor a felhasználó megérti és megtapasztalja, miért érdemes tovább használnia a terméket.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Határozd meg az activation momentet: milyen esemény mutatja, hogy a felhasználó értéket kapott?",
+        "Tervezd visszafelé az első használati flow-t az activation pillanattól.",
+        "Írj mérési és UI javaslatot az aktiváció gyorsítására minőségi romlás nélkül."
+      ],
+      "anti_patterns": [
+        "signup_as_activation: A regisztrációt tekintjük aktivációnak, nem az első értéket.",
+        "too_late_value: A felhasználó túl későn jut el hasznos eredményhez.",
+        "metric_without_experience: Van aktivációs szám, de nem értjük az élményt mögötte."
+      ],
+      "checklist": [
+        "Az activation konkrét felhasználói értékhez kötődik?",
+        "Mérhető esemény jelzi?",
+        "A first-run út ezt gyorsítja?",
+        "Nem ösztönöz üres vagy hamis aktivitásra?"
+      ],
+      "relations": [
+        "ui_ux.onboarding",
+        "ux_states.first_run_experience",
+        "ui_ux.retention"
+      ]
+    },
+    {
+      "id": "ui_ux.retention",
+      "label": "retention",
+      "group": "ui_ux",
+      "description": "A felhasználók visszatérése és hosszabb távú értékkapása, amely a termék hasznosságából és ritmusából épül, nem puszta értesítésből.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Elemezd a retentiont: miért térne vissza a felhasználó holnap, jövő héten vagy egy hónap múlva?",
+        "Javasolj retention loopot értékes visszahívással, friss tartalommal vagy befejezetlen munkával.",
+        "Auditáld, mely értesítések hasznosak, és melyek csak zajt termelnek."
+      ],
+      "anti_patterns": [
+        "notification_as_retention: A megtartást push üzenetekkel próbáljuk pótolni.",
+        "no_returning_context: Visszatéréskor a felhasználó nem látja, hol hagyta abba.",
+        "engagement_over_value: Aktivitást mérünk, nem valódi hasznot."
+      ],
+      "checklist": [
+        "Van természetes ok a visszatérésre?",
+        "A visszatérő felhasználó kontextust kap?",
+        "Az értesítések értéket adnak?",
+        "A retention mérés nem jutalmaz üres aktivitást?"
+      ],
+      "relations": [
+        "ui_ux.activation",
+        "ui_ux.engagement",
+        "ui_ux.user_journey"
+      ]
+    },
+    {
+      "id": "ui_ux.engagement",
+      "label": "engagement",
+      "group": "ui_ux",
+      "description": "Felhasználói bevonódás és aktivitás, amely akkor jó, ha értelmes feladatvégzéshez vagy elégedettséghez kapcsolódik.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Határozd meg, milyen engagement események jelentenek valódi értéket ennél a terméknél.",
+        "Különítsd el a hasznos aktivitást a vanity metric jellegű kattintásoktól.",
+        "Javasolj UI és tartalmi elemeket, amelyek visszahozzák a felhasználót anélkül, hogy zaklatnák."
+      ],
+      "anti_patterns": [
+        "click_count_worship: Minden kattintást bevonódásnak tekintünk.",
+        "habit_without_value: Szokást akarunk építeni, de nincs ismétlődő haszon.",
+        "attention_trap: A felület figyelmet köt le, de nem segít célt elérni."
+      ],
+      "checklist": [
+        "Az engagement esemény értéket jelez?",
+        "Elválik az aktivitás és a siker?",
+        "A visszahívás nem zavaró?",
+        "A felhasználó céljához kötődik?"
+      ],
+      "relations": [
+        "ui_ux.retention",
+        "ui_ux.delight",
+        "ui_ux.dark_pattern"
+      ]
+    },
+    {
+      "id": "ui_ux.progressive_disclosure",
+      "label": "progressive_disclosure",
+      "group": "ui_ux",
+      "description": "Információ és vezérlés fokozatos feltárása, hogy a kezdő ne kapjon túl sokat egyszerre, a haladó viszont elérje a mélyebb lehetőségeket.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd át ezt a zsúfolt felületet progressive disclosure elv szerint.",
+        "Döntsd el, mi legyen alapból látható, mi kerüljön haladó részbe, és mi legyen kontextuális.",
+        "Írj címkéket és helper szövegeket kinyitható vagy később megjelenő információhoz."
+      ],
+      "anti_patterns": [
+        "hide_to_clean: Fontos dolgokat elrejtünk csak azért, hogy tisztábbnak tűnjön a UI.",
+        "advanced_dump: Minden ritkább funkció egy rendezetlen haladó panelbe kerül.",
+        "mystery_reveal: A felhasználó nem sejti, mit talál a kinyitás után."
+      ],
+      "checklist": [
+        "A leggyakoribb műveletek láthatók?",
+        "A ritkább opciók megtalálhatók?",
+        "A rejtés csökkenti a döntési terhet?",
+        "Nincs kritikus információ túl mélyen?"
+      ],
+      "relations": [
+        "ux_states.progressive_disclosure",
+        "ui_ux.cognitive_load",
+        "frontend_ui.accordion"
+      ]
+    },
+    {
+      "id": "ui_ux.usability",
+      "label": "usability",
+      "group": "ui_ux",
+      "description": "Használhatóság: mennyire könnyen, gyorsan, hibamentesen és magabiztosan tudja a felhasználó elvégezni a feladatát.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld a felület használhatóságát cél, érthetőség, hatékonyság, hibatűrés és tanulhatóság szerint.",
+        "Javasolj usability javításokat magas hatás és alacsony kockázat alapján priorizálva.",
+        "Írj usability acceptance criteriákat ehhez a flow-hoz."
+      ],
+      "anti_patterns": [
+        "usable_for_team_only: A csapat érti a felületet, de új felhasználó nem.",
+        "efficiency_without_clarity: Gyorsnak tervezzük, de nem érthető.",
+        "no_error_tolerance: Egy rossz lépés könnyen adatvesztést vagy zsákutcát okoz."
+      ],
+      "checklist": [
+        "A felhasználó érti, mit kell tennie?",
+        "Kevés felesleges lépés van?",
+        "Hibából vissza lehet jönni?",
+        "Új felhasználó gyorsan megtanulja?"
+      ],
+      "relations": [
+        "ui_ux.usability_testing",
+        "ui_ux.heuristic_evaluation",
+        "ui_ux.learnability"
+      ]
+    },
+    {
+      "id": "ui_ux.usability_testing",
+      "label": "usability_testing",
+      "group": "ui_ux",
+      "description": "Felület tesztelése reprezentatív felhasználókkal vagy feladatokkal, hogy kiderüljön, hol akadnak el valójában.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts usability testing tervet célokkal, feladatokkal, résztvevőprofillal és mérési szempontokkal.",
+        "Írj moderátori kérdéseket, amelyek nem vezetik rá a felhasználót a válaszra.",
+        "Alakítsd át a teszteredményeket priorizált UX javításokká."
+      ],
+      "anti_patterns": [
+        "leading_test_script: A kérdések megmondják, mit kellene tenni.",
+        "testing_opinions_not_tasks: Véleményt kérdezünk, nem feladatvégzést figyelünk.",
+        "findings_without_severity: Találatok vannak, de nincs súlyosság vagy gyakoriság."
+      ],
+      "checklist": [
+        "Valódi feladatot tesztel?",
+        "A kérdések nem vezetők?",
+        "Rögzíti az elakadásokat és kerülőutakat?",
+        "A findings priorizálhatók?"
+      ],
+      "relations": [
+        "ui_ux.usability",
+        "ui_ux.pain_point",
+        "ui_ux.persona"
+      ]
+    },
+    {
+      "id": "ui_ux.heuristic_evaluation",
+      "label": "heuristic_evaluation",
+      "group": "ui_ux",
+      "description": "Szakmai UX ellenőrzés bevált alapelvek alapján, gyors kockázatfeltárásra felhasználói teszt előtt vagy mellett.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Végezz heuristic evaluationt láthatóság, kontroll, konzisztencia, hibatűrés és felismerhetőség szempontból.",
+        "Sorold a talált problémákat súlyosság, bizonyíték és javítási javaslat szerint.",
+        "Jelöld, mely megállapítás igényel felhasználói tesztet vagy analitikai ellenőrzést."
+      ],
+      "anti_patterns": [
+        "expert_opinion_as_truth: Szakértői véleményből végleges igazság lesz adat nélkül.",
+        "heuristic_name_dump: Alapelvnevek listája készül konkrét képernyőhiba nélkül.",
+        "no_severity_scale: Minden probléma egyformán fontosnak tűnik."
+      ],
+      "checklist": [
+        "Minden találat konkrét UI helyhez kötődik?",
+        "Van súlyosság és indoklás?",
+        "A javítás gyakorlati?",
+        "Látszik, mit kell teszttel validálni?"
+      ],
+      "relations": [
+        "ui_ux.usability",
+        "ui_ux.consistency",
+        "ui_ux.predictability"
+      ]
+    },
+    {
+      "id": "ui_ux.ab_testing",
+      "label": "ab_testing",
+      "group": "ui_ux",
+      "description": "Két vagy több változat összehasonlítása valós felhasználói adatokkal, jól megfogalmazott hipotézissel és mérhető sikerfeltétellel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj A/B teszt hipotézist változattal, elsődleges metrikával, guardrail metrikával és döntési szabállyal.",
+        "Döntsd el, ez a UX kérdés A/B teszttel, usability testtel vagy analitikával vizsgálható-e jobban.",
+        "Auditáld a tesztet torzítás, túl korai leállítás és rossz metrika kockázata szerint."
+      ],
+      "anti_patterns": [
+        "test_without_hypothesis: Van két variáns, de nincs állítás, amit tesztelünk.",
+        "metric_cherry_picking: Utólag választjuk ki a nyertes metrikát.",
+        "local_win_global_loss: Egy konverzió javul, de retention vagy bizalom romlik."
+      ],
+      "checklist": [
+        "Van előre leírt hipotézis?",
+        "Egyértelmű az elsődleges metrika?",
+        "Vannak guardrail metrikák?",
+        "A döntési szabály előre ismert?"
+      ],
+      "relations": [
+        "ui_ux.conversion_flow",
+        "ui_ux.funnel",
+        "ui_ux.usability_testing"
+      ]
+    },
+    {
+      "id": "ui_ux.heatmap",
+      "label": "heatmap",
+      "group": "ui_ux",
+      "description": "Vizualizáció kattintásokról, görgetésről vagy figyelemről, amely jelzi a viselkedési mintát, de önmagában nem magyarázza az okot.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Értelmezd ezt a heatmapet hipotézisekkel, de jelöld, mi nem következik belőle biztosan.",
+        "Kapcsold össze a heatmap megfigyeléseit click path, drop-off és usability teszt kérdésekkel.",
+        "Javasolj UI változtatásokat heatmap alapján úgy, hogy ne téveszd össze a kattintást érdeklődéssel."
+      ],
+      "anti_patterns": [
+        "heatmap_as_mind_reading: A kattintásból biztos szándékot olvasunk ki.",
+        "sample_context_missing: Nem tudjuk, milyen felhasználóktól és helyzetből jön az adat.",
+        "rage_click_ignored: Ismételt kattintások frusztrációt jeleznek, de sikerként értelmezzük."
+      ],
+      "checklist": [
+        "Ismert a minta és kontextus?",
+        "A következtetés hipotézisként van kezelve?",
+        "Össze van kötve más adatokkal?",
+        "Külön figyel a frusztrációs jelekre?"
+      ],
+      "relations": [
+        "ui_ux.click_path",
+        "ui_ux.drop_off",
+        "ui_ux.usability_testing"
+      ]
+    },
+    {
+      "id": "ui_ux.click_path",
+      "label": "click_path",
+      "group": "ui_ux",
+      "description": "A kattintások és lépések tényleges sorrendje, amely megmutatja, hogyan próbálnak a felhasználók célt elérni.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Elemezd a click path adatokat: mely utak rövidek, kerülősek, visszalépősek vagy zsákutcásak.",
+        "Hasonlítsd össze a tervezett user flow-t a valódi click path mintákkal.",
+        "Javasolj navigációs vagy UI módosítást a kerülőutak csökkentésére."
+      ],
+      "anti_patterns": [
+        "average_path_blindness: Átlagos útvonalat nézünk, és elvesznek a fontos szegmensek.",
+        "clicks_as_success: Több kattintást aktivitásnak, nem súrlódásnak látunk.",
+        "missing_intent: A kattintási sorrendből cél nélkül próbálunk következtetni."
+      ],
+      "checklist": [
+        "A click path célhoz kötött?",
+        "Szegmensek szerint is vizsgáljuk?",
+        "Összevetjük a tervezett flow-val?",
+        "Kiderül, hol van kerülőút vagy zsákutca?"
+      ],
+      "relations": [
+        "ui_ux.user_flow",
+        "ui_ux.heatmap",
+        "ui_ux.friction"
+      ]
+    },
+    {
+      "id": "ui_ux.drop_off",
+      "label": "drop_off",
+      "group": "ui_ux",
+      "description": "Az a pont, ahol a felhasználók elhagyják a folyamatot, megszakítják a feladatot vagy nem jutnak tovább.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Elemezd a drop-off pontokat lépés, felhasználói szegmens, eszköz és hibatípus szerint.",
+        "Írj hipotéziseket arra, miért esnek ki a felhasználók ennél a lépésnél.",
+        "Javasolj javításokat: microcopy, mezőcsökkentés, bizalmi elem, technikai hiba vagy alternatív út."
+      ],
+      "anti_patterns": [
+        "drop_off_blame_user: A lemorzsolódást felhasználói türelmetlenségnek könyveljük el.",
+        "single_cause_assumption: Egyetlen okot feltételezünk minden kiesés mögött.",
+        "fix_without_measurement: Javítunk, de nincs előtte-utána mérés."
+      ],
+      "checklist": [
+        "Pontosan ismert, hol történik a kiesés?",
+        "Szegmens és eszköz szerint bontott?",
+        "Több lehetséges okot vizsgál?",
+        "Van mérhető javítási terv?"
+      ],
+      "relations": [
+        "ui_ux.funnel",
+        "ui_ux.friction",
+        "ui_ux.ab_testing"
+      ]
+    },
+    {
+      "id": "ui_ux.funnel",
+      "label": "funnel",
+      "group": "ui_ux",
+      "description": "Lépésekből álló folyamat, ahol mérhető, hány felhasználó jut tovább, hol akad el, és mi javítható.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a funnel lépéseit eseménynevekkel, sikerfeltételekkel és drop-off értelmezéssel.",
+        "Auditáld, hogy a funnel mérése tényleg a felhasználói utat követi-e, nem csak technikai eventeket.",
+        "Javasolj funnel javítási kísérleteket hipotézissel és guardrail metrikával."
+      ],
+      "anti_patterns": [
+        "funnel_as_pressure_pipe: Csak átnyomni akarjuk a felhasználót, nem segíteni.",
+        "event_mismatch: A mért event nem azt jelenti, amit a termékcsapat gondol.",
+        "missing_guardrails: Konverziót optimalizálunk bizalom, minőség vagy retention nélkül."
+      ],
+      "checklist": [
+        "A lépések felhasználói jelentést hordoznak?",
+        "Az eventek pontosan definiáltak?",
+        "A drop-off értelmezhető?",
+        "Vannak minőségi guardrail metrikák?"
+      ],
+      "relations": [
+        "ui_ux.conversion_flow",
+        "ui_ux.drop_off",
+        "ui_ux.ab_testing"
+      ]
+    },
+    {
+      "id": "ui_ux.cta",
+      "label": "cta",
+      "group": "ui_ux",
+      "description": "Cselekvésre hívó elem, amely világosan megnevezi a következő lépést és annak értelmét.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj CTA variációkat különböző szándékokra: kipróbálás, mentés, vásárlás, kapcsolatfelvétel és folytatás.",
+        "Auditáld a CTA-kat elhelyezés, szöveg, vizuális súly és ígéret szerint.",
+        "Javasolj CTA-t úgy, hogy ne legyen manipulatív vagy túlzó."
+      ],
+      "anti_patterns": [
+        "generic_click_here: A CTA nem mondja meg, mi fog történni.",
+        "too_many_primary_ctas: Több elem verseng elsődleges műveletként.",
+        "promise_mismatch: A CTA többet ígér, mint amit a következő lépés ad."
+      ],
+      "checklist": [
+        "A CTA konkrét műveletet nevez meg?",
+        "Egyértelmű, mi történik kattintás után?",
+        "A vizuális súlya illik a fontosságához?",
+        "Nem félrevezető vagy túlzó?"
+      ],
+      "relations": [
+        "ui_ux.primary_action",
+        "ui_ux.conversion_flow",
+        "frontend_ui.hero_section"
+      ]
+    },
+    {
+      "id": "ui_ux.primary_action",
+      "label": "primary_action",
+      "group": "ui_ux",
+      "description": "A képernyő legfontosabb művelete, amelynek vizuálisan és logikailag is elsőbbséget kell kapnia.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Határozd meg a képernyő primary actionjét a felhasználói cél alapján.",
+        "Auditáld, mi verseng most az elsődleges művelettel, és hogyan lehet tisztítani a döntést.",
+        "Írj primary action állapotokat: alap, hover, focus, loading, disabled, success."
+      ],
+      "anti_patterns": [
+        "multiple_primary_actions: Több elsődleges gomb van ugyanazon döntési pillanatban.",
+        "primary_below_noise: A fő művelet túl mélyen vagy vizuális zaj mögött van.",
+        "disabled_primary_mystery: A fő gomb inaktív, de nem derül ki, miért."
+      ],
+      "checklist": [
+        "Egyértelmű, mi a fő művelet?",
+        "A vizuális súlya elsődleges?",
+        "Az állapotai érthetők?",
+        "Nem ütközik más CTA-val?"
+      ],
+      "relations": [
+        "ui_ux.cta",
+        "ui_ux.secondary_action",
+        "ux_states.disabled_state"
+      ]
+    },
+    {
+      "id": "ui_ux.secondary_action",
+      "label": "secondary_action",
+      "group": "ui_ux",
+      "description": "Másodlagos művelet, amely támogatja a feladatot, de nem veheti el a figyelmet az elsődleges döntésről.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Rendezd el a primary és secondary actionöket úgy, hogy a döntési hierarchia tiszta legyen.",
+        "Írj szabályt, mikor legyen secondary button, link, ghost button vagy overflow menü.",
+        "Auditáld, mely másodlagos műveletek túl hangosak vagy rossz helyen vannak."
+      ],
+      "anti_patterns": [
+        "secondary_looks_primary: Másodlagos művelet vizuálisan elsődlegesnek tűnik.",
+        "action_row_clutter: A gombsor túl sok lehetőséget mutat egyszerre.",
+        "escape_action_hidden: Hasznos visszalépés vagy mentés piszkozatként túl rejtett."
+      ],
+      "checklist": [
+        "A másodlagos művelet vizuálisan halkabb?",
+        "Támogatja, nem zavarja a fő döntést?",
+        "A veszélyes műveletektől elkülönül?",
+        "Mobilon is elfér értelmesen?"
+      ],
+      "relations": [
+        "ui_ux.primary_action",
+        "ui_ux.destructive_action",
+        "frontend_ui.modal"
+      ]
+    },
+    {
+      "id": "ui_ux.destructive_action",
+      "label": "destructive_action",
+      "group": "ui_ux",
+      "description": "Veszélyes vagy visszafordíthatatlan művelet, például törlés, visszavonás, jogosultságmegvonás vagy adatvesztés.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a destructive action mintát törléshez: elhelyezés, szöveg, megerősítés, undo és auditálhatóság.",
+        "Írj figyelmeztető microcopyt úgy, hogy konkrét következményt mondjon, ne csak ijesztgessen.",
+        "Döntsd el, kell-e confirmation dialog, typed confirmation, undo vagy soft delete."
+      ],
+      "anti_patterns": [
+        "red_button_too_close: Veszélyes művelet túl közel van gyakori művelethez.",
+        "vague_destruction_copy: Nem derül ki, pontosan mi fog elveszni.",
+        "confirmation_fatigue: Minden apróság megerősítést kér, ezért a valódi veszély is rutinná válik."
+      ],
+      "checklist": [
+        "A következmény konkrétan le van írva?",
+        "A művelet elég távol van a gyakori gomboktól?",
+        "Van undo vagy soft delete, ha lehet?",
+        "A megerősítés arányos a kockázattal?"
+      ],
+      "relations": [
+        "ui_ux.confirmation_dialog",
+        "ui_ux.undo_pattern",
+        "frontend_ui.modal"
+      ]
+    },
+    {
+      "id": "ui_ux.confirmation_dialog",
+      "label": "confirmation_dialog",
+      "group": "ui_ux",
+      "description": "Megerősítő párbeszédablak kockázatos vagy nagy hatású művelet előtt, amely nem csak lassít, hanem döntést tisztáz.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj confirmation dialogot törléshez, jogosultságváltozáshoz vagy publikáláshoz konkrét következménnyel.",
+        "Döntsd el, szükséges-e megerősítő ablak, vagy jobb undo pattern.",
+        "Auditáld, mely megerősítések feleslegesek, és mely veszélyek nincsenek eléggé védve."
+      ],
+      "anti_patterns": [
+        "are_you_sure_copy: A dialog csak általánosan kérdez, következmény nélkül.",
+        "confirm_everything: Túl sok megerősítés miatt a felhasználó automatikusan kattint.",
+        "primary_destructive_default: A veszélyes gomb kapja a legkényelmesebb alapértelmezést."
+      ],
+      "checklist": [
+        "A dialog megnevezi a konkrét tárgyat és következményt?",
+        "A gombszöveg cselekvést nevez meg?",
+        "A cancel biztonságos és jól látható?",
+        "Nem használjuk feleslegesen visszavonható műveletekre?"
+      ],
+      "relations": [
+        "ui_ux.destructive_action",
+        "ui_ux.undo_pattern",
+        "frontend_ui.modal"
+      ]
+    },
+    {
+      "id": "ui_ux.undo_pattern",
+      "label": "undo_pattern",
+      "group": "ui_ux",
+      "description": "Visszavonási minta, amely bizonyos műveleteknél jobb élményt ad, mint az előzetes megerősítés.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg az undo patternt törléshez, archiváláshoz vagy státuszváltáshoz időablakkal és visszajelzéssel.",
+        "Döntsd el, mikor használjunk undo-t confirmation dialog helyett.",
+        "Írj toast vagy inline visszavonási microcopyt úgy, hogy elég ideig észrevehető legyen."
+      ],
+      "anti_patterns": [
+        "undo_too_fast: A visszavonás túl gyorsan eltűnik.",
+        "fake_undo: A felület visszavonást ígér, de a rendszer már végleg törölt.",
+        "undo_for_irreversible: Visszavonhatatlan művelethez undo látszatot adunk."
+      ],
+      "checklist": [
+        "A művelet technikailag visszavonható?",
+        "Az undo elég ideig látható?",
+        "A felhasználó érti, mi történt?",
+        "Kritikus műveletnél nem pótolja hamisan a védelmet?"
+      ],
+      "relations": [
+        "ui_ux.destructive_action",
+        "ux_states.toast_notification",
+        "ui_ux.feedback_loop"
+      ]
+    },
+    {
+      "id": "ui_ux.trust_signal",
+      "label": "trust_signal",
+      "group": "ui_ux",
+      "description": "Bizalmat erősítő jelzés, amely csökkenti a kockázatérzetet: bizonyíték, garancia, adatkezelési tisztaság, social proof vagy átlátható következmény.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Javasolj trust signalt checkout, regisztráció, adatbekérés vagy fizetés környezetébe.",
+        "Auditáld, hol kérünk bizalmat anélkül, hogy bizonyítékot vagy kontrollt adnánk.",
+        "Írj bizalmi microcopyt adatkezeléshez, próbaverzióhoz vagy fizetési lépéshez."
+      ],
+      "anti_patterns": [
+        "badge_confetti: Sok bizalmi ikon van, de egyik sem releváns a döntéshez.",
+        "trust_after_ask: Csak az adatbekérés után magyarázzuk el, miért biztonságos.",
+        "fake_social_proof: Homályos vagy nem ellenőrizhető állítás építi a bizalmat."
+      ],
+      "checklist": [
+        "A trust signal a döntési pontnál jelenik meg?",
+        "Konkrét kockázatra válaszol?",
+        "Bizonyítható vagy ellenőrizhető?",
+        "Nem takarja el a valódi feltételeket?"
+      ],
+      "relations": [
+        "ui_ux.conversion_flow",
+        "ui_ux.microcopy",
+        "security.encryption_in_transit"
+      ]
+    },
+    {
+      "id": "ui_ux.delight",
+      "label": "delight",
+      "group": "ui_ux",
+      "description": "Apró pozitív élményelem, amely akkor működik, ha a feladat már jól használható, és a plusz réteg nem zavarja a munkát.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Javasolj visszafogott delight elemeket sikerpillanathoz, onboardinghoz vagy üres állapothoz.",
+        "Döntsd el, mely élményelem erősíti a márka hangját, és melyik csak zavaró dísz.",
+        "Írj delight microcopyt úgy, hogy ne legyen gügyögő vagy túl ünnepélyes."
+      ],
+      "anti_patterns": [
+        "delight_before_usability: Kedves részleteket építünk, miközben az alap flow akadozik.",
+        "forced_fun: A játékosság nem illik a felhasználó helyzetéhez.",
+        "celebration_noise: Minden apró siker túl nagy ünneplést kap."
+      ],
+      "checklist": [
+        "Az alap feladat már jól működik?",
+        "A delight illik a kontextushoz?",
+        "Kikapcsolható vagy visszafogott, ha kell?",
+        "Nem lassítja a fő műveletet?"
+      ],
+      "relations": [
+        "ux_states.success_state",
+        "ui_ux.engagement",
+        "frontend_ui.microinteractions"
+      ]
+    },
+    {
+      "id": "ui_ux.dark_pattern",
+      "label": "dark_pattern",
+      "group": "ui_ux",
+      "description": "Manipulatív UX minta, amely a felhasználó ellen dolgozik: megtéveszt, sürget, elrejt, megnehezít vagy kényszerít.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld ezt a flow-t dark pattern kockázatokra: rejtett költség, kényszer, megtévesztő CTA, nehéz lemondás.",
+        "Írd át ezt a konverziós mintát etikusabb UX-re úgy, hogy az üzleti cél is megmaradjon.",
+        "Jelöld, mely UI elemek sérthetik a felhasználói kontrollt vagy tájékozott döntést."
+      ],
+      "anti_patterns": [
+        "roach_motel_flow: Könnyű belépni, nehéz kilépni vagy lemondani.",
+        "misleading_primary_action: A fő gomb mást sugall, mint amit végrehajt.",
+        "hidden_cost_or_consent: Költség, adatkezelés vagy feltétel későn derül ki."
+      ],
+      "checklist": [
+        "A felhasználó tájékozott döntést hoz?",
+        "A kilépés vagy lemondás arányosan könnyű?",
+        "A CTA nem félrevezető?",
+        "Az üzleti cél nem sérti a felhasználói kontrollt?"
+      ],
+      "relations": [
+        "ui_ux.conversion_flow",
+        "ui_ux.trust_signal",
+        "ui_ux.confirmation_dialog"
+      ]
+    },
+    {
+      "id": "ui_ux.design_debt",
+      "label": "design_debt",
+      "group": "ui_ux",
+      "description": "Felhalmozódott vizuális, komponens- és UX következetlenség, amely lassítja a fejlesztést és rontja a felhasználói bizalmat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts design debt auditot komponensduplikáció, spacing drift, tokeneltérés és flow következetlenség szerint.",
+        "Prioritizáld a design debt javításokat hatás, kockázat és fejlesztési költség alapján.",
+        "Írj refaktor tervet úgy, hogy közben ne álljon meg a termékfejlesztés."
+      ],
+      "anti_patterns": [
+        "visual_patch_stack: Minden új képernyő lokális vizuális javításokat kap.",
+        "component_forking: Ugyanaz a komponens sok kis eltéréssel él több helyen.",
+        "big_bang_redesign: Minden adósságot egyszerre akarunk kijavítani működő roadmap nélkül."
+      ],
+      "checklist": [
+        "Az adósság konkrét mintákra van bontva?",
+        "Van hatás és kockázat szerinti prioritás?",
+        "Kapcsolódik design system vagy komponensjavításhoz?",
+        "Fokozatosan javítható?"
+      ],
+      "relations": [
+        "frontend_ui.design_system",
+        "ui_ux.consistency",
+        "vibe_coding.refactor"
+      ]
+    },
+    {
+      "id": "ui_ux.consistency",
+      "label": "consistency",
+      "group": "ui_ux",
+      "description": "Következetes vizuális, nyelvi és működésbeli szabályok, amelyek miatt a felhasználó nem tanulja újra a terméket képernyőnként.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld a UI konzisztenciát komponensek, szövegek, állapotok, ikonok és navigáció szerint.",
+        "Írj egységesítési szabályokat gombokra, linkekre, hibákra, üres állapotokra és modálokra.",
+        "Keresd meg, hol jelent ugyanaz a vizuális minta mást különböző képernyőkön."
+      ],
+      "anti_patterns": [
+        "same_thing_different_name: Ugyanazt a műveletet több néven hívjuk.",
+        "same_style_different_behavior: Ugyanúgy kinéző elemek máshogy viselkednek.",
+        "local_exception_sprawl: Minden képernyőnek saját kivétele van."
+      ],
+      "checklist": [
+        "A hasonló elemek hasonlóan működnek?",
+        "A szövegezés egységes?",
+        "Az állapotok ugyanazt jelentik mindenhol?",
+        "A kivételek indokoltak és dokumentáltak?"
+      ],
+      "relations": [
+        "frontend_ui.design_system",
+        "ui_ux.predictability",
+        "ui_ux.design_debt"
+      ]
+    },
+    {
+      "id": "ui_ux.predictability",
+      "label": "predictability",
+      "group": "ui_ux",
+      "description": "Előre sejthető felületi viselkedés, ahol a felhasználó tudja, mire számítson kattintás, váltás, mentés vagy navigáció után.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld a kiszámíthatóságot: mely műveletek eredménye meglepő, késik vagy másként működik máshol.",
+        "Javasolj szabályokat navigáció, form mentés, szűrés és destruktív műveletek előrejelezhetőségére.",
+        "Írj microcopyt olyan művelethez, amelynek következménye nem magától értetődő."
+      ],
+      "anti_patterns": [
+        "surprise_navigation: Kattintás után váratlan oldalra vagy állapotba kerülünk.",
+        "invisible_side_effect: A művelet háttérben más adatot is módosít.",
+        "inconsistent_save_model: Néhol automatikus mentés van, máshol kézi, jelzés nélkül."
+      ],
+      "checklist": [
+        "A műveletek következménye előre érthető?",
+        "A mentési modell következetes?",
+        "Nincsenek rejtett mellékhatások?",
+        "A kivételek magyarázatot kapnak?"
+      ],
+      "relations": [
+        "ui_ux.consistency",
+        "ui_ux.feedback_loop",
+        "ux_states.form_feedback"
+      ]
+    },
+    {
+      "id": "ui_ux.discoverability",
+      "label": "discoverability",
+      "group": "ui_ux",
+      "description": "A funkciók megtalálhatósága: a felhasználó rájön-e, hogy valami létezik, hol van, és mikor érdemes használnia.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld a discoverabilityt: mely fontos funkciók vannak elrejtve, rosszul nevezve vagy rossz pillanatban mutatva.",
+        "Javasolj felfedezési mintákat: üres állapot, tooltip, command palette, onboarding vagy kontextuális CTA.",
+        "Különítsd el, mi legyen mindig látható, mi tanítható és mi kereshető."
+      ],
+      "anti_patterns": [
+        "hidden_power_feature: Fontos funkció csak haladó trükkel található meg.",
+        "tooltip_teaches_everything: A felfedezhetőséget tooltipek próbálják pótolni.",
+        "menu_burial: Minden ritkább művelet egy mély, névtelen menübe kerül."
+      ],
+      "checklist": [
+        "A fontos funkciók jó pillanatban látszanak?",
+        "A címkék felhasználói nyelven vannak?",
+        "Van keresés vagy gyorselérés haladó használathoz?",
+        "Nem takarja el a UI a ritkább, de fontos műveleteket?"
+      ],
+      "relations": [
+        "ui_ux.affordance",
+        "frontend_ui.command_palette",
+        "ui_ux.learnability"
+      ]
+    },
+    {
+      "id": "ui_ux.learnability",
+      "label": "learnability",
+      "group": "ui_ux",
+      "description": "A felület megtanulhatósága: mennyi idő alatt érti meg a felhasználó a modellt, és hogyan válik gyorsabbá ismételt használatkor.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Auditáld a learnabilityt első használat, visszatérő használat és haladó gyorsítás szerint.",
+        "Javasolj tanulást segítő mintákat: első siker, progresszív feltárás, kontextuális segítség és következetes minták.",
+        "Írj onboarding és in-product help javaslatot úgy, hogy a felhasználó később ne akadjon meg a tanító rétegen."
+      ],
+      "anti_patterns": [
+        "training_required_ui: A felület csak külön oktatás után használható.",
+        "permanent_beginner_mode: A UI örökké kezdőként kezeli a felhasználót.",
+        "shortcut_without_model: Gyorsbillentyűk vannak, de az alap működési modell nem érthető."
+      ],
+      "checklist": [
+        "Az első feladat gyorsan megtanulható?",
+        "A visszatérő használó gyorsabb utat kap?",
+        "A segítség kontextusban jelenik meg?",
+        "A rendszer következetessége tanítja a mintát?"
+      ],
+      "relations": [
+        "ui_ux.onboarding",
+        "ui_ux.discoverability",
+        "ui_ux.usability"
+      ]
+    }
+  ]
+}

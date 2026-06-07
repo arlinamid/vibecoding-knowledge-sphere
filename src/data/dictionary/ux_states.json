@@ -1,0 +1,470 @@
+{
+  "group": "ux_states",
+  "keywords": [
+    {
+      "id": "ux_states.loading_state",
+      "label": "loading_state",
+      "group": "ux_states",
+      "description": "Betöltés közbeni állapot, amely jelzi, hogy a rendszer dolgozik, és megakadályozza az üres vagy megfagyottnak tűnő felületet.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg ennek a flow-nak a loading state-jeit rövid, közepes és hosszú betöltésre.",
+        "Adj loading microcopyt, amely megmondja, mi történik, de nem ígér hamis pontosságot.",
+        "Válaszd ki, hol kell spinner, skeleton, progress bar vagy inline loading.",
+        "Írj állapotkezelési logikát, hogy a felhasználó ne kattintson duplán betöltés közben."
+      ],
+      "anti_patterns": [
+        "blank_while_fetching: Betöltés alatt üres képernyő látszik.",
+        "spinner_forever: A spinner végtelenül forog időkorlát vagy hibaág nélkül.",
+        "fake_progress: A progress bar pontosságot sugall, miközben nincs valódi mérés mögötte.",
+        "double_submit_window: A felhasználó többször indíthatja ugyanazt a műveletet."
+      ],
+      "checklist": [
+        "Minden lassú művelethez van látható állapot?",
+        "Külön kezeli a rövid és hosszú várakozást?",
+        "Van timeout vagy hibaág?",
+        "Nem takarja el feleslegesen a már meglévő adatot?",
+        "Megakadályozza a dupla beküldést?"
+      ],
+      "relations": [
+        "ux_states.skeleton_loader",
+        "performance.lazy_loading",
+        "accessibility.reduced_motion"
+      ]
+    },
+    {
+      "id": "ux_states.empty_state",
+      "label": "empty_state",
+      "group": "ux_states",
+      "description": "Üres állapot, amely elmagyarázza, miért nincs még tartalom vagy találat, és megmutatja a következő hasznos lépést.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj empty state szöveget üres lista, első használat és nulla keresési találat esetre külön.",
+        "Adj CTA-t az üres állapothoz úgy, hogy ne legyen erőltetett.",
+        "Tervezd meg, mit mutasson a dashboard, amikor még nincs adat.",
+        "Különböztesd meg a valóban üres állapotot a betöltési és jogosultsági hibától."
+      ],
+      "anti_patterns": [
+        "generic_nothing_here: Az üres állapot csak annyit mond, hogy nincs itt semmi.",
+        "empty_as_error: Az üresség hibának tűnik, pedig természetes kezdőállapot.",
+        "no_next_step: A felhasználó nem tudja, mit tegyen tovább.",
+        "search_dead_end: Nulla találatnál nincs javaslat szűrő törlésre vagy keresés módosításra."
+      ],
+      "checklist": [
+        "Kiderül, miért üres a nézet?",
+        "Van értelmes következő lépés?",
+        "Első használat és nulla találat külön szöveget kap?",
+        "Nem keveredik össze hibával vagy betöltéssel?",
+        "A CTA valóban a legjobb következő művelet?"
+      ],
+      "relations": [
+        "ui_ux.microcopy",
+        "ui_ux.activation",
+        "ux_states.onboarding_flow"
+      ]
+    },
+    {
+      "id": "ux_states.error_state",
+      "label": "error_state",
+      "group": "ux_states",
+      "description": "Hiba esetén megjelenő felület vagy komponensállapot, amely érthető okot, javítási lehetőséget és biztonságos továbblépést ad.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj error state-et hálózati hiba, jogosultsági hiba, validációs hiba és szerverhiba esetre.",
+        "Fogalmazz hibaüzenetet úgy, hogy ne hibáztassa a felhasználót, mégis cselekvést adjon.",
+        "Adj retry, support és fallback viselkedést ehhez a hibás állapothoz.",
+        "Tervezd meg, mikor legyen inline hiba, page-level hiba vagy toast."
+      ],
+      "anti_patterns": [
+        "dead_end_error: A hibaüzenet zsákutca, nincs retry vagy visszalépés.",
+        "blame_user_copy: A szöveg a felhasználót teszi felelőssé homályos hiba miatt.",
+        "technical_dump: Nyers exception vagy stack trace kerül a UI-ba.",
+        "same_error_for_all: Minden hibatípus ugyanazt a generikus üzenetet kapja."
+      ],
+      "checklist": [
+        "A hiba oka emberi nyelven érthető?",
+        "Van retry, módosítás vagy visszalépési út?",
+        "A hibatípushoz illik a megjelenési forma?",
+        "Nem szivárogtat technikai vagy biztonsági részletet?",
+        "Képernyőolvasóval is észlelhető?"
+      ],
+      "relations": [
+        "accessibility.error_announcement",
+        "ux_states.toast_notification",
+        "ui_ux.undo_pattern"
+      ]
+    },
+    {
+      "id": "ux_states.success_state",
+      "label": "success_state",
+      "group": "ux_states",
+      "description": "Sikeres művelet visszajelzése, amely megerősíti a változást, és ha kell, következő lépést vagy visszavonást kínál.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a mentés, törlés, beküldés és import sikerállapotát külön-külön.",
+        "Írj rövid success microcopyt, amely nem túl ünnepélyes, de megnyugtató.",
+        "Döntsd el, mikor elég toast, és mikor kell tartós sikeroldal vagy inline visszajelzés.",
+        "Adj következő lépést sikeres onboarding vagy aktiváció után."
+      ],
+      "anti_patterns": [
+        "silent_success: A művelet sikerült, de a felhasználó nem kap megerősítést.",
+        "celebration_overkill: Apró művelet túl nagy ünneplést kap.",
+        "success_without_next_step: A siker után nem világos, hova tovább.",
+        "undo_missing: Visszafordítható műveletnél nincs undo vagy biztonsági kapaszkodó."
+      ],
+      "checklist": [
+        "A felhasználó biztosan látja, hogy sikerült a művelet?",
+        "A visszajelzés arányos a művelet súlyával?",
+        "Van következő lépés, ha természetes?",
+        "Destruktív vagy tömeges műveletnél van undo vagy részletezés?",
+        "A success nem takarja el a fontos új állapotot?"
+      ],
+      "relations": [
+        "ux_states.toast_notification",
+        "ui_ux.feedback_loop",
+        "ui_ux.activation"
+      ]
+    },
+    {
+      "id": "ux_states.skeleton_loader",
+      "label": "skeleton_loader",
+      "group": "ux_states",
+      "description": "Tartalomhelykitöltő betöltés alatt, amely előre jelzi az elrendezést, és csökkenti az üres képernyő érzetét.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a skeleton loader elrendezését ehhez a kártyalistához vagy dashboardhoz.",
+        "Adj szabályt, mikor használjunk skeletont spinner helyett.",
+        "Írj CSS skeleton mintát reduced motion támogatással.",
+        "Ellenőrizd, hogy a skeleton méretei nem okoznak layout shiftet."
+      ],
+      "anti_patterns": [
+        "skeleton_mismatch: A skeleton alakja nem hasonlít a betöltődő tartalomra.",
+        "layout_shift_loader: Betöltéskor nagyot ugrik az elrendezés.",
+        "shimmer_overload: A csillogó animáció túl erős vagy reduced motion mellett is fut.",
+        "skeleton_for_instant_load: Azonnali művelethez felesleges, villanó skeleton jelenik meg."
+      ],
+      "checklist": [
+        "A skeleton aránya követi a valódi tartalmat?",
+        "Megőrzi a layout méreteit betöltés után is?",
+        "Reduced motion mellett nyugodt változatot használ?",
+        "Csak ott jelenik meg, ahol valóban hasznos?",
+        "Nem rejti el a már ismert, régi adatot feleslegesen?"
+      ],
+      "relations": [
+        "ux_states.loading_state",
+        "performance.lcp",
+        "accessibility.reduced_motion"
+      ]
+    },
+    {
+      "id": "ux_states.toast_notification",
+      "label": "toast_notification",
+      "group": "ux_states",
+      "description": "Rövid, ideiglenes értesítés, amely nem szakítja meg a munkát, de megerősít, figyelmeztet vagy hibát jelez.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a toast szabályokat siker, hiba, figyelmeztetés és folyamatban lévő művelet esetére.",
+        "Írj toast microcopyt rövid, egyértelmű és képernyőolvasóval is használható formában.",
+        "Döntsd el, mely üzenetek nem valók toastba, mert tartós hibának kell lenniük.",
+        "Adj toast queue és időzítés szabályt, hogy ne torlódjanak az értesítések."
+      ],
+      "anti_patterns": [
+        "toast_spam: Sok értesítés egymásra halmozódik.",
+        "critical_toast_only: Fontos hiba eltűnő toastban él tartós jelzés nélkül.",
+        "vague_toast: Az üzenet csak annyit mond, hogy valami történt.",
+        "unreachable_action: A toastban lévő undo vagy részletek link túl gyorsan eltűnik."
+      ],
+      "checklist": [
+        "A toast rövid és konkrét?",
+        "Kritikus információ nem csak toastban jelenik meg?",
+        "Van limit vagy sorbarendezés több toast esetén?",
+        "Akciógomb esetén elég ideig látható?",
+        "Screen reader számára is bejelenthető?"
+      ],
+      "relations": [
+        "accessibility.error_announcement",
+        "ux_states.success_state",
+        "ux_states.form_feedback"
+      ]
+    },
+    {
+      "id": "ux_states.inline_validation",
+      "label": "inline_validation",
+      "group": "ux_states",
+      "description": "Űrlapmezők közvetlen ellenőrzése, amely a felhasználó mellett dolgozik, nem csak beküldés után büntet.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg az inline validation szabályait: mikor jelezzen gépelés közben, blur után vagy submitkor.",
+        "Írj mezőszintű hibaüzeneteket email, jelszó, dátum és kötelező mező esetére.",
+        "Adj valid, invalid, pending és untouched állapotot ehhez az űrlapmezőhöz.",
+        "Javasolj megoldást aszinkron validációra, például foglalt felhasználónév ellenőrzésre."
+      ],
+      "anti_patterns": [
+        "eager_scolding: A mező már az első karakter után hibát jelez.",
+        "late_validation: Csak beküldés után derül ki minden hiba.",
+        "color_only_error: A validáció csak piros színből látszik.",
+        "async_race_error: Régi aszinkron validációs válasz felülírja az újabb állapotot."
+      ],
+      "checklist": [
+        "A validáció időzítése illik a mező típusához?",
+        "A hiba pontosan megmondja, mit kell javítani?",
+        "Van pending állapot aszinkron ellenőrzésnél?",
+        "A hiba nem csak színből látszik?",
+        "Submitkor minden hiba összefoglalható?"
+      ],
+      "relations": [
+        "ux_states.form_feedback",
+        "accessibility.form_accessibility",
+        "ux_states.error_state"
+      ]
+    },
+    {
+      "id": "ux_states.form_feedback",
+      "label": "form_feedback",
+      "group": "ux_states",
+      "description": "Űrlap beküldése előtti, közbeni és utáni visszajelzés: mi hiányzik, mi mentődik, mi sikerült, mi hibázott.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg ennek az űrlapnak a feedback rendszerét dirty, saving, saved, error és disabled állapotokra.",
+        "Írj submit utáni hibalistát, amely fókuszálható és mezőkhöz kapcsolódik.",
+        "Adj success és error feedbacket mentési űrlaphoz úgy, hogy ne vesszen el a felhasználó munkája.",
+        "Javasolj autosave visszajelzést túl sok zaj nélkül."
+      ],
+      "anti_patterns": [
+        "lost_form_work: Hiba után eltűnik a beírt adat.",
+        "submit_black_box: Beküldés után nem látszik, dolgozik-e a rendszer.",
+        "saved_but_unclear: Nem derül ki, hogy az adat mentve lett-e.",
+        "error_summary_disconnected: Az összesített hiba nem visz a hibás mezőkhöz."
+      ],
+      "checklist": [
+        "Beküldés közben látszik a folyamat?",
+        "Hiba után megmaradnak a beírt adatok?",
+        "A sikeres mentés egyértelmű?",
+        "Az összesített hibalista mezőkhöz kapcsolódik?",
+        "Autosave esetén nincs túl sok visszajelzési zaj?"
+      ],
+      "relations": [
+        "ux_states.inline_validation",
+        "ux_states.success_state",
+        "accessibility.error_announcement"
+      ]
+    },
+    {
+      "id": "ux_states.disabled_state",
+      "label": "disabled_state",
+      "group": "ux_states",
+      "description": "Inaktív elem állapota, amely megmutatja, hogy egy művelet miért nem elérhető, és hogyan tehető elérhetővé.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg, mikor legyen disabled egy gomb, és mikor jobb engedni kattintani magyarázó hibával.",
+        "Írj tooltipet vagy helper textet inaktív műveletek okára.",
+        "Auditáld, hol hagyja magára a felhasználót egy szürkített gomb.",
+        "Adj alternatívát olyan disabled állapotra, amely akadályozza a felfedezést."
+      ],
+      "anti_patterns": [
+        "mystery_disabled: A gomb inaktív, de nem derül ki, miért.",
+        "disabled_everything: Túl sok elem tiltott, ezért a felület halottnak érződik.",
+        "hoverless_disabled_help: Az ok csak hoverrel látszik, mobilon vagy billentyűzettel nem.",
+        "premature_disable: Már akkor tiltunk műveletet, amikor magyarázó validáció jobb lenne."
+      ],
+      "checklist": [
+        "Kiderül, miért inaktív az elem?",
+        "Van út az állapot feloldásához?",
+        "Mobilon és billentyűzettel is elérhető a magyarázat?",
+        "Nem akadályozza feleslegesen a felfedezést?",
+        "A disabled vizuálisan olvasható marad?"
+      ],
+      "relations": [
+        "ui_ux.affordance",
+        "ux_states.inline_validation",
+        "accessibility.contrast_ratio"
+      ]
+    },
+    {
+      "id": "ux_states.hover_state",
+      "label": "hover_state",
+      "group": "ux_states",
+      "description": "Egérrel rámutatáskor látható állapot, amely jelzi az interaktivitást, de nem lehet az egyetlen használati jel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a hover állapotokat gombokra, kártyákra, linkekre és ikonokra.",
+        "Javasolj hover visszajelzést, amely nem mozgatja el a layoutot.",
+        "Ellenőrizd, hogy hover nélkül is felismerhető-e az interaktív elem.",
+        "Adj hover és focus állapotpárt ugyanahhoz a komponenshez."
+      ],
+      "anti_patterns": [
+        "hover_only_discovery: A művelet csak hoverre derül ki.",
+        "layout_shift_hover: Hoverkor megnő az elem és eltolja a környezetét.",
+        "mobile_hover_assumption: Mobilon is hoverre épít a UI.",
+        "inconsistent_hover: Ugyanaz a hover több helyen más jelentést hordoz."
+      ],
+      "checklist": [
+        "Hover nélkül is felismerhető az elem szerepe?",
+        "Nem okoz layout shiftet?",
+        "Van hozzá billentyűzetes focus állapot?",
+        "Mobilon nem függ hover viselkedéstől?",
+        "Következetes a design systemben?"
+      ],
+      "relations": [
+        "ux_states.focus_state",
+        "ux_states.active_state",
+        "frontend_ui.microinteractions"
+      ]
+    },
+    {
+      "id": "ux_states.focus_state",
+      "label": "focus_state",
+      "group": "ux_states",
+      "description": "Billentyűzettel vagy kattintással fókuszált elem állapota, amely láthatóvá teszi, hol tart a felhasználó a felületen.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a focus state-et minden interaktív elemre úgy, hogy billentyűzettel jól látható legyen.",
+        "Adj focus ring szabályokat light és dark témához.",
+        "Auditáld, hol tűnik el a fókusz vagy olvad bele a háttérbe.",
+        "Írj CSS mintát focus-visible használatra."
+      ],
+      "anti_patterns": [
+        "outline_none: A fókusz körvonala ki van kapcsolva pótlás nélkül.",
+        "focus_invisible: A fókusz technikailag létezik, de vizuálisan alig látszik.",
+        "focus_style_as_hover: A fókusz csak hoverrel azonos, billentyűzettel nem elég egyértelmű.",
+        "focus_order_mismatch: A fókusz sorrendje nem követi a tartalom logikáját."
+      ],
+      "checklist": [
+        "Minden interaktív elemnek van látható fókusza?",
+        "A fókusz kontrasztja elég erős?",
+        "Focus-visible külön kezeli a billentyűzetes használatot?",
+        "A fókuszsorrend logikus?",
+        "Modalok és menük nyitásakor kontrollált a fókusz?"
+      ],
+      "relations": [
+        "accessibility.keyboard_navigation",
+        "ux_states.hover_state",
+        "ux_states.active_state"
+      ]
+    },
+    {
+      "id": "ux_states.active_state",
+      "label": "active_state",
+      "group": "ux_states",
+      "description": "Éppen megnyomott, kiválasztott vagy aktuális elem állapota, amely visszajelzi a művelet pillanatát vagy az aktuális nézetet.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg az active állapotot gombokra, tabokra, nav itemekre és toggle elemekre.",
+        "Különítsd el a pressed, selected és current állapotokat ebben a komponensben.",
+        "Adj vizuális szabályt, hogy az active state ne keveredjen hoverrel vagy disabled állapottal.",
+        "Írj ARIA attribútum javaslatot aktív tab, current page és toggle esetére."
+      ],
+      "anti_patterns": [
+        "active_hover_confusion: Nem látszik, mi van kiválasztva és mi csak hover alatt áll.",
+        "no_current_location: Navigációban nem derül ki, melyik oldalon vagyunk.",
+        "pressed_without_feedback: Gombnyomáskor nincs azonnali reakció.",
+        "state_name_blur: A selected, pressed és current ugyanúgy néz ki és ugyanazt jelenti."
+      ],
+      "checklist": [
+        "Látszik az aktuális oldal vagy kiválasztott elem?",
+        "A pressed visszajelzés azonnali?",
+        "Nem keveredik hover vagy disabled állapottal?",
+        "ARIA állapot illeszkedik a vizuális állapothoz?",
+        "Több állapot együtt is értelmezhető?"
+      ],
+      "relations": [
+        "ux_states.hover_state",
+        "ux_states.focus_state",
+        "ui_ux.feedback_loop"
+      ]
+    },
+    {
+      "id": "ux_states.onboarding_flow",
+      "label": "onboarding_flow",
+      "group": "ux_states",
+      "description": "Új felhasználót bevezető folyamat, amely fokozatosan mutatja meg az értéket és az első valódi sikerlépést.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg az onboarding flow-t első belépés, első beállítás, első siker és kihagyás lehetőséggel.",
+        "Írj onboarding lépéseket úgy, hogy ne legyen hosszú kötelező túra.",
+        "Adj progress jelzést és visszatérési pontot félbehagyott onboardinghoz.",
+        "Különítsd el a termékérték bemutatását a kötelező konfigurációtól."
+      ],
+      "anti_patterns": [
+        "tour_before_value: Hosszú túra indul, mielőtt a felhasználó bármi hasznosat látna.",
+        "no_skip_path: Az onboarding kötelezően végigkényszerít mindenkit.",
+        "setup_overwhelm: Túl sok döntés érkezik az első percben.",
+        "forgotten_resume: Félbehagyott onboardingot nem lehet értelmesen folytatni."
+      ],
+      "checklist": [
+        "Az első érték gyorsan elérhető?",
+        "Van kihagyás vagy későbbi folytatás?",
+        "A lépések száma nem túl sok?",
+        "Látszik a haladás?",
+        "A gyakorlott felhasználó nem akad el benne?"
+      ],
+      "relations": [
+        "ux_states.first_run_experience",
+        "ui_ux.onboarding",
+        "ui_ux.progressive_disclosure"
+      ]
+    },
+    {
+      "id": "ux_states.first_run_experience",
+      "label": "first_run_experience",
+      "group": "ux_states",
+      "description": "Az első használat élménye: az első perc, első kattintás és első siker úgy megtervezve, hogy a felhasználó ne üres rendszerbe érkezzen.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg az első futás élményét demo adatokkal, vezetett első lépéssel és gyors sikerrel.",
+        "Írj first-run microcopyt, amely elmagyarázza, hol kezdjen a felhasználó.",
+        "Döntsd el, kell-e sample content, template vagy import opció az első használathoz.",
+        "Adj első 5 perc útvonalat új felhasználónak."
+      ],
+      "anti_patterns": [
+        "empty_product_first: A felhasználó üres felületet kap, mielőtt értené az értéket.",
+        "all_setup_no_payoff: Az első élmény csak konfigurációból áll.",
+        "sample_data_trap: Demo adat bent marad és összekeveredik a valódi munkával.",
+        "first_action_too_big: Az első feladat túl összetett vagy túl kockázatos."
+      ],
+      "checklist": [
+        "Az első percben látszik a termék értéke?",
+        "Van biztonságos első művelet?",
+        "Demo adat vagy template nem zavarja később a valódi munkát?",
+        "Az első siker gyorsan elérhető?",
+        "A felhasználó tudja, hol folytassa?"
+      ],
+      "relations": [
+        "ux_states.onboarding_flow",
+        "ux_states.empty_state",
+        "ui_ux.activation"
+      ]
+    },
+    {
+      "id": "ux_states.progressive_disclosure",
+      "label": "progressive_disclosure",
+      "group": "ux_states",
+      "description": "Információ és vezérlés fokozatos megjelenítése, hogy a kezdő ne fulladjon bele, a haladó pedig elérje a mélyebb funkciókat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd át ezt a zsúfolt beállítási panelt progressive disclosure elv szerint.",
+        "Döntsd el, mely mezők legyenek alapból láthatók, és melyek kerüljenek haladó részbe.",
+        "Írj microcopyt kinyitható részhez úgy, hogy világos legyen, mi van mögötte.",
+        "Adj szabályt, mikor használjunk accordiont, steppert, reveal gombot vagy külön oldalt."
+      ],
+      "anti_patterns": [
+        "everything_at_once: Minden beállítás egyszerre zúdul a felhasználóra.",
+        "hidden_critical_control: Fontos művelet túl mélyre van elrejtve.",
+        "mystery_disclosure: A kinyitható rész címéből nem derül ki, mit tartalmaz.",
+        "accordion_dump: A zsúfoltság csak accordionok mögé van tolva valódi rendezés nélkül."
+      ],
+      "checklist": [
+        "A leggyakoribb műveletek azonnal látszanak?",
+        "A haladó beállítások megtalálhatók, de nem zavarók?",
+        "A kinyitható részek címkéi konkrétak?",
+        "Nincs kritikus funkció elrejtve?",
+        "A fokozatos feltárás csökkenti a döntési terhet?"
+      ],
+      "relations": [
+        "ui_ux.progressive_disclosure",
+        "frontend_ui.accordion",
+        "ux_states.onboarding_flow"
+      ]
+    }
+  ]
+}

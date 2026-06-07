@@ -1,0 +1,628 @@
+{
+  "group": "vibe_coding",
+  "keywords": [
+    {
+      "id": "vibe_coding.git",
+      "label": "git",
+      "group": "vibe_coding",
+      "description": "Verziókezelő rendszer, amellyel visszakövethető, mi változott a projektben és mikor lehet biztonságosan visszalépni.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Nézd át a git státuszt, és javasolj értelmes commitokra bontható változáscsoportokat.",
+        "Magyarázd el, mely fájlok tartoznak össze ebben a módosításban, és mit ne keverjek bele a commitba.",
+        "Készíts rövid visszalépési tervet arra az esetre, ha ez a változtatás hibát okozna élesben.",
+        "Írj kezdőbarát git munkamenetet: branch létrehozás, módosítás, ellenőrzés, commit, pull request."
+      ],
+      "anti_patterns": [
+        "everything_commit: Minden módosítás egyetlen óriási commitba kerül, ezért később nehéz megérteni vagy visszavonni.",
+        "dirty_unknown_state: Úgy indul fejlesztés, hogy senki nem nézi meg a git status és diff aktuális állapotát.",
+        "generated_noise: Build output, log vagy cache fájl is bekerül a verziótörténetbe.",
+        "no_restore_point: Nincs tiszta mentési pont nagyobb refaktor vagy migráció előtt."
+      ],
+      "checklist": [
+        "Megnézted a git status és git diff kimenetet?",
+        "A változások logikus, külön commitokra bonthatók?",
+        "Nincs véletlenül build output, log, cache vagy secret a módosítások között?",
+        "Van tiszta visszalépési pont nagyobb változtatás előtt?",
+        "A branch neve elárulja, milyen munkát tartalmaz?"
+      ],
+      "relations": [
+        "vibe_coding.commit",
+        "vibe_coding.branch",
+        "vibe_coding.rollback",
+        "documentation.changelog"
+      ]
+    },
+    {
+      "id": "vibe_coding.commit",
+      "label": "commit",
+      "group": "vibe_coding",
+      "description": "Egy konkrét, értelmesen körülhatárolt változtatás mentése a projekt történetébe.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj conventional commit üzenetet ehhez a diffhez, rövid tárggyal és indokló leírással.",
+        "Mondd meg, ez a módosítás egy commit legyen-e, vagy bontsam több kisebb commitra.",
+        "Fogalmazd meg a commit üzenetet úgy, hogy három hónap múlva is érthető legyen, miért történt a változtatás.",
+        "Ellenőrizd, hogy a commit csak egy célhoz tartozó fájlokat tartalmaz-e."
+      ],
+      "anti_patterns": [
+        "vague_message: Olyan commit üzenet készül, mint update, fix vagy changes.",
+        "mixed_intent: Egy commitban bugfix, design változtatás, refaktor és dokumentáció is összekeveredik.",
+        "untested_commit: Teszt vagy legalább alap ellenőrzés nélkül kerül mentésre működést érintő változás.",
+        "hidden_breaking_change: Törő változás kerül be úgy, hogy az üzenet nem jelzi."
+      ],
+      "checklist": [
+        "Egy mondatban meg tudod mondani, mit old meg a commit?",
+        "A tárgysor konkrétabb, mint egy sima fix/update?",
+        "Nincs benne más célú módosítás?",
+        "Futtattál releváns ellenőrzést vagy leírtad, miért nem?",
+        "Törő változás esetén jelölve van a commitban vagy PR-ben?"
+      ],
+      "relations": [
+        "vibe_coding.git",
+        "vibe_coding.pull_request",
+        "vibe_coding.changelog"
+      ]
+    },
+    {
+      "id": "vibe_coding.branch",
+      "label": "branch",
+      "group": "vibe_coding",
+      "description": "Külön fejlesztési ág, amely elszigeteli az adott javítást vagy funkciót a fő kódtól.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Javasolj branch nevet ehhez a feladathoz a csapat naming szabályai szerint.",
+        "Mondd meg, milyen kisebb feladatokra érdemes bontani ezt a branchet, hogy ne nőjön túl nagyra.",
+        "Ellenőrizd, hogy ez a branch egyetlen célra fókuszál-e, vagy több munkát kever.",
+        "Adj tervet a branch frissen tartására a main változásaival szemben."
+      ],
+      "anti_patterns": [
+        "forever_branch: Hetekig élő branch, amely végül nehezen olvasztható vissza.",
+        "unclear_branch_name: A branch neve nem mondja meg, bugfix, feature vagy refaktor készül rajta.",
+        "shared_experiment: Többen dolgoznak egy kísérleti branchen tiszta cél és tulajdonos nélkül.",
+        "stale_base: A branch régi main állapotról indul, ezért a végén sok konfliktus keletkezik."
+      ],
+      "checklist": [
+        "A branch neve tartalmazza a munka típusát vagy issue azonosítóját?",
+        "Egy fő célja van a branchnek?",
+        "Rendszeresen frissül a main aktuális állapotával?",
+        "A branch mérete még review-zható?",
+        "Törölhető lesz merge után?"
+      ],
+      "relations": [
+        "vibe_coding.git",
+        "vibe_coding.merge",
+        "vibe_coding.issue"
+      ]
+    },
+    {
+      "id": "vibe_coding.merge",
+      "label": "merge",
+      "group": "vibe_coding",
+      "description": "Két fejlesztési ág összeolvasztása úgy, hogy a végleges kód működő és követhető maradjon.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Nézd át ezt a merge előtt álló változást, és keresd meg a konfliktusra vagy regresszióra hajlamos részeket.",
+        "Magyarázd el, mely teszteket futtassam merge előtt ennél a módosításnál.",
+        "Segíts feloldani a konfliktust úgy, hogy egyik oldal üzleti logikája se vesszen el.",
+        "Készíts merge utáni smoke check listát ehhez a feature-höz."
+      ],
+      "anti_patterns": [
+        "blind_conflict_resolution: Konfliktus feloldása anélkül, hogy értenénk mindkét ág szándékát.",
+        "merge_without_tests: Beolvasztás alap build, lint vagy smoke check nélkül.",
+        "lost_changes: Az egyik ág módosítása véletlenül eltűnik konfliktuskezelés közben.",
+        "late_big_merge: Túl nagy branch kerül egyszerre beolvasztásra, sok rejtett mellékhatással."
+      ],
+      "checklist": [
+        "Érted mindkét oldal változtatási szándékát?",
+        "Lefutott a releváns build, lint vagy teszt?",
+        "Konfliktus után kézzel is ellenőrizted az érintett működést?",
+        "A merge nem hoz be véletlen, nem kapcsolódó fájlokat?",
+        "Van visszavonási terv, ha a merge után hiba derül ki?"
+      ],
+      "relations": [
+        "vibe_coding.branch",
+        "vibe_coding.pull_request",
+        "testing_qa.smoke_test"
+      ]
+    },
+    {
+      "id": "vibe_coding.pull_request",
+      "label": "pull_request",
+      "group": "vibe_coding",
+      "description": "Review-ra küldött változáscsomag, ahol a kód, a szándék és az ellenőrzés együtt látszik.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj PR leírást: mi változott, miért, hogyan teszteltem, és mire figyeljen a reviewer.",
+        "Nézd át ezt a PR-t review szemmel: bug, regresszió, hiányzó teszt, félrevezető dokumentáció.",
+        "Készíts rövid reviewer checklistet ehhez a változtatáshoz.",
+        "Fogalmazd át a PR leírást úgy, hogy egy új csapattag is értse a kontextust."
+      ],
+      "anti_patterns": [
+        "empty_pr_description: A reviewer csak a diffből próbálja kitalálni a szándékot.",
+        "too_large_pr: Túl sok fájl és cél egy PR-ben, ezért a review felszínes lesz.",
+        "no_test_notes: Nem derül ki, mit ellenőriztek és mi maradt kockázat.",
+        "defensive_review: A feedback személyes vitává válik, nem a kód minőségéről szól."
+      ],
+      "checklist": [
+        "A PR leírja a problémát és a megoldást?",
+        "Van tesztelési vagy ellenőrzési szakasz?",
+        "Külön jelölve vannak a kockázatos részek?",
+        "A PR mérete review-zható maradt?",
+        "A kapcsolódó issue vagy döntés linkelve van?"
+      ],
+      "relations": [
+        "vibe_coding.commit",
+        "vibe_coding.issue",
+        "vibe_coding.merge",
+        "documentation.release_notes"
+      ]
+    },
+    {
+      "id": "vibe_coding.changelog",
+      "label": "changelog",
+      "group": "vibe_coding",
+      "description": "Változásnapló, amely felhasználói és fejlesztői nézőpontból is követhetővé teszi a verziók közti különbséget.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "A commitok alapján írj changelog bejegyzést Added, Changed, Fixed és Breaking szakaszokkal.",
+        "Válaszd szét a felhasználót érintő változásokat a belső refaktoroktól.",
+        "Fogalmazd meg ezt a változást release note stílusban, nem git naplóként.",
+        "Jelöld, ha migráció, új env var vagy visszafelé nem kompatibilis változás történt."
+      ],
+      "anti_patterns": [
+        "commit_dump: A changelog csak commit üzenetek nyers listája.",
+        "missing_breaking_note: Törő változás bekerül, de nincs kiemelve.",
+        "internal_only_language: Csak fejlesztők értik, a felhasználói hatás nem látszik.",
+        "stale_changelog: A changelog csak release után, emlékezetből készül."
+      ],
+      "checklist": [
+        "Látszik, mi új, mi változott és mi javult?",
+        "Kiemelted a breaking change-eket?",
+        "Felhasználói nyelven is érthető?",
+        "Van dátum vagy verziószám?",
+        "A changelog összhangban van a release notes tartalmával?"
+      ],
+      "relations": [
+        "vibe_coding.commit",
+        "documentation.release_notes",
+        "documentation.changelog"
+      ]
+    },
+    {
+      "id": "vibe_coding.readme",
+      "label": "readme",
+      "group": "vibe_coding",
+      "description": "A projekt első számú belépési pontja: megmutatja, mire való, hogyan indul el és hol kell keresni a fontos döntéseket.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj README-t ehhez a projekthez cél, telepítés, futtatás, környezeti változók és fő parancsok szakaszokkal.",
+        "Nézd át a README-t kezdő szemmel: mi hiányzik ahhoz, hogy nulláról elinduljak?",
+        "Adj rövid projektáttekintést úgy, hogy ne marketingoldal legyen, hanem fejlesztői belépő.",
+        "Készíts troubleshooting részt a három leggyakoribb indítási hibára."
+      ],
+      "anti_patterns": [
+        "works_on_my_machine_docs: A README csak annak érthető, aki már ismeri a projektet.",
+        "missing_env_section: Nincs leírva, milyen env változók kellenek és honnan jönnek.",
+        "outdated_commands: A dokumentált parancsok már nem egyeznek a package scriptekkel.",
+        "marketing_readme: A README sokat ígér, de nem segít futtatni vagy fejleszteni."
+      ],
+      "checklist": [
+        "Egy új fejlesztő el tudja indítani a projektet a README alapján?",
+        "Szerepelnek a telepítési és futtatási parancsok?",
+        "Le van írva az env varok szerepe?",
+        "Van rövid projektstruktúra vagy architektúra áttekintés?",
+        "Van hibaelhárítási szakasz?"
+      ],
+      "relations": [
+        "documentation.readme",
+        "documentation.setup_guide",
+        "vibe_coding.scaffold"
+      ]
+    },
+    {
+      "id": "vibe_coding.function_map",
+      "label": "function_map",
+      "group": "vibe_coding",
+      "description": "Áttekintő térkép arról, mely modulok, komponensek és függvények milyen felelősséget visznek.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts function mapet a projekt fő moduljairól, bemenetekről, kimenetekről és mellékhatásokról.",
+        "Mutasd meg, mely függvények érintik ugyanazt az adatfolyamot vagy üzleti szabályt.",
+        "Jelöld a túl nagy felelősségű komponenseket, amelyeket érdemes lenne bontani.",
+        "Készíts rövid függőségi térképet a frontend és backend határáról."
+      ],
+      "anti_patterns": [
+        "unknown_ownership: Nem derül ki, melyik modul miért felel.",
+        "god_function: Egy függvény egyszerre validál, adatot kér, állapotot módosít és UI-t dönt el.",
+        "stale_map: A térkép egyszer elkészül, de refaktor után nem frissül.",
+        "call_graph_without_meaning: Csak hívási lánc készül, felelősségi magyarázat nélkül."
+      ],
+      "checklist": [
+        "Látszanak a fő modulok és felelősségeik?",
+        "Le vannak írva a fontos bemenetek és kimenetek?",
+        "Megjelennek az adatfolyamok és mellékhatások?",
+        "Kiderül, hol vannak túl nagy felelősségű részek?",
+        "A map frissül nagyobb refaktor után?"
+      ],
+      "relations": [
+        "documentation.function_map",
+        "documentation.architecture_diagram",
+        "vibe_coding.refactor"
+      ]
+    },
+    {
+      "id": "vibe_coding.brief",
+      "label": "brief",
+      "group": "vibe_coding",
+      "description": "Rövid, döntésképes projektleírás: mit építünk, kinek, milyen határokkal és sikerfeltételekkel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj egy egyoldalas projektbriefet célközönséggel, problémával, MVP határral és sikerdefinícióval.",
+        "Tedd külön a biztos követelményeket, feltételezéseket és nyitott kérdéseket.",
+        "Fogalmazd át ezt az ötletet fejlesztési briefként, ne reklámszövegként.",
+        "Készíts scope listát: mi van benne az első verzióban, és mit halasztunk későbbre."
+      ],
+      "anti_patterns": [
+        "solution_without_problem: Már eszközökről beszélünk, de nincs kimondva a megoldandó probléma.",
+        "no_success_definition: Nem mérhető, mikor tekinthető késznek vagy jónak a munka.",
+        "scope_blur: A brief nem húz határt az MVP és a későbbi ötletek között.",
+        "stakeholder_guessing: A célcsoport és döntéshozó igényei csak feltételezések maradnak."
+      ],
+      "checklist": [
+        "Le van írva a probléma egy mondatban?",
+        "Kiderül, kinek készül az első verzió?",
+        "Van MVP határ és halasztott lista?",
+        "Van mérhető sikerfeltétel?",
+        "A nyitott kérdések külön szerepelnek?"
+      ],
+      "relations": [
+        "vibe_coding.prd",
+        "vibe_coding.mvp",
+        "vibe_coding.roadmap"
+      ]
+    },
+    {
+      "id": "vibe_coding.prd",
+      "label": "prd",
+      "group": "vibe_coding",
+      "description": "Termékkövetelmény dokumentum, amely a felhasználói célokat, funkciókat, nem célokat és elfogadási feltételeket rögzíti.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts PRD-t user storykkal, elfogadási kritériumokkal, nem-célokkal és kockázatokkal.",
+        "Válaszd szét a must-have, should-have és later követelményeket.",
+        "Írj acceptance criteriát ehhez a funkcióhoz úgy, hogy tesztelhető legyen.",
+        "Keresd meg a PRD-ben az ellentmondásos vagy túl homályos követelményeket."
+      ],
+      "anti_patterns": [
+        "wish_list_prd: A dokumentum kívánságlista, prioritás és elfogadási feltétel nélkül.",
+        "implementation_prd: A PRD túl korán konkrét technikai megoldást ír elő termékcél helyett.",
+        "no_non_goals: Nem derül ki, mit nem fogunk megépíteni.",
+        "untestable_requirements: A követelmények nem ellenőrizhetők konkrét viselkedéssel."
+      ],
+      "checklist": [
+        "Minden fontos funkcióhoz van elfogadási kritérium?",
+        "A prioritások világosak?",
+        "Szerepelnek nem-célok is?",
+        "A követelmények tesztelhetők?",
+        "A kockázatok és függőségek külön látszanak?"
+      ],
+      "relations": [
+        "vibe_coding.brief",
+        "vibe_coding.mvp",
+        "testing_qa.acceptance_test"
+      ]
+    },
+    {
+      "id": "vibe_coding.mvp",
+      "label": "mvp",
+      "group": "vibe_coding",
+      "description": "A legkisebb használható verzió, amely már bizonyítja a fő értéket, de nem próbál minden ötletet megoldani.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Vágd le ezt az ötletet MVP-re: mi az a legkisebb verzió, ami még valódi értéket ad?",
+        "Készíts must-have és later listát, és indokold, miért halasztható a többi funkció.",
+        "Tervezd meg az MVP első mérhető validációját.",
+        "Mutasd meg, mely funkciók csak nice-to-have elemek az első körben."
+      ],
+      "anti_patterns": [
+        "mini_enterprise_app: Az MVP valójában teljes termék akar lenni adminnal, dashboarddal és minden integrációval.",
+        "demo_not_value: A verzió látványos, de nem oldja meg a fő felhasználói problémát.",
+        "no_learning_goal: Nem derül ki, mit akarunk megtudni az MVP-ből.",
+        "premature_polish: Túl korán részletcsiszolásra megy az idő a fő workflow helyett."
+      ],
+      "checklist": [
+        "Egy fő felhasználói problémát old meg?",
+        "Van világos tanulási vagy validációs cél?",
+        "A nice-to-have funkciók ki vannak véve az első körből?",
+        "Az MVP végigjárható elejétől a végéig?",
+        "Tudjuk, milyen jel alapján döntünk a folytatásról?"
+      ],
+      "relations": [
+        "vibe_coding.brief",
+        "vibe_coding.prd",
+        "vibe_coding.roadmap"
+      ]
+    },
+    {
+      "id": "vibe_coding.roadmap",
+      "label": "roadmap",
+      "group": "vibe_coding",
+      "description": "Időben és logikában rendezett fejlesztési út, amely megmutatja, milyen sorrendben épül a termék.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts roadmapet MVP, stabilizálás, bővítés és production hardening szakaszokra bontva.",
+        "Rendezd sorba ezeket a funkciókat függőség, kockázat és felhasználói érték alapján.",
+        "Mutasd meg, mely mérföldköveknél kell döntést hozni a folytatásról.",
+        "Adj rövid heti fejlesztési tervet úgy, hogy maradjon idő tesztre és dokumentációra."
+      ],
+      "anti_patterns": [
+        "date_fantasy: Dátumok szerepelnek, de kapacitás, függőség és kockázat nincs mögöttük.",
+        "everything_parallel: Minden egyszerre indul, ezért semmi nem készül el stabilan.",
+        "no_validation_gate: Nincs pont, ahol visszamérjük, működik-e az irány.",
+        "roadmap_as_promise: A roadmap ígéretként jelenik meg, nem tanulási tervként."
+      ],
+      "checklist": [
+        "A sorrend tükrözi a függőségeket?",
+        "Van MVP utáni stabilizálási szakasz?",
+        "Szerepelnek döntési vagy validációs pontok?",
+        "A kockázatos részek korán jönnek?",
+        "A roadmap nem ígér túl konkrétat bizonytalan területen?"
+      ],
+      "relations": [
+        "vibe_coding.mvp",
+        "vibe_coding.milestone",
+        "vibe_coding.backlog"
+      ]
+    },
+    {
+      "id": "vibe_coding.backlog",
+      "label": "backlog",
+      "group": "vibe_coding",
+      "description": "Rendezett feladatlista, ahol az ötletek, hibák és fejlesztések prioritás szerint várnak sorra.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Rendezd ezt a backlogot prioritás, felhasználói érték, kockázat és méret alapján.",
+        "Bontsd kisebb issue-kra ezt a túl nagy backlog elemet.",
+        "Jelöld meg, mi blocker, mi fontos, és mi csak későbbi ötlet.",
+        "Írj acceptance criteriát a backlog top 5 eleméhez."
+      ],
+      "anti_patterns": [
+        "idea_dump: A backlog rendezetlen ötletkupac, nincs dönthető következő lépés.",
+        "no_owner: Nincs felelős, ezért a feladatok csak vándorolnak.",
+        "oversized_items: Egy backlog elem több hét munkát rejt.",
+        "priority_inflation: Minden high priority, ezért nincs valódi sorrend."
+      ],
+      "checklist": [
+        "Minden top elemhez tartozik cél vagy felhasználói érték?",
+        "A nagy elemek issue-kra vannak bontva?",
+        "Van egyértelmű prioritási sorrend?",
+        "A blocker és later elemek elkülönülnek?",
+        "A backlog rendszeresen tisztítva van?"
+      ],
+      "relations": [
+        "vibe_coding.issue",
+        "vibe_coding.milestone",
+        "vibe_coding.roadmap"
+      ]
+    },
+    {
+      "id": "vibe_coding.issue",
+      "label": "issue",
+      "group": "vibe_coding",
+      "description": "Konkrét, követhető munkaegység, amely leírja a problémát, a várható eredményt és az ellenőrzés módját.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj issue-t címmel, háttérrel, acceptance criteriával és tesztelési megjegyzéssel.",
+        "Bontsd ezt a homályos feladatot három kisebb, lezárható issue-ra.",
+        "Adj bug issue sablont reproduce steps, expected, actual és környezet mezőkkel.",
+        "Nézd meg, ez az issue elég konkrét-e ahhoz, hogy valaki önállóan elkezdje."
+      ],
+      "anti_patterns": [
+        "title_only_issue: Csak cím van, háttér és elvárt viselkedés nélkül.",
+        "solution_locked_issue: Az issue előír egy megoldást, de nem írja le a problémát.",
+        "no_acceptance_criteria: Nem egyértelmű, mikor kész.",
+        "mega_issue: Egy issue több külön funkciót vagy hibát tartalmaz."
+      ],
+      "checklist": [
+        "Le van írva a probléma vagy cél?",
+        "Van acceptance criteria?",
+        "Bugnál szerepel reproduce steps?",
+        "Elég kicsi ahhoz, hogy egy PR-ben zárható legyen?",
+        "Kapcsolódik backloghoz vagy milestone-hoz?"
+      ],
+      "relations": [
+        "vibe_coding.backlog",
+        "vibe_coding.pull_request",
+        "debugging.reproduce_steps"
+      ]
+    },
+    {
+      "id": "vibe_coding.milestone",
+      "label": "milestone",
+      "group": "vibe_coding",
+      "description": "Nagyobb célállomás, amely több issue-t vagy funkciót fog össze egy ellenőrizhető eredmény köré.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Szervezd milestone-okba ezt a roadmapet úgy, hogy minden mérföldkőnek legyen demózható eredménye.",
+        "Határozd meg, mely issue-k tartoznak az MVP milestone-ba és melyek csúszhatnak későbbre.",
+        "Adj release kritériumot ehhez a milestone-hoz.",
+        "Írj rövid státuszjelentést a milestone előrehaladásáról kockázatokkal együtt."
+      ],
+      "anti_patterns": [
+        "calendar_only_milestone: A milestone csak dátum, nincs hozzá eredmény vagy döntési pont.",
+        "no_exit_criteria: Nem tudni, mikor zárható le.",
+        "scope_creep_milestone: Folyamatosan kerülnek bele új feladatok, ezért sosem készül el.",
+        "hidden_blockers: A blokkoló függőségek nem látszanak a milestone-ban."
+      ],
+      "checklist": [
+        "Van konkrét, demózható eredménye?",
+        "Tartozik hozzá lezárási kritérium?",
+        "Az issue-k reálisan beleférnek?",
+        "A blokkoló függőségek látszanak?",
+        "Záráskor készül rövid összegzés?"
+      ],
+      "relations": [
+        "vibe_coding.roadmap",
+        "vibe_coding.backlog",
+        "documentation.release_notes"
+      ]
+    },
+    {
+      "id": "vibe_coding.refactor",
+      "label": "refactor",
+      "group": "vibe_coding",
+      "description": "A kód szerkezetének javítása úgy, hogy a külső viselkedés lehetőleg változatlan maradjon.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Javasolj refaktor tervet úgy, hogy a viselkedés ne változzon, és minden lépés külön ellenőrizhető legyen.",
+        "Keresd meg ebben a modulban a túl nagy felelősségű részeket és a duplikációkat.",
+        "Írj karakterizációs tesztötleteket refaktor előtt.",
+        "Bontsd a refaktort kis, review-zható commitokra."
+      ],
+      "anti_patterns": [
+        "behavior_change_refactor: Refaktor címén funkcionális változás is bekerül jelölés nélkül.",
+        "big_bang_refactor: Egyszerre túl sok fájl változik, nehéz bizonyítani, hogy nem romlott el semmi.",
+        "no_safety_tests: Nincs teszt vagy snapshot a régi viselkedéshez.",
+        "aesthetic_refactor: Csak ízlésvita miatt változik a kód, valós karbantarthatósági előny nélkül."
+      ],
+      "checklist": [
+        "Le van írva, milyen viselkedés marad változatlan?",
+        "Van teszt vagy kézi ellenőrzés refaktor előtt és után?",
+        "Kis lépésekre bontható?",
+        "Nem keveredik bele új feature?",
+        "A végén egyszerűbb lett a felelősségi szerkezet?"
+      ],
+      "relations": [
+        "vibe_coding.function_map",
+        "testing_qa.regression_test",
+        "debugging.regression"
+      ]
+    },
+    {
+      "id": "vibe_coding.rollback",
+      "label": "rollback",
+      "group": "vibe_coding",
+      "description": "Terv vagy művelet egy hibás változtatás biztonságos visszavonására.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts rollback tervet ehhez a release-hez: mit vonunk vissza, hogyan ellenőrizzük, és ki dönt róla.",
+        "Mondd meg, mely változások igényelnek külön adatbázis rollback stratégiát.",
+        "Írj gyors incident reakciót arra az esetre, ha deploy után nő az error rate.",
+        "Válaszd szét a code rollback, config rollback és data rollback lépéseket."
+      ],
+      "anti_patterns": [
+        "rollback_after_panic: Csak hiba után kezdjük kitalálni, hogyan lehet visszalépni.",
+        "irreversible_migration: Adatváltozás történik mentés vagy visszaállítási út nélkül.",
+        "unknown_owner: Nem világos, ki dönt rollbackről incident közben.",
+        "partial_rollback: Csak a kód kerül vissza, de config vagy adat állapot nem."
+      ],
+      "checklist": [
+        "Van előre leírt rollback trigger?",
+        "Tudjuk, ki dönt a visszavonásról?",
+        "A config, kód és adat lépések külön vannak kezelve?",
+        "Migráció előtt van mentés vagy restore terv?",
+        "Rollback után van health check?"
+      ],
+      "relations": [
+        "devops_deploy.rollback",
+        "database.backup",
+        "observability.error_rate"
+      ]
+    },
+    {
+      "id": "vibe_coding.scaffold",
+      "label": "scaffold",
+      "group": "vibe_coding",
+      "description": "Kezdő projektváz vagy modulváz, amely jó alapstruktúrát ad a további fejlesztéshez.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Scaffoldolj egy minimális, futtatható projektvázat README-vel, env példával és alap teszttel.",
+        "Hozz létre mappaszerkezetet úgy, hogy később ne kelljen rögtön átrendezni.",
+        "Adj kezdő komponens/API/data réteget, de ne töltsd tele felesleges absztrakciókkal.",
+        "Készíts első commitokra bontható scaffold tervet."
+      ],
+      "anti_patterns": [
+        "overengineered_scaffold: A projektváz több keretrendszert és réteget hoz be, mint amennyire az MVP-nek szüksége van.",
+        "empty_shell: Van mappaszerkezet, de nincs futtatható példa vagy ellenőrzés.",
+        "missing_env_example: A projekt indulásához kell env, de nincs példa vagy leírás.",
+        "template_leftovers: A generált sablonban bent maradnak nem használt fájlok és placeholder szövegek."
+      ],
+      "checklist": [
+        "A projekt azonnal futtatható?",
+        "Van README és env példa?",
+        "A mappaszerkezet a tényleges domainhez illik?",
+        "Nincs bent felesleges template maradék?",
+        "Van legalább egy alap ellenőrzés vagy smoke test?"
+      ],
+      "relations": [
+        "vibe_coding.boilerplate",
+        "documentation.setup_guide",
+        "testing_qa.smoke_test"
+      ]
+    },
+    {
+      "id": "vibe_coding.boilerplate",
+      "label": "boilerplate",
+      "group": "vibe_coding",
+      "description": "Újrahasználható induló kód vagy sablon, amely gyorsít, de könnyen fölösleges teherré is válhat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Értékeld ezt a boilerplate-et: mi hasznos belőle, mit töröljünk, mit kell átírni a projekthez.",
+        "Alakítsd át a generikus sablont domain-specifikus induló kóddá.",
+        "Készíts listát a boilerplate-ben maradt veszélyes placeholder vagy demo részekről.",
+        "Javasolj egyszerűbb alternatívát, ha a boilerplate túl nagy ehhez az MVP-hez."
+      ],
+      "anti_patterns": [
+        "template_cult: A csapat úgy tart meg sablonrészeket, hogy senki nem tudja, mire valók.",
+        "unused_dependencies: A boilerplate rengeteg csomagot hoz be valódi használat nélkül.",
+        "demo_security: Demo auth, demo secret vagy nyitott admin útvonal marad a projektben.",
+        "hard_to_delete: A sablon túl sok rejtett összekötést tartalmaz, ezért nehéz egyszerűsíteni."
+      ],
+      "checklist": [
+        "Csak tényleg használt dependency maradt?",
+        "Eltűntek a placeholder képernyők és demo adatok?",
+        "A biztonsági beállítások élesíthetők?",
+        "A sablon illik a projekt méretéhez?",
+        "Dokumentálva van, mely részeket kell átírni?"
+      ],
+      "relations": [
+        "vibe_coding.scaffold",
+        "security.secrets_management",
+        "documentation.readme"
+      ]
+    },
+    {
+      "id": "vibe_coding.production_ready",
+      "label": "production_ready",
+      "group": "vibe_coding",
+      "description": "Olyan állapot, ahol az app nem csak demóban működik, hanem hibakezeléssel, biztonsággal, megfigyelhetőséggel és visszaállási tervvel is rendelkezik.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts production readiness checklistet ehhez az apphoz biztonság, teljesítmény, observability és rollback bontásban.",
+        "Nézd meg, mi választja el ezt a demót az élesíthető verziótól.",
+        "Prioritás szerint rendezd a production hardening feladatokat.",
+        "Írj release előtti kockázati összegzést és go/no-go kritériumokat."
+      ],
+      "anti_patterns": [
+        "demo_equals_production: A működő demo automatikusan élesíthetőnek van tekintve.",
+        "no_observability: Nincs log, metric vagy alert, ezért hiba után vakon keresünk.",
+        "secret_shortcuts: Ideiglenes kulcskezelés vagy auth workaround marad élesben.",
+        "no_operational_owner: Nincs felelős az incidensek, rollback és monitoring kezelésére."
+      ],
+      "checklist": [
+        "Van auth, env és secret kezelés ellenőrizve?",
+        "Látszanak a hibák logokban vagy dashboardon?",
+        "Van health check és rollback terv?",
+        "A teljesítménykritikus útvonalak mérve vannak?",
+        "Dokumentált a release és incident folyamat?"
+      ],
+      "relations": [
+        "observability.monitoring",
+        "devops_deploy.health_check",
+        "security.secrets_management",
+        "vibe_coding.rollback"
+      ]
+    }
+  ]
+}

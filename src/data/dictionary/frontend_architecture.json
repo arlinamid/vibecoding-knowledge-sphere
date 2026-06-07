@@ -1,0 +1,565 @@
+{
+  "group": "frontend_architecture",
+  "keywords": [
+    {
+      "id": "frontend_architecture.react",
+      "label": "react",
+      "group": "frontend_architecture",
+      "description": "Komponensalapú UI könyvtár, ahol a felület kisebb, újrahasználható részekből, állapotból és deklaratív renderelésből épül fel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Bontsd ezt a felületet React komponensekre felelősségi kör, állapot és újrahasználhatóság szerint.",
+        "Javasolj prop- és komponensstruktúrát úgy, hogy a konténerlogika ne keveredjen a megjelenítéssel.",
+        "Mutasd meg, mely részek legyenek controlled komponensek, és hol maradhat lokális állapot."
+      ],
+      "anti_patterns": [
+        "mega_component: Egyetlen komponensben van a lekérdezés, formkezelés, üzleti logika és teljes UI.",
+        "derived_state_drift: Propsból másolt state idővel eltér az eredeti adattól.",
+        "unstable_keys: Listaelemek index alapú kulcsot kapnak, ezért rendezésnél vagy törlésnél hibás állapot marad."
+      ],
+      "checklist": [
+        "A komponensek egyértelmű felelősséget kapnak?",
+        "A state ott él, ahol a legkevesebb komponenst érinti?",
+        "A listák stabil kulcsokat használnak?",
+        "A komponensek kezelik az üres, loading és hibaállapotokat?"
+      ],
+      "relations": [
+        "frontend_architecture.state_management",
+        "frontend_architecture.typescript",
+        "frontend_ui.component"
+      ]
+    },
+    {
+      "id": "frontend_architecture.nextjs",
+      "label": "nextjs",
+      "group": "frontend_architecture",
+      "description": "React keretrendszer routinggal, renderelési stratégiákkal, szerveroldali funkciókkal és optimalizált build folyamatokkal.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg ezt Next.js App Router struktúrában route groupokkal, layoutelemekkel és adatbetöltési pontokkal.",
+        "Döntsd el oldalanként, hol kell server component, client component, SSR, SSG vagy ISR.",
+        "Adj javaslatot cache, metadata, loading és error boundary kezelésre Next.js környezetben."
+      ],
+      "anti_patterns": [
+        "client_everything: Minden komponens client component lesz, ezért elveszik a szerveroldali előny.",
+        "route_logic_sprawl: Az üzleti logika szétszóródik page fájlokban és route handlerekben.",
+        "cache_surprise: Nincs kimondva, mely adat frissül kérésenként, buildkor vagy revalidációval."
+      ],
+      "checklist": [
+        "A route struktúra követi a termék információs szerkezetét?",
+        "Világos, mely komponens fut szerveren és melyik kliensen?",
+        "A cache és revalidate döntések dokumentáltak?",
+        "Van loading, not-found és error kezelés a fontos útvonalakon?"
+      ],
+      "relations": [
+        "frontend_architecture.server_components",
+        "frontend_architecture.routing",
+        "frontend_architecture.isr"
+      ]
+    },
+    {
+      "id": "frontend_architecture.typescript",
+      "label": "typescript",
+      "group": "frontend_architecture",
+      "description": "Típusos JavaScript réteg, amely fordítási időben teszi láthatóvá az adat-, komponens- és API-szerződések hibáit.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts TypeScript típusokat ehhez a komponenshez, különválasztva a domain modellt, API választ és UI view modelt.",
+        "Jelöld meg, hol kell union type, generic vagy utility type a biztonságosabb kódhoz.",
+        "Szűkítsd az ismeretlen adatokat runtime validáció után típusbiztosan használható formára."
+      ],
+      "anti_patterns": [
+        "any_escape_hatch: Az any eltünteti a valódi szerződési hibákat.",
+        "duplicated_contracts: Backend, frontend és form típusok külön élnek, és lassan eltérnek.",
+        "stringly_typed_state: Fontos állapotok szabad szövegként mozognak enum vagy union helyett."
+      ],
+      "checklist": [
+        "A külső adatok validálás után kapnak típust?",
+        "A komponens propsai nem engednek érvénytelen kombinációt?",
+        "Az API és UI típusok közötti átalakítás látható helyen történik?",
+        "A hibakezeléshez is vannak típusozott esetek?"
+      ],
+      "relations": [
+        "frontend_architecture.zod",
+        "frontend_architecture.form_schema",
+        "backend.api_contract"
+      ]
+    },
+    {
+      "id": "frontend_architecture.state_management",
+      "label": "state_management",
+      "group": "frontend_architecture",
+      "description": "A felület pillanatnyi és tartós állapotainak rendszerezése, külön kezelve a lokális UI state-et, form state-et és szerverállapotot.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Térképezd fel ebben a képernyőben a lokális, globális, form és szerverállapotokat.",
+        "Javasolj state ownership modellt: mi marad komponensben, mi kerül store-ba, és mit kezel cache könyvtár.",
+        "Írd le, milyen események módosítják az állapotot, és hol kell visszagörgetés vagy szinkronizálás."
+      ],
+      "anti_patterns": [
+        "global_by_default: Minden állapot közös store-ba kerül, akkor is, ha csak egy dialog használja.",
+        "server_state_in_store: API válaszokat kézzel másolunk globális store-ba cache és invalidálás nélkül.",
+        "hidden_state_coupling: Két távoli komponens ugyanazt az állapotot módosítja látható szerződés nélkül."
+      ],
+      "checklist": [
+        "Megvan minden állapot tulajdonosa?",
+        "Elválik a szerverállapot a UI állapottól?",
+        "A frissítés, reset és rollback szabályai tiszták?",
+        "Nem kényszerít felesleges újrarenderelést a store felépítése?"
+      ],
+      "relations": [
+        "frontend_architecture.zustand",
+        "frontend_architecture.redux",
+        "frontend_architecture.tanstack_query"
+      ]
+    },
+    {
+      "id": "frontend_architecture.zustand",
+      "label": "zustand",
+      "group": "frontend_architecture",
+      "description": "Könnyű React állapotkezelő könyvtár, amely kis API-val ad közös store-t szelektorokkal és middleware lehetőségekkel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz Zustand store-t ehhez a feature-höz slice-okkal, akciókkal és minimális publikus állapottal.",
+        "Mutasd meg, mely állapot ne kerüljön Zustandba, mert lokális vagy szerver cache feladata.",
+        "Adj szelektorstratégiát, hogy a komponensek csak a szükséges state változásra rendereljenek újra."
+      ],
+      "anti_patterns": [
+        "god_store: Egyetlen óriás store tartalmaz minden feature-t és minden átmeneti UI állapotot.",
+        "mutating_without_actions: Komponensek közvetlenül, követhetetlen módon módosítják a store-t.",
+        "selector_overread: A komponens túl nagy state objektumot olvas, ezért sok felesleges render történik."
+      ],
+      "checklist": [
+        "A store feature szerint szeletelt?",
+        "Az akciók neve üzleti eseményt ír le?",
+        "A komponensek szelektorral csak a szükséges mezőt olvassák?",
+        "A perzisztált adatok verziózása és migrációja kezelve van?"
+      ],
+      "relations": [
+        "frontend_architecture.state_management",
+        "ux_states.modal_state",
+        "frontend_architecture.optimistic_ui"
+      ]
+    },
+    {
+      "id": "frontend_architecture.redux",
+      "label": "redux",
+      "group": "frontend_architecture",
+      "description": "Szabályozott állapotkezelési minta és eszköztár, ahol az állapot eseményeken, reducer logikán és jól nyomon követhető adatfolyamon át változik.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg ehhez a modulhoz a Redux slice-okat, actionöket és selectorokat Redux Toolkit szemlélettel.",
+        "Döntsd el, mely adatok valódi alkalmazásállapotok, és melyeket inkább RTK Query vagy lokális state kezeljen.",
+        "Adj debugolható action-névadást és reducer struktúrát nagyobb csapatmunkához."
+      ],
+      "anti_patterns": [
+        "redux_for_everything: Apró UI kapcsolók és egyszerű formmezők is Reduxba kerülnek.",
+        "action_noise: Sok technikai action keletkezik, de egyik sem fejez ki üzleti eseményt.",
+        "selector_duplication: Ugyanazt a számított adatot több komponens külön-külön rakja össze."
+      ],
+      "checklist": [
+        "A slice-ok domain vagy feature mentén szervezettek?",
+        "A selectorok újrahasználhatók és memoizálhatók?",
+        "A szerveradatok cache stratégiája nem kézi másolásra épül?",
+        "A devtoolsban olvasható az állapotváltozás története?"
+      ],
+      "relations": [
+        "frontend_architecture.state_management",
+        "frontend_architecture.tanstack_query",
+        "debugging.state_inspection"
+      ]
+    },
+    {
+      "id": "frontend_architecture.tanstack_query",
+      "label": "tanstack_query",
+      "group": "frontend_architecture",
+      "description": "Szerverállapot-kezelő könyvtár cache-eléssel, háttérfrissítéssel, invalidálással, retry logikával és mutációs mintákkal.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a query key struktúrát, stale time beállításokat és invalidálási szabályokat ehhez az API-hoz.",
+        "Mutasd meg, mely lekérdezések függnek egymástól, és hol kell prefetch vagy placeholder adat.",
+        "Adj mutációs mintát optimistic update-tel, rollbackkel és célzott cache frissítéssel."
+      ],
+      "anti_patterns": [
+        "random_query_keys: Query key-ek nem követnek stabil hierarchiát, ezért rossz adat invalidálódik.",
+        "manual_refetch_spam: Minden művelet után vakon újratöltjük az összes lekérdezést.",
+        "cache_as_source_of_truth: A cache-t tartós domain store-ként használjuk explicit frissítési szabály nélkül."
+      ],
+      "checklist": [
+        "A query key-ek egységes névadást követnek?",
+        "A stale time igazodik az adat frissülési ritmusához?",
+        "A mutációk célzottan invalidálnak vagy frissítenek cache-t?",
+        "A loading, error, empty és refetching állapot külön látszik a UI-ban?"
+      ],
+      "relations": [
+        "frontend_architecture.optimistic_ui",
+        "frontend_architecture.realtime_updates",
+        "backend.api_contract"
+      ]
+    },
+    {
+      "id": "frontend_architecture.server_components",
+      "label": "server_components",
+      "group": "frontend_architecture",
+      "description": "React komponensek, amelyek a szerveren futnak, így közvetlenül férhetnek hozzá adatforrásokhoz, és kevesebb JavaScriptet küldenek a böngészőbe.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Jelöld ki ebben a Next.js fában, mely komponensek maradjanak server componentek, és hol szükséges kliens határ.",
+        "Tervezz adatbetöltést server componentben úgy, hogy a titkos kulcsok és nehéz függőségek ne kerüljenek kliensre.",
+        "Adj komponenshatár javaslatot interaktív widgetek, formok és statikus tartalom között."
+      ],
+      "anti_patterns": [
+        "use_client_blanket: A fájlfa tetején szerepel a use client, ezért minden alatta klienscsomagba kerül.",
+        "browser_api_on_server: Server componentben window, localStorage vagy kliens hook szerepel.",
+        "secret_leak_by_boundary: Szerveroldali adat vagy konfiguráció propsként túl szélesen jut klienskomponensbe."
+      ],
+      "checklist": [
+        "Csak az interaktív részek lépik át a klienshatárt?",
+        "A szerveroldali adatlekérés nem szivárogtat titkot?",
+        "A klienskomponensek kis, célzott szigetek?",
+        "A komponensfa csökkenti a böngészőbe küldött JavaScriptet?"
+      ],
+      "relations": [
+        "frontend_architecture.nextjs",
+        "frontend_architecture.server_actions",
+        "performance.bundle_size"
+      ]
+    },
+    {
+      "id": "frontend_architecture.server_actions",
+      "label": "server_actions",
+      "group": "frontend_architecture",
+      "description": "Szerveren futó műveletek, amelyeket a UI közvetlenül hívhat űrlapokból vagy eseményekből, külön API route írása nélkül.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Alakítsd át ezt a form mentést server action alapú folyamattá validációval, jogosultság-ellenőrzéssel és redirecttel.",
+        "Írd le, hol legyen a server action határa, és milyen adatot kapjon a kliensről.",
+        "Tervezz hibavisszajelzést server action után mezőszintű és globális hibaüzenetekkel."
+      ],
+      "anti_patterns": [
+        "trusting_form_data: A server action validálás nélkül elfogadja a böngészőből érkező adatot.",
+        "hidden_side_effects: A művelet több adatot módosít, mint amit a gomb vagy form sugall.",
+        "no_pending_feedback: A felhasználó nem látja, hogy a szerveroldali művelet fut."
+      ],
+      "checklist": [
+        "A bemenet runtime sémával validált?",
+        "A jogosultságot szerveren ellenőrizzük?",
+        "A siker és hiba UI állapota visszajut a felületre?",
+        "A kapcsolódó cache vagy oldal revalidációja megtörténik?"
+      ],
+      "relations": [
+        "frontend_architecture.form_schema",
+        "authentication.session",
+        "ux_states.loading_state"
+      ]
+    },
+    {
+      "id": "frontend_architecture.ssr",
+      "label": "ssr",
+      "group": "frontend_architecture",
+      "description": "Server-Side Rendering, amikor az oldal HTML-je kéréskor a szerveren készül el, majd a böngésző interaktívvá teszi.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Döntsd el, mely oldalak igényelnek SSR-t friss adat, SEO, személyre szabás vagy auth miatt.",
+        "Tervezz SSR adatbetöltést úgy, hogy a lassú backend hívások ne rontsák indokolatlanul a válaszidőt.",
+        "Adj caching és streaming javaslatot SSR oldalakhoz különböző adattisztasági igények mellett."
+      ],
+      "anti_patterns": [
+        "ssr_for_static_pages: Statikus tartalom is minden kérésnél újrarenderelődik.",
+        "slow_waterfall: A szerver egymás után vár több független adatlekérésre.",
+        "personal_data_cached_publicly: Felhasználóspecifikus SSR válasz publikus cache-be kerül."
+      ],
+      "checklist": [
+        "Indokolt az oldal kérésenkénti renderelése?",
+        "Párhuzamosíthatók a szerveroldali adatlekérések?",
+        "Biztonságos a cache beállítás személyes adatok mellett?",
+        "A hydration nem változtatja meg a szerveren renderelt tartalmat?"
+      ],
+      "relations": [
+        "frontend_architecture.hydration",
+        "frontend_architecture.ssg",
+        "performance.ttfb"
+      ]
+    },
+    {
+      "id": "frontend_architecture.ssg",
+      "label": "ssg",
+      "group": "frontend_architecture",
+      "description": "Static Site Generation, amikor az oldal HTML-je build időben készül, ezért gyorsan és olcsón kiszolgálható CDN-ről.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Jelöld ki, mely útvonalak generálhatók statikusan, mert ritkán változnak és nem személyre szabottak.",
+        "Tervezz build-time adatlekérést termék-, blog- vagy dokumentációs oldalakhoz hibakezeléssel.",
+        "Adj stratégiát arra, mikor kell SSG-ről ISR-re vagy SSR-re váltani."
+      ],
+      "anti_patterns": [
+        "stale_static_content: Ritkán buildelünk, ezért a felhasználó elavult üzleti adatot lát.",
+        "huge_build_matrix: Túl sok dinamikus útvonal generálódik előre, és a build tarthatatlanul lassú.",
+        "static_with_user_context: Személyre szabott vagy jogosultságfüggő oldal statikusnak van kezelve."
+      ],
+      "checklist": [
+        "Az oldal tartalma ritkán változik?",
+        "A build idő elfogadható marad a generált útvonalakkal?",
+        "Van frissítési terv tartalomváltozáskor?",
+        "Nincs benne felhasználóspecifikus vagy titkos adat?"
+      ],
+      "relations": [
+        "frontend_architecture.isr",
+        "frontend_architecture.routing",
+        "documentation.docs_site"
+      ]
+    },
+    {
+      "id": "frontend_architecture.isr",
+      "label": "isr",
+      "group": "frontend_architecture",
+      "description": "Incremental Static Regeneration, amely statikus oldalak gyors kiszolgálását kombinálja időzített vagy eseményalapú újragenerálással.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz ISR revalidate szabályokat katalógus-, tartalom- vagy landing oldalakhoz üzleti frissességi igény alapján.",
+        "Írd le, mely események indítsanak on-demand revalidációt tartalomkezelőből vagy admin műveletből.",
+        "Adj fallback stratégiát új dinamikus útvonalakhoz, amikor az oldal még nem generálódott le."
+      ],
+      "anti_patterns": [
+        "random_revalidate: A revalidate idő technikai tipp, nem az adat frissülési ritmusából jön.",
+        "no_purge_path: Tartalomváltozás után nincs célzott útvonal- vagy tag-alapú revalidáció.",
+        "user_specific_isr: Felhasználófüggő adat kerül ISR oldalba."
+      ],
+      "checklist": [
+        "A revalidate idő üzletileg indokolt?",
+        "Van on-demand revalidáció fontos módosításokra?",
+        "A fallback állapot felhasználóbarát?",
+        "A statikus cache nem tartalmaz személyes adatot?"
+      ],
+      "relations": [
+        "frontend_architecture.nextjs",
+        "frontend_architecture.ssg",
+        "devops_deploy.cache_invalidation"
+      ]
+    },
+    {
+      "id": "frontend_architecture.hydration",
+      "label": "hydration",
+      "group": "frontend_architecture",
+      "description": "Az a folyamat, amikor a böngésző a szerverről kapott HTML-re rákapcsolja a React interaktív állapotát és eseménykezelőit.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Keresd meg, mi okozhat hydration mismatch hibát ezen az oldalon dátumok, random értékek vagy kliensfüggő adatok miatt.",
+        "Javasolj komponenshatárt, ahol a szerveren stabil HTML marad, a böngészőfüggő rész pedig később indul.",
+        "Írd át ezt a renderlogikát úgy, hogy első kliens renderkor megegyezzen a szerver HTML-lel."
+      ],
+      "anti_patterns": [
+        "render_time_randomness: Math.random, Date.now vagy locale formázás eltérő értéket ad szerveren és kliensen.",
+        "client_only_branch_on_first_render: A komponens első renderkor már window alapján más markupot ad.",
+        "invalid_html_nesting: A böngésző javítja a HTML-t, ezért React más struktúrát talál."
+      ],
+      "checklist": [
+        "A szerver és kliens első renderje ugyanazt a markupot adja?",
+        "A böngészőfüggő adatok effect után töltődnek be?",
+        "A dátumok és locale formátumok determinisztikusak?",
+        "A hydration hiba nem csak el van nyomva, hanem meg van értve?"
+      ],
+      "relations": [
+        "frontend_architecture.ssr",
+        "frontend_architecture.server_components",
+        "debugging.console_error"
+      ]
+    },
+    {
+      "id": "frontend_architecture.routing",
+      "label": "routing",
+      "group": "frontend_architecture",
+      "description": "Az alkalmazás útvonalainak, paramétereinek, nested layoutelemeinek és navigációs szabályainak rendszere.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg az alkalmazás route térképét nested layoutokkal, dinamikus paraméterekkel és védett útvonalakkal.",
+        "Javasolj URL-struktúrát, amely olvasható, megosztható és támogatja a böngésző előzményeket.",
+        "Írd le, hol történjen route guard, adatbetöltés, redirect és 404 kezelés."
+      ],
+      "anti_patterns": [
+        "url_as_afterthought: Az URL nem tükrözi a felhasználó aktuális helyét vagy szűrőit.",
+        "guard_only_in_ui: A védett útvonal csak gombok elrejtésével védett, szerveroldali ellenőrzés nélkül.",
+        "navigation_state_loss: Oldalváltáskor elvesznek fontos szűrők vagy visszatérési pontok."
+      ],
+      "checklist": [
+        "Az útvonalak beszédesek és stabilak?",
+        "A dinamikus paraméterek validálva vannak?",
+        "A védett oldalak kliensen és szerveren is ellenőrzöttek?",
+        "A navigáció megőrzi a fontos kontextust?"
+      ],
+      "relations": [
+        "frontend_architecture.nextjs",
+        "authentication.route_guard",
+        "ui_ux.user_flow"
+      ]
+    },
+    {
+      "id": "frontend_architecture.layout_system",
+      "label": "layout_system",
+      "group": "frontend_architecture",
+      "description": "Oldal- és komponenselrendezési rendszer, amely meghatározza a rácsot, térközöket, navigációt, shellt és reszponzív viselkedést.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg ehhez az apphoz a layout rendszert shell, sidebar, header, content régió és breakpoint szabályok szerint.",
+        "Adj komponensszintű layout primitive-eket, hogy ne minden képernyő saját gridet találjon ki.",
+        "Vizsgáld meg, hol törik a layout mobilon, széles desktopon és üres állapotban."
+      ],
+      "anti_patterns": [
+        "page_by_page_layout: Minden oldal külön spacing és grid szabályokat használ.",
+        "fixed_desktop_bias: A layout fix szélességekkel működik, mobilon vagy nagy kijelzőn szétesik.",
+        "nested_cards_as_structure: A teljes oldal kártyákba ágyazott kártyákból áll valódi információs hierarchia nélkül."
+      ],
+      "checklist": [
+        "Van közös shell és tartalmi régió rendszer?",
+        "A spacing és grid szabályok tokenekre épülnek?",
+        "A layout stabil üres, hosszú és hibás tartalommal is?",
+        "A reszponzív töréspontok valódi tartalomhoz igazodnak?"
+      ],
+      "relations": [
+        "frontend_ui.grid_layout",
+        "ui_ux.visual_hierarchy",
+        "accessibility.landmarks"
+      ]
+    },
+    {
+      "id": "frontend_architecture.client_side_validation",
+      "label": "client_side_validation",
+      "group": "frontend_architecture",
+      "description": "Böngészőben futó adatellenőrzés, amely gyors visszajelzést ad a felhasználónak, de nem helyettesíti a szerveroldali validációt.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz kliensoldali validációt ehhez az űrlaphoz mezőszintű hibákkal, késleltetett ellenőrzéssel és submit előtti összegzéssel.",
+        "Írd le, mely szabályok ellenőrizhetők kliensen, és melyek igényelnek szerveroldali döntést.",
+        "Adj UX mintát arra, hogyan jelenjen meg a validáció anélkül, hogy gépelés közben büntetné a felhasználót."
+      ],
+      "anti_patterns": [
+        "client_validation_as_security: A frontend validációt biztonsági kontrollnak tekintjük.",
+        "eager_error_noise: A hibaüzenetek már az első karakter után támadják a felhasználót.",
+        "different_rules_than_server: A kliens és szerver validációs szabályai eltérnek."
+      ],
+      "checklist": [
+        "A kliens validáció gyors, de nem az egyetlen védelem?",
+        "A hibaüzenetek mezőhöz és javítási lépéshez kötődnek?",
+        "A szerveroldali hibák visszajutnak ugyanabba a UI mintába?",
+        "A validáció nem akadályozza a segítő technológiák használatát?"
+      ],
+      "relations": [
+        "frontend_architecture.form_schema",
+        "frontend_architecture.zod",
+        "ux_states.error_state"
+      ]
+    },
+    {
+      "id": "frontend_architecture.form_schema",
+      "label": "form_schema",
+      "group": "frontend_architecture",
+      "description": "Az űrlap mezőinek, típusainak, szabályainak, alapértékeinek és hibáinak explicit szerződése.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj form schema tervet ehhez az űrlaphoz mezőkkel, típusokkal, alapértékekkel és validációs üzenetekkel.",
+        "Kapcsold össze a form schema-t TypeScript típussal, szerveroldali validációval és UI hibaállapotokkal.",
+        "Javasolj sémafelosztást create, update és részleges mentés esetére."
+      ],
+      "anti_patterns": [
+        "rules_hidden_in_handlers: A validáció szétszórva él onChange és onSubmit függvényekben.",
+        "one_schema_for_all_flows: Ugyanaz a séma próbál create, edit, draft és admin folyamatot kezelni.",
+        "error_messages_as_afterthought: A szabályok megvannak, de a felhasználó nem kap javítható üzenetet."
+      ],
+      "checklist": [
+        "A mezők, típusok és kötelezőségek egy helyen látszanak?",
+        "Külön séma kezeli az eltérő űrlapfolyamatokat?",
+        "A hibák emberi nyelven javításra vezetnek?",
+        "A séma megosztható kliens és szerver között?"
+      ],
+      "relations": [
+        "frontend_architecture.zod",
+        "frontend_architecture.client_side_validation",
+        "backend.validation"
+      ]
+    },
+    {
+      "id": "frontend_architecture.zod",
+      "label": "zod",
+      "group": "frontend_architecture",
+      "description": "TypeScript-központú runtime séma könyvtár, amely validálja az ismeretlen adatot és abból típust is képes levezetni.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts Zod sémát ehhez az API válaszhoz és vezesd le belőle a TypeScript típust.",
+        "Adj safeParse alapú hibakezelést, amely mezőszintű UI hibaüzenetekre alakítja a validációs eredményt.",
+        "Mutasd meg, hogyan lehet preprocess, transform vagy refine lépéssel tisztítani a bejövő adatot."
+      ],
+      "anti_patterns": [
+        "schema_without_usage: A Zod séma létezik, de a bejövő adat soha nincs validálva vele.",
+        "type_inferred_from_wrong_layer: UI típus készül a nyers API válaszból transzformáció nélkül.",
+        "opaque_refine_error: Összetett refine szabály hibája nem mondja meg, mit javítson a felhasználó."
+      ],
+      "checklist": [
+        "Minden külső adat safeParse vagy parse lépésen megy át?",
+        "A levezetett típus nem duplikálja kézzel a sémát?",
+        "A transzformációk nem rejtenek el adatvesztést?",
+        "A validációs hibák UI-barát formára alakíthatók?"
+      ],
+      "relations": [
+        "frontend_architecture.typescript",
+        "frontend_architecture.form_schema",
+        "backend.validation"
+      ]
+    },
+    {
+      "id": "frontend_architecture.optimistic_ui",
+      "label": "optimistic_ui",
+      "group": "frontend_architecture",
+      "description": "Felületi minta, ahol a UI azonnal megmutatja a várható eredményt, miközben a szerver művelet még folyamatban van.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz optimistic UI folyamatot ehhez a mentéshez ideiglenes állapottal, rollbackkel és hibavisszajelzéssel.",
+        "Írd le, mely műveletek alkalmasak optimista frissítésre, és melyek igényelnek szerverválasz előtti várakozást.",
+        "Adj cache frissítési lépéseket TanStack Query vagy hasonló szerverállapot-kezelő mellett."
+      ],
+      "anti_patterns": [
+        "optimism_without_rollback: A UI sikeresnek mutatja a műveletet, de hiba esetén nincs helyreállítás.",
+        "fake_irreversible_success: Fizetés, jogosultság vagy kritikus törlés optimistán véglegesnek látszik.",
+        "duplicate_temp_records: Ideiglenes elemek szerverválasz után duplikálódnak stabil azonosító hiányában."
+      ],
+      "checklist": [
+        "A művelet alacsony kockázatú optimista frissítéshez?",
+        "Van rollback vagy konfliktuskezelés hiba esetén?",
+        "A felhasználó látja a függőben lévő állapotot?",
+        "Az ideiglenes és végleges azonosítók összevezetése megoldott?"
+      ],
+      "relations": [
+        "frontend_architecture.tanstack_query",
+        "ux_states.pending_state",
+        "debugging.race_condition"
+      ]
+    },
+    {
+      "id": "frontend_architecture.realtime_updates",
+      "label": "realtime_updates",
+      "group": "frontend_architecture",
+      "description": "Élő adatfrissítési minta WebSockettel, SSE-vel, pollinggal vagy felhőszolgáltatói subscriptionnel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Válassz realtime frissítési stratégiát ehhez a képernyőhöz: WebSocket, SSE, polling vagy subscription.",
+        "Tervezd meg, hogyan illeszkedjen az élő frissítés a meglévő cache-hez és lokális UI állapothoz.",
+        "Adj konfliktuskezelést arra, amikor a felhasználó szerkeszt, miközben háttérből új adat érkezik."
+      ],
+      "anti_patterns": [
+        "websocket_for_static_data: Élő kapcsolatot nyitunk olyan adatra, amely ritkán változik.",
+        "event_storm: Minden kis változás teljes lista újratöltést indít.",
+        "silent_remote_overwrite: Beérkező frissítés felülírja a felhasználó éppen szerkesztett adatát."
+      ],
+      "checklist": [
+        "Indokolt a valós idejű frissítés az adott felhasználói célhoz?",
+        "Van reconnect, backoff és offline viselkedés?",
+        "Az események célzottan frissítik a cache-t?",
+        "Szerkesztés közben van konfliktus- vagy merge stratégia?"
+      ],
+      "relations": [
+        "frontend_architecture.tanstack_query",
+        "backend.websocket",
+        "observability.event_tracking"
+      ]
+    }
+  ]
+}

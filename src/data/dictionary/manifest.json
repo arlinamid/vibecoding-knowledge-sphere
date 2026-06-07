@@ -1,0 +1,175 @@
+{
+  "meta": {
+    "title": "AI fejlesztői varázsszavak szótára",
+    "version": "1.1.0",
+    "language": "hu",
+    "schema_note": "Minden fő csoport tartalmazza a description, keywords, prompt_phrases, anti_patterns és checklist mezőket.",
+    "purpose": "Kulcsszavak, magyarázatok, prompt-kifejezések, anti-patternök és ellenőrzőlisták gyűjteménye vibe codinghoz, UI/UX-hez, frontendhez, backendhez, authhoz, hibakereséshez, teszteléshez, DevOpshoz, dokumentációhoz és AI-agent fejlesztéshez.",
+    "recommended_use": [
+      "AI promptok pontosítására",
+      "projekt briefek írására",
+      "fejlesztői kommunikációhoz",
+      "RAG vagy MCP tudásbázis alapanyagként",
+      "junior fejlesztői szótárként",
+      "vibe coding checklistekhez",
+      "terméktervezési sablonként"
+    ]
+  },
+  "main_groups": {
+    "vibe_coding": {
+      "name": "Vibe Coding",
+      "color": "#F59E0B"
+    },
+    "ui_ux": {
+      "name": "UI/UX",
+      "color": "#D946EF"
+    },
+    "frontend_ui": {
+      "name": "Frontend UI",
+      "color": "#06B6D4"
+    },
+    "ux_states": {
+      "name": "UX States",
+      "color": "#8B5CF6"
+    },
+    "frontend_architecture": {
+      "name": "Frontend Architektúra",
+      "color": "#3B82F6"
+    },
+    "backend": {
+      "name": "Backend",
+      "color": "#10B981"
+    },
+    "database": {
+      "name": "Database",
+      "color": "#14B8A6"
+    },
+    "authentication": {
+      "name": "Hitelesítés",
+      "color": "#EF4444"
+    },
+    "security": {
+      "name": "Biztonság",
+      "color": "#B91C1C"
+    },
+    "debugging": {
+      "name": "Hibakeresés",
+      "color": "#EAB308"
+    },
+    "testing_qa": {
+      "name": "Tesztelés & QA",
+      "color": "#84CC16"
+    },
+    "devops_deploy": {
+      "name": "DevOps & Deploy",
+      "color": "#64748B"
+    },
+    "observability": {
+      "name": "Megfigyelhetőség",
+      "color": "#7C3AED"
+    },
+    "performance": {
+      "name": "Teljesítmény",
+      "color": "#22C55E"
+    },
+    "accessibility": {
+      "name": "Akadálymentesség",
+      "color": "#0EA5E9"
+    },
+    "ai_agentic": {
+      "name": "AI & Agentic",
+      "color": "#D97706"
+    },
+    "documentation": {
+      "name": "Dokumentáció",
+      "color": "#94A3B8"
+    }
+  },
+  "category_files": [
+    {
+      "group": "vibe_coding",
+      "file": "vibe_coding.json",
+      "keyword_count": 20
+    },
+    {
+      "group": "ui_ux",
+      "file": "ui_ux.json",
+      "keyword_count": 48
+    },
+    {
+      "group": "frontend_ui",
+      "file": "frontend_ui.json",
+      "keyword_count": 36
+    },
+    {
+      "group": "ux_states",
+      "file": "ux_states.json",
+      "keyword_count": 15
+    },
+    {
+      "group": "frontend_architecture",
+      "file": "frontend_architecture.json",
+      "keyword_count": 20
+    },
+    {
+      "group": "backend",
+      "file": "backend.json",
+      "keyword_count": 28
+    },
+    {
+      "group": "database",
+      "file": "database.json",
+      "keyword_count": 23
+    },
+    {
+      "group": "authentication",
+      "file": "authentication.json",
+      "keyword_count": 34
+    },
+    {
+      "group": "security",
+      "file": "security.json",
+      "keyword_count": 19
+    },
+    {
+      "group": "debugging",
+      "file": "debugging.json",
+      "keyword_count": 27
+    },
+    {
+      "group": "testing_qa",
+      "file": "testing_qa.json",
+      "keyword_count": 20
+    },
+    {
+      "group": "devops_deploy",
+      "file": "devops_deploy.json",
+      "keyword_count": 21
+    },
+    {
+      "group": "observability",
+      "file": "observability.json",
+      "keyword_count": 18
+    },
+    {
+      "group": "performance",
+      "file": "performance.json",
+      "keyword_count": 19
+    },
+    {
+      "group": "accessibility",
+      "file": "accessibility.json",
+      "keyword_count": 13
+    },
+    {
+      "group": "ai_agentic",
+      "file": "ai_agentic.json",
+      "keyword_count": 29
+    },
+    {
+      "group": "documentation",
+      "file": "documentation.json",
+      "keyword_count": 14
+    }
+  ]
+}

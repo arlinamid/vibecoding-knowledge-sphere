@@ -1,0 +1,437 @@
+{
+  "group": "documentation",
+  "keywords": [
+    {
+      "id": "documentation.readme",
+      "label": "readme",
+      "group": "documentation",
+      "description": "A repository belépő dokumentuma, amely gyorsan elmagyarázza a célját, indítását és legfontosabb fejlesztői szabályait.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj README-t cél, gyors indítás, env varok, fő parancsok és troubleshooting szakaszokkal.",
+        "Nézd át ezt a README-t új belépő fejlesztő szemével, és jelöld a hiányzó lépéseket.",
+        "Rendezd át a README-t úgy, hogy az első öt percben futtatható legyen a projekt.",
+        "Adj rövid projektstruktúra magyarázatot a README-be túlzott részletezés nélkül."
+      ],
+      "anti_patterns": [
+        "tribal_readme: A README feltételezi a csapat belső tudását.",
+        "missing_quickstart: Nincs rövid, működő indítási út.",
+        "stale_commands: A dokumentált parancsok nem egyeznek a tényleges scriptekkel.",
+        "no_troubleshooting: Gyakori hibákra nincs kapaszkodó."
+      ],
+      "checklist": [
+        "Van egy mondatos projektcél?",
+        "Van quickstart telepítéssel és futtatással?",
+        "Szerepelnek a szükséges env varok?",
+        "A fő parancsok tényleg működnek?",
+        "Van hibaelhárítás vagy ismert probléma szakasz?"
+      ],
+      "relations": [
+        "documentation.setup_guide",
+        "documentation.faq",
+        "vibe_coding.readme"
+      ]
+    },
+    {
+      "id": "documentation.setup_guide",
+      "label": "setup_guide",
+      "group": "documentation",
+      "description": "Lépésről lépésre követhető telepítési és lokális futtatási útmutató.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj setup guide-ot nulláról induló fejlesztőnek: előfeltételek, install, env, futtatás, ellenőrzés.",
+        "Keresd meg, hol lehet elakadni a telepítésben, és adj minden ponthoz diagnosztikai parancsot.",
+        "Válaszd szét a Windows, macOS és Linux eltéréseket, ha vannak.",
+        "Adj végső smoke checket, amiből látszik, hogy a setup sikerült."
+      ],
+      "anti_patterns": [
+        "implicit_prerequisites: Nincs leírva, milyen Node, runtime, adatbázis vagy CLI kell.",
+        "copy_paste_without_check: Parancsok vannak, de nincs megadva, milyen sikeres kimenetet várunk.",
+        "env_guessing: A fejlesztő találgatja az env értékeket.",
+        "platform_blindness: A guide csak az író gépén működik."
+      ],
+      "checklist": [
+        "Szerepelnek az előfeltételek verzióval együtt?",
+        "Minden parancsnál látszik a cél vagy várható eredmény?",
+        "Van `.env.example` vagy hasonló minta?",
+        "Külön jelölve vannak platformfüggő lépések?",
+        "A végén ellenőrizhető, hogy fut az app?"
+      ],
+      "relations": [
+        "documentation.readme",
+        "documentation.runbook",
+        "devops_deploy.environment_config"
+      ]
+    },
+    {
+      "id": "documentation.api_docs",
+      "label": "api_docs",
+      "group": "documentation",
+      "description": "API dokumentáció, amely a végpontok célját, bemenetét, válaszát és hibáit írja le.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Dokumentáld ezt az API-t endpoint, method, auth, request body, response és error példák szerint.",
+        "Készíts kezdőbarát példahívásokat curl és JavaScript fetch formában.",
+        "Jelöld, mely mezők kötelezők, opcionálisak és validáltak.",
+        "Írj hibaválasz dokumentációt gyakori státuszkódokkal."
+      ],
+      "anti_patterns": [
+        "happy_path_only_docs: Csak sikeres válasz van dokumentálva, hibaág nincs.",
+        "missing_auth_context: Nem derül ki, milyen token vagy jogosultság kell.",
+        "schema_drift: A dokumentáció eltér a tényleges request/response sémától.",
+        "no_examples: A leírás elméleti, nincs másolható kérés."
+      ],
+      "checklist": [
+        "Minden endpointnál szerepel method és URL?",
+        "Le van írva az auth követelmény?",
+        "Van request és response példa?",
+        "A hibák státuszkóddal együtt szerepelnek?",
+        "A dokumentáció egyezik az aktuális sémával?"
+      ],
+      "relations": [
+        "backend.openapi",
+        "backend.swagger",
+        "backend.endpoint"
+      ]
+    },
+    {
+      "id": "documentation.architecture_diagram",
+      "label": "architecture_diagram",
+      "group": "documentation",
+      "description": "Ábra vagy leíró térkép, amely megmutatja a fő rendszerrészek kapcsolatát és adatáramlását.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts architektúra diagramot a frontend, backend, adatbázis, külső API-k és auth kapcsolatáról.",
+        "Magyarázd el az adatáramlást a felhasználói művelettől az adatbázisig.",
+        "Jelöld a trust boundarykat, külső szolgáltatásokat és failure pointokat.",
+        "Adj Mermaid diagramot rövid magyarázattal."
+      ],
+      "anti_patterns": [
+        "box_art_only: Szép dobozok vannak, de nincs adatáramlás vagy felelősség.",
+        "missing_boundaries: Nem látszik, hol lép át adat kliensből szerverre vagy külső szolgáltatásba.",
+        "stale_architecture: A diagram nem követi a valós kódot.",
+        "no_failure_view: Csak a sikeres út látszik, hiba és kiesés nem."
+      ],
+      "checklist": [
+        "Látszanak a fő komponensek és felelősségeik?",
+        "Jelölve vannak az adatáramlások?",
+        "Látszanak a külső függőségek?",
+        "Megjelennek biztonsági vagy trust boundaryk?",
+        "Frissült nagyobb architektúra-változás után?"
+      ],
+      "relations": [
+        "documentation.function_map",
+        "ai_agentic.workflow",
+        "security.zero_trust"
+      ]
+    },
+    {
+      "id": "documentation.function_map",
+      "label": "function_map",
+      "group": "documentation",
+      "description": "Fejlesztői térkép a fontos függvényekről, modulokról, felelősségekről és hívási útvonalakról.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts function mapet a fő modulokról, bemenetekről, kimenetekről és mellékhatásokról.",
+        "Mutasd meg, mely függvények tartoznak a login, adatmentés vagy deploy flow-hoz.",
+        "Jelöld a refaktorra érett, túl sok felelősségű részeket.",
+        "Adj rövid olvasási sorrendet új fejlesztőnek a kódbázishoz."
+      ],
+      "anti_patterns": [
+        "flat_function_list: Csak névlista készül, felelősség és kapcsolat nélkül.",
+        "hidden_side_effects: A dokumentáció nem jelöli, hol történik adatírás vagy külső hívás.",
+        "no_entry_points: Nem derül ki, honnan indulnak a fő flow-k.",
+        "never_updated_map: A map elavul, mert refaktor után nem frissítik."
+      ],
+      "checklist": [
+        "Látszanak a belépési pontok?",
+        "Minden fő modulhoz tartozik felelősség?",
+        "Jelölve vannak mellékhatások és külső hívások?",
+        "Segít új fejlesztőnek olvasási sorrendet választani?",
+        "Refaktor után frissül?"
+      ],
+      "relations": [
+        "vibe_coding.function_map",
+        "documentation.architecture_diagram",
+        "vibe_coding.refactor"
+      ]
+    },
+    {
+      "id": "documentation.decision_log",
+      "label": "decision_log",
+      "group": "documentation",
+      "description": "Döntésnapló, amely röviden rögzíti, milyen fontos döntés született, milyen alternatívák voltak és miért ezt választottuk.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj döntésnapló bejegyzést a problémáról, alternatívákról, döntésről és következményekről.",
+        "Fogalmazd meg, milyen tradeoff miatt választottuk ezt a technikai irányt.",
+        "Keresd meg, mely döntéseket kellene ADR-be vagy decision logba emelni.",
+        "Írj rövid visszatekintést: a döntés még érvényes, módosult vagy vissza kell vonni?"
+      ],
+      "anti_patterns": [
+        "decision_amnesia: Hónapok múlva senki nem tudja, miért lett így megoldva.",
+        "only_final_choice: Csak a döntés van leírva, alternatívák és indoklás nélkül.",
+        "blame_log: A log utólagos hibáztatásra használódik, nem tanulásra.",
+        "too_verbose_log: Olyan hosszú, hogy senki nem olvassa."
+      ],
+      "checklist": [
+        "Le van írva a kontextus?",
+        "Szerepelnek alternatívák?",
+        "Világos a választás indoka?",
+        "Látszik a következmény vagy kockázat?",
+        "Később visszakereshető?"
+      ],
+      "relations": [
+        "documentation.adr",
+        "vibe_coding.prd",
+        "documentation.architecture_diagram"
+      ]
+    },
+    {
+      "id": "documentation.adr",
+      "label": "adr",
+      "group": "documentation",
+      "description": "Architecture Decision Record: tömör, strukturált dokumentum egy tartós architektúra-döntésről.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj ADR-t státusz, kontextus, döntés, következmények és alternatívák szakaszokkal.",
+        "Döntsd el, ez a technikai választás elég fontos-e ADR-hez vagy elég decision logba.",
+        "Fogalmazd át ezt a hosszú vitát egy rövid ADR-be.",
+        "Adj ADR review kérdéseket: mit kell tisztázni elfogadás előtt?"
+      ],
+      "anti_patterns": [
+        "adr_for_everything: Minden apró döntés ADR lesz, ezért elveszik a fontos jelzés.",
+        "missing_consequences: A döntés le van írva, de a vállalt hátrányok nem.",
+        "status_confusion: Nem látszik, javasolt, elfogadott vagy elavult ADR-ről van szó.",
+        "implementation_details_only: Az ADR kódrészletekkel foglalkozik architektúra-döntés helyett."
+      ],
+      "checklist": [
+        "Van státusz?",
+        "A kontextus érthető külső olvasónak is?",
+        "Le vannak írva alternatívák?",
+        "Szerepelnek következmények és tradeoffok?",
+        "Később módosítható vagy elavulttá jelölhető?"
+      ],
+      "relations": [
+        "documentation.decision_log",
+        "documentation.architecture_diagram"
+      ]
+    },
+    {
+      "id": "documentation.changelog",
+      "label": "changelog",
+      "group": "documentation",
+      "description": "Fejlesztői és felhasználói változásnapló, amely verzióról verzióra mutatja, mi új, mi javult és mi tört el szándékosan.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj changelogot Added, Changed, Fixed, Removed és Breaking szakaszokkal.",
+        "A commit listából készíts emberi nyelvű változásnaplót.",
+        "Emeld ki, ha új env var, migráció vagy breaking change jelent meg.",
+        "Válaszd szét a felhasználói hatást a belső refaktortól."
+      ],
+      "anti_patterns": [
+        "raw_commit_log: A changelog csak technikai commit dump.",
+        "hidden_breaking_change: Törő változás nincs feltűnően jelölve.",
+        "release_afterthought: Csak utólag próbáljuk összerakni, mi változott.",
+        "no_upgrade_notes: Nincs útmutató, mit kell tennie annak, aki frissít."
+      ],
+      "checklist": [
+        "Van verzió vagy dátum?",
+        "Szét vannak választva a változástípusok?",
+        "Breaking change jól látható?",
+        "Felhasználói hatás is érthető?",
+        "Van migrációs vagy frissítési megjegyzés, ha kell?"
+      ],
+      "relations": [
+        "vibe_coding.changelog",
+        "documentation.release_notes"
+      ]
+    },
+    {
+      "id": "documentation.release_notes",
+      "label": "release_notes",
+      "group": "documentation",
+      "description": "Kiadási jegyzet, amely a konkrét release felhasználói hatását, kockázatait és szükséges lépéseit foglalja össze.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj release notes szöveget felhasználói újdonságokkal, javításokkal és ismert korlátokkal.",
+        "Fogalmazd át a technikai changelogot ügyfélbarát release note-ra.",
+        "Adj upgrade notes részt, ha a felhasználónak vagy üzemeltetőnek teendője van.",
+        "Írj rövid belső release összegzést support és sales csapatnak."
+      ],
+      "anti_patterns": [
+        "too_technical_release: A felhasználó csak belső ticket- és komponensneveket lát.",
+        "no_known_issues: Ismert korlátok rejtve maradnak.",
+        "missing_action_required: Nem derül ki, ha frissítés után teendő van.",
+        "marketing_only_release: Csak hangzatos állítások vannak, konkrét változás nincs."
+      ],
+      "checklist": [
+        "Érthető, kinek mit változtat a release?",
+        "Szerepelnek javítások és ismert korlátok?",
+        "Van action required rész, ha kell?",
+        "A hangnem illik a célközönséghez?",
+        "Összhangban van a changeloggal?"
+      ],
+      "relations": [
+        "documentation.changelog",
+        "vibe_coding.pull_request",
+        "vibe_coding.production_ready"
+      ]
+    },
+    {
+      "id": "documentation.contributing_guide",
+      "label": "contributing_guide",
+      "group": "documentation",
+      "description": "Hozzájárulási útmutató, amely megmondja, hogyan lehet biztonságosan issue-t nyitni, branchet készíteni, tesztelni és PR-t küldeni.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj contributing guide-ot branch naming, commit szabály, tesztelés, PR leírás és code review elvárásokkal.",
+        "Tedd kezdőbaráttá a hozzájárulási folyamatot külső contributor számára.",
+        "Adj issue és PR sablonokat ehhez a projekthez.",
+        "Fogalmazd meg, milyen minőségi kapukon kell átmenni merge előtt."
+      ],
+      "anti_patterns": [
+        "unwritten_contribution_rules: A szabályok csak szóban léteznek.",
+        "hostile_first_pr: Az első külső contributor nem kap világos lépéseket.",
+        "no_review_expectations: Nem derül ki, milyen minőséget várunk PR előtt.",
+        "maintainer_bottleneck: Minden döntés egy emberre szorul dokumentált folyamat nélkül."
+      ],
+      "checklist": [
+        "Le van írva a branch és commit elvárás?",
+        "Van PR és issue sablon?",
+        "Szerepelnek tesztelési követelmények?",
+        "Külső contributor is érti a folyamatot?",
+        "Világos, mikor merge-elhető egy PR?"
+      ],
+      "relations": [
+        "vibe_coding.pull_request",
+        "vibe_coding.commit",
+        "testing_qa.qa_checklist"
+      ]
+    },
+    {
+      "id": "documentation.runbook",
+      "label": "runbook",
+      "group": "documentation",
+      "description": "Üzemeltetési kézikönyv gyakori műveletekhez, hibákhoz, riasztásokhoz és visszaállításhoz.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj runbookot ehhez az alerthez: tünet, valószínű okok, diagnosztika, javítás, eszkaláció.",
+        "Készíts deploy utáni ellenőrző runbookot health checkkel és rollback lépésekkel.",
+        "Adj parancsokat és dashboard linkeket a leggyakoribb incidentekhez.",
+        "Rövidítsd ezt a hosszú hibaleírást operátori lépéssorrá."
+      ],
+      "anti_patterns": [
+        "hero_ops: Csak egy tapasztalt ember tudja, mit kell tenni incidentnél.",
+        "no_escalation_path: Nem világos, mikor kit kell bevonni.",
+        "missing_verification: A javítás után nincs ellenőrzési lépés.",
+        "dangerous_commands: Kockázatos parancsok vannak magyarázat vagy rollback nélkül."
+      ],
+      "checklist": [
+        "Le van írva a tünet és első diagnosztika?",
+        "Vannak biztonságos, másolható parancsok?",
+        "Szerepel eszkalációs pont?",
+        "Van javítás utáni ellenőrzés?",
+        "Kockázatos lépésnél van figyelmeztetés vagy rollback?"
+      ],
+      "relations": [
+        "observability.alerting",
+        "devops_deploy.rollback",
+        "devops_deploy.health_check"
+      ]
+    },
+    {
+      "id": "documentation.faq",
+      "label": "faq",
+      "group": "documentation",
+      "description": "Gyakori kérdések gyűjteménye, amely gyors választ ad ismétlődő felhasználói vagy fejlesztői elakadásokra.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts FAQ-t a telepítés, login, deploy és gyakori hibák alapján.",
+        "Írd át ezeket a support kérdéseket rövid, kereshető FAQ válaszokká.",
+        "Adj minden FAQ válasz végére következő lépést vagy kapcsolódó dokumentumot.",
+        "Csoportosítsd a kérdéseket kezdő, fejlesztői és üzemeltetési témák szerint."
+      ],
+      "anti_patterns": [
+        "faq_as_dump: A FAQ rendezetlen kérdéslista, kereshető struktúra nélkül.",
+        "answers_without_action: A válasz elmagyaráz, de nem mondja meg, mit tegyek.",
+        "duplicate_docs: A FAQ ellentmond a README-nek vagy setup guide-nak.",
+        "stale_support_answers: Régi workaroundok maradnak benne javított hibák után."
+      ],
+      "checklist": [
+        "A kérdések csoportosítva vannak?",
+        "A válaszok rövidek és cselekvésorientáltak?",
+        "Linkelnek a részletesebb dokumentumokra?",
+        "Nincs ellentmondás a README-vel?",
+        "Rendszeresen frissül support tapasztalat alapján?"
+      ],
+      "relations": [
+        "documentation.readme",
+        "documentation.setup_guide",
+        "documentation.onboarding_docs"
+      ]
+    },
+    {
+      "id": "documentation.glossary",
+      "label": "glossary",
+      "group": "documentation",
+      "description": "Fogalomtár, amely egységesíti a projektben használt technikai és terméknyelvet.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts glossary-t a projekt kulcsfogalmaiból rövid, kezdőbarát definíciókkal.",
+        "Jelöld, mely fogalmaknak van több jelentése, és itt melyiket használjuk.",
+        "Kapcsold össze a glossary elemeket releváns dokumentumokkal vagy kódrészekkel.",
+        "Írd át a definíciókat úgy, hogy ne tankönyvszagúak legyenek, hanem projektkontekstusban segítsenek."
+      ],
+      "anti_patterns": [
+        "generic_dictionary: A fogalomtár általános definíciókat ad, nem a projekt jelentését.",
+        "acronym_wall: Rövidítések listája magyarázat és példa nélkül.",
+        "conflicting_terms: Ugyanarra több név van, vagy egy név több dolgot jelent.",
+        "no_links: A glossary nem vezet tovább a kapcsolódó dokumentumokhoz."
+      ],
+      "checklist": [
+        "A definíciók a projekt kontextusában íródtak?",
+        "Van példa vagy kapcsolódó hivatkozás fontos fogalmaknál?",
+        "A rövidítések ki vannak fejtve?",
+        "Nincs egymásnak ellentmondó terminológia?",
+        "Új belépő számára is érthető?"
+      ],
+      "relations": [
+        "documentation.onboarding_docs",
+        "ui_ux.microcopy",
+        "ai_agentic.prompt_engineering"
+      ]
+    },
+    {
+      "id": "documentation.onboarding_docs",
+      "label": "onboarding_docs",
+      "group": "documentation",
+      "description": "Belépési dokumentáció új fejlesztőknek vagy felhasználóknak, amely vezetett első lépéseket ad.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj onboarding docs útvonalat: első 5 perc, első futtatás, első módosítás, első PR.",
+        "Készíts új fejlesztőnek checklistet hozzáférésekhez, setuphoz és első feladathoz.",
+        "Tedd tanulóúttá a dokumentációt, ne csak linkgyűjteménnyé.",
+        "Adj kezdőbarát magyarázatot, hol kezdje olvasni a kódot."
+      ],
+      "anti_patterns": [
+        "link_maze: Az onboarding csak linkekből áll, sorrend és cél nélkül.",
+        "first_task_too_big: Az első feladat túl nagy vagy túl kockázatos új embernek.",
+        "access_surprises: A szükséges hozzáférések menet közben derülnek ki.",
+        "no_success_moment: Nincs gyors sikerélmény, amely bizonyítja, hogy a setup működik."
+      ],
+      "checklist": [
+        "Van első 5 perc útvonal?",
+        "Le vannak írva a szükséges hozzáférések?",
+        "Van első futtatási és első módosítási lépés?",
+        "Kiderül, kitől lehet segítséget kérni?",
+        "Az első sikerélmény gyorsan elérhető?"
+      ],
+      "relations": [
+        "documentation.setup_guide",
+        "documentation.glossary",
+        "vibe_coding.issue"
+      ]
+    }
+  ]
+}

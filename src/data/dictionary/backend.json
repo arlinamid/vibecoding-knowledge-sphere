@@ -1,0 +1,789 @@
+{
+  "group": "backend",
+  "keywords": [
+    {
+      "id": "backend.api",
+      "label": "api",
+      "group": "backend",
+      "description": "Alkalmazások közötti szerződéses kommunikációs felület, amely meghatározza a bemeneteket, válaszokat, hibákat és jogosultsági szabályokat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg az API szerződését erőforrásokkal, műveletekkel, válaszformákkal és hibakódokkal.",
+        "Írd le, mely kliensfolyamatokat szolgál ki az API, és milyen adatot nem szabad kiszivárogtatnia.",
+        "Adj verziózási, jogosultsági és dokumentációs tervet az API hosszú távú karbantartásához."
+      ],
+      "anti_patterns": [
+        "implementation_leak: Az API a belső adatbázistáblák szerkezetét másolja ki.",
+        "inconsistent_errors: Minden végpont más hibaformátumot ad vissza.",
+        "undocumented_contract: A kliens csak forráskódból tudja kitalálni, hogyan kell hívni az API-t."
+      ],
+      "checklist": [
+        "Van egységes request és response szerződés?",
+        "A hibák géppel és emberrel is értelmezhetők?",
+        "A jogosultsági szabályok végpontszinten tiszták?",
+        "Az API dokumentáció együtt változik a kóddal?"
+      ],
+      "relations": [
+        "backend.openapi",
+        "backend.validation",
+        "frontend_architecture.typescript"
+      ]
+    },
+    {
+      "id": "backend.rest_api",
+      "label": "rest_api",
+      "group": "backend",
+      "description": "HTTP erőforrásokra épülő API stílus, ahol URL-ek, metódusok, státuszkódok és reprezentációk alkotják a szerződést.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Alakítsd ezt a feature-t REST API végpontokká erőforrásnévvel, HTTP metódussal és státuszkódokkal.",
+        "Javasolj URL struktúrát listázásra, részletezésre, létrehozásra, módosításra és törlésre.",
+        "Add meg, mikor használjunk query paramétert, path paramétert és request body-t."
+      ],
+      "anti_patterns": [
+        "verb_urls: Az URL-ek műveletnevek, nem erőforrások köré szerveződnek.",
+        "always_200: A hibák és létrehozások is 200-as válasszal térnek vissza.",
+        "body_for_everything: GET kérések is bodyra támaszkodnak, ezért cache és proxy viselkedés sérül."
+      ],
+      "checklist": [
+        "Az URL-ek erőforrásokat neveznek meg?",
+        "A HTTP metódusok jelentése következetes?",
+        "A státuszkódok tényleg a művelet eredményét jelzik?",
+        "A listázás, szűrés és lapozás kiszámítható query paraméterekkel működik?"
+      ],
+      "relations": [
+        "backend.endpoint",
+        "backend.pagination",
+        "backend.openapi"
+      ]
+    },
+    {
+      "id": "backend.graphql",
+      "label": "graphql",
+      "group": "backend",
+      "description": "Sémaalapú API lekérdezőnyelv, ahol a kliens pontosan megadhatja, milyen mezőkre és kapcsolatokra van szüksége.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a GraphQL sémát típusokkal, querykkel, mutationökkel és jogosultsági határokkal.",
+        "Javasolj resolver struktúrát, amely elkerüli az N+1 lekérdezéseket és kezeli a mezőszintű authot.",
+        "Add meg, mely műveletek maradjanak REST-ben, és melyek nyernek GraphQL-lel."
+      ],
+      "anti_patterns": [
+        "schema_as_database_dump: A GraphQL típusok egy az egyben adatbázistáblákat tükröznek.",
+        "resolver_n_plus_one: Kapcsolt mezők minden rekordnál külön adatbázishívást indítanak.",
+        "unbounded_query_depth: A kliens korlátlan mélységű és költségű lekérdezést futtathat."
+      ],
+      "checklist": [
+        "A séma domain nyelvet használ, nem belső táblaneveket?",
+        "Van query complexity vagy depth limit?",
+        "A resolverek batch-elnek vagy cache-elnek kapcsolt adatoknál?",
+        "A mezőszintű jogosultságok nem kerülhetők meg?"
+      ],
+      "relations": [
+        "backend.service_layer",
+        "backend.caching",
+        "performance.n_plus_one_query"
+      ]
+    },
+    {
+      "id": "backend.endpoint",
+      "label": "endpoint",
+      "group": "backend",
+      "description": "Konkrét API elérési pont, amely egy adott URL-en, metóduson és szerződésen keresztül fogad kérést.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írd le ennek az endpointnak a bemenetét, kimenetét, státuszkódjait és jogosultsági feltételeit.",
+        "Adj validációs és hibaválasz tervet az összes fontos hibás bemenetre.",
+        "Mutasd meg, milyen logolás, rate limit és teszt szükséges ehhez a végponthoz."
+      ],
+      "anti_patterns": [
+        "hidden_contract: Az endpoint viselkedése csak kipróbálással derül ki.",
+        "side_effect_get: GET végpont módosít adatot vagy indít üzleti műveletet.",
+        "no_negative_cases: Csak sikeres kérésre van teszt, hibás bemenetekre nincs."
+      ],
+      "checklist": [
+        "Ismert a metódus, URL, body és válaszséma?",
+        "Minden bemenet validált és naplózható?",
+        "A hibakódok és hibaüzenetek egységesek?",
+        "Van jogosultsági, validációs és happy path teszt?"
+      ],
+      "relations": [
+        "backend.route",
+        "backend.validation",
+        "testing_qa.integration_test"
+      ]
+    },
+    {
+      "id": "backend.route",
+      "label": "route",
+      "group": "backend",
+      "description": "Backend útvonal, amely a beérkező HTTP kérést a megfelelő middleware, controller vagy handler logikához irányítja.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a route struktúrát modulok, verziók és jogosultsági csoportok szerint.",
+        "Javasolj middleware sorrendet auth, validáció, rate limit és error handling szempontból.",
+        "Tisztázd, mely route-ok publikusak, melyek védettek, és hol kell admin jogosultság."
+      ],
+      "anti_patterns": [
+        "route_sprawl: Minden végpont egy közös fájlban gyűlik, átlátható modulhatár nélkül.",
+        "middleware_after_handler: A validáció vagy auth túl későn fut le.",
+        "ambiguous_params: Több route ugyanazt a mintát használja eltérő jelentéssel."
+      ],
+      "checklist": [
+        "A route-ok feature vagy domain szerint vannak csoportosítva?",
+        "A middleware sorrend biztonságos és dokumentált?",
+        "A dinamikus paraméterek nem ütköznek?",
+        "A route definícióból látszik a védettségi szint?"
+      ],
+      "relations": [
+        "backend.middleware",
+        "backend.controller",
+        "authentication.route_guard"
+      ]
+    },
+    {
+      "id": "backend.controller",
+      "label": "controller",
+      "group": "backend",
+      "description": "Kéréskezelő réteg, amely HTTP bemenetből domain műveletet indít, majd egységes HTTP választ állít össze.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írj controller tervet, amely csak request mappinget, validáció indítást és response formázást végez.",
+        "Mozgasd ki az üzleti döntéseket service layerbe, és hagyd a controllert vékony adapterként.",
+        "Adj egységes hibakezelési mintát controller szinten try-catch sprawl nélkül."
+      ],
+      "anti_patterns": [
+        "fat_controller: Üzleti szabályok, adatbázishívások és külső API-k közvetlenül controllerben vannak.",
+        "response_shape_drift: Végpontonként más válaszburkolat és hibaformátum alakul ki.",
+        "manual_error_mapping_everywhere: Minden controller külön fordítja HTTP hibára ugyanazokat az eseteket."
+      ],
+      "checklist": [
+        "A controller vékony adapter marad?",
+        "A service layer végzi az üzleti döntést?",
+        "A válaszformátum konzisztens?",
+        "A hibák központi mechanizmuson át alakulnak HTTP válasszá?"
+      ],
+      "relations": [
+        "backend.service_layer",
+        "backend.serialization",
+        "backend.endpoint"
+      ]
+    },
+    {
+      "id": "backend.service_layer",
+      "label": "service_layer",
+      "group": "backend",
+      "description": "Üzleti logikai réteg, amely a use case-eket, szabályokat, tranzakciós határokat és külső együttműködéseket fogja össze.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a service layer use case-eit bemeneti parancsokkal, domain szabályokkal és kimeneti eredményekkel.",
+        "Válaszd szét a business validationt, repository hívásokat és külső integrációkat.",
+        "Adj tranzakciós és hibakezelési határokat ehhez a service művelethez."
+      ],
+      "anti_patterns": [
+        "anemic_pass_through_service: A service csak továbbhívja a repositoryt, szabályok nélkül.",
+        "service_knows_http: A service HTTP requestet, response-t vagy státuszkódot kezel.",
+        "implicit_transaction_boundary: Több adatváltozás történik, de nem tiszta, mi fut egy tranzakcióban."
+      ],
+      "checklist": [
+        "A service domain nyelvű műveleteket kínál?",
+        "Nem függ HTTP rétegtől vagy UI részlettől?",
+        "A tranzakciós határ egyértelmű?",
+        "A service tesztelhető adatbázis és hálózat nélkül?"
+      ],
+      "relations": [
+        "backend.controller",
+        "backend.repository_pattern",
+        "backend.dependency_injection"
+      ]
+    },
+    {
+      "id": "backend.repository_pattern",
+      "label": "repository_pattern",
+      "group": "backend",
+      "description": "Adathozzáférési minta, amely a domain műveleteket elválasztja az adatbázis vagy ORM konkrét lekérdezéseitől.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz repository interfészt ehhez az entitáshoz domain műveletekkel, nem nyers SQL szemlélettel.",
+        "Mutasd meg, mely lekérdezések tartoznak repositoryba, és mely összetett esetek igényelnek külön query service-t.",
+        "Adj tesztelési stratégiát repository mock, integration test és tranzakciós viselkedés ellenőrzésére."
+      ],
+      "anti_patterns": [
+        "orm_leak: Az ORM modell és query builder minden rétegben megjelenik.",
+        "generic_repository_trap: Túl általános CRUD repository elfedi a domain-specifikus lekérdezéseket.",
+        "business_logic_in_queries: Fontos üzleti döntések nyers lekérdezésekbe vannak temetve."
+      ],
+      "checklist": [
+        "A repository domain műveleteket nevez meg?",
+        "Az ORM részletei nem szivárognak feljebb?",
+        "A komplex lekérdezések külön kezelhetők?",
+        "Van integration test a kritikus adatlekérésekre?"
+      ],
+      "relations": [
+        "backend.service_layer",
+        "database.index",
+        "testing_qa.integration_test"
+      ]
+    },
+    {
+      "id": "backend.middleware",
+      "label": "middleware",
+      "group": "backend",
+      "description": "Köztes feldolgozó logika, amely a kérés életútján authot, validációt, naplózást, rate limitet vagy hibakezelést végezhet.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Állíts össze middleware láncot request ID, logging, auth, rate limit, validáció és error handler sorrenddel.",
+        "Írd le, mely middleware módosíthatja a request kontextust, és milyen mezőket adhat hozzá.",
+        "Vizsgáld meg, hol kell route-szintű middleware a globális helyett."
+      ],
+      "anti_patterns": [
+        "order_sensitive_mystery: A middleware sorrend véletlenszerű, ezért auth vagy validáció rosszkor fut.",
+        "hidden_request_mutation: Middleware dokumentálatlan mezőket rak a request objektumra.",
+        "heavy_global_middleware: Minden kérés drága logikán megy át, akkor is, ha nem kell."
+      ],
+      "checklist": [
+        "A middleware sorrend szándékosan van felépítve?",
+        "A request kontextus bővítése típusozott vagy dokumentált?",
+        "A globális middleware nem végez felesleges nehéz munkát?",
+        "A hibakezelő middleware a lánc végén van?"
+      ],
+      "relations": [
+        "backend.route",
+        "backend.rate_limiting",
+        "observability.request_id"
+      ]
+    },
+    {
+      "id": "backend.validation",
+      "label": "validation",
+      "group": "backend",
+      "description": "A bejövő adatok szerveroldali ellenőrzése típus, forma, üzleti szabály és jogosultsági kontextus alapján.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts szerveroldali validációs tervet body, query, params és üzleti szabályok különválasztásával.",
+        "Add meg, milyen hibaüzenetet kapjon a kliens mezőszintű és globális validációs hibákra.",
+        "Kapcsold össze a validációt OpenAPI sémával és frontend form schema-val."
+      ],
+      "anti_patterns": [
+        "frontend_only_validation: A backend bízik abban, hogy a kliens már ellenőrzött mindent.",
+        "business_rule_as_type_check: Összetett üzleti szabályokat egyszerű kötelező mezőként kezelünk.",
+        "unhelpful_validation_error: A válasz csak annyit mond, hogy invalid input."
+      ],
+      "checklist": [
+        "Minden külső bemenet szerveren is validált?",
+        "Elválik a technikai és üzleti validáció?",
+        "A hibaüzenet segít javítani a bemenetet?",
+        "A validációs séma illeszkedik az API dokumentációhoz?"
+      ],
+      "relations": [
+        "frontend_architecture.zod",
+        "frontend_architecture.form_schema",
+        "backend.openapi"
+      ]
+    },
+    {
+      "id": "backend.serialization",
+      "label": "serialization",
+      "group": "backend",
+      "description": "Adatok átalakítása hálózaton továbbítható és kliens számára biztonságos reprezentációvá.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a serializer réteget, amely domain objektumból publikus API választ készít.",
+        "Jelöld meg, mely mezőket kell elrejteni, átnevezni, formázni vagy view modelbe alakítani.",
+        "Adj stratégiát dátumok, pénzértékek, enumok és kapcsolt adatok konzisztens reprezentációjára."
+      ],
+      "anti_patterns": [
+        "raw_entity_response: Adatbázis entitást küldünk vissza közvetlenül a kliensnek.",
+        "accidental_secret_field: Belső mező vagy token véletlenül bekerül a JSON válaszba.",
+        "formatting_per_endpoint: Dátumok és számok végpontonként eltérő formátumban jelennek meg."
+      ],
+      "checklist": [
+        "A publikus válaszmezők explicit listából készülnek?",
+        "Nincs belső vagy érzékeny mező a response-ban?",
+        "A dátum, pénz és enum formátum egységes?",
+        "A serializer teszttel védi a publikus szerződést?"
+      ],
+      "relations": [
+        "backend.controller",
+        "security.data_exposure",
+        "frontend_architecture.typescript"
+      ]
+    },
+    {
+      "id": "backend.pagination",
+      "label": "pagination",
+      "group": "backend",
+      "description": "Nagy adathalmaz kisebb, kiszámítható részekben való kiszolgálása offset, cursor vagy keyset stratégia alapján.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Válassz lapozási stratégiát ehhez a listához: offset, cursor vagy keyset pagination.",
+        "Add meg a response meta mezőket, következő oldal jelzést és stabil rendezési követelményeket.",
+        "Vizsgáld meg, mikor lassul be az offset alapú lapozás, és milyen index kell helyette."
+      ],
+      "anti_patterns": [
+        "unbounded_list: A végpont limit nélkül adja vissza az összes rekordot.",
+        "unstable_order: Lapozás közben változó rendezés miatt elemek kimaradnak vagy duplikálódnak.",
+        "large_offset_scan: Nagy oldalszámnál az adatbázis rengeteg sort átolvas feleslegesen."
+      ],
+      "checklist": [
+        "Van kötelező limit és maximum limit?",
+        "A rendezés stabil és indexelhető?",
+        "A response tartalmaz next cursor vagy meta információt?",
+        "A lapozás működik gyakran változó adathalmaz mellett is?"
+      ],
+      "relations": [
+        "backend.sorting",
+        "backend.filtering",
+        "database.index"
+      ]
+    },
+    {
+      "id": "backend.filtering",
+      "label": "filtering",
+      "group": "backend",
+      "description": "Adatok célzott szűrése query paraméterek, jogosultsági kontextus és adatbázis-optimalizált feltételek alapján.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a szűrési paramétereket típusokkal, alapértelmezésekkel és engedélyezett operátorokkal.",
+        "Válaszd szét a felhasználói szűrőket és a kötelező jogosultsági vagy tenant szűrést.",
+        "Adj indexelési javaslatot a gyakori filter kombinációkhoz."
+      ],
+      "anti_patterns": [
+        "free_form_filter_sql: A kliens szabadon küldhet mezőnevet és operátort kontroll nélkül.",
+        "auth_filter_missing: A felhasználó csak UI-ban van szűrve, backend oldalon nem.",
+        "filter_combo_explosion: Minden szűrőkombináció támogatott, de nincs index vagy használati adat."
+      ],
+      "checklist": [
+        "Csak engedélyezett mezők és operátorok használhatók?",
+        "A jogosultsági szűrők nem kapcsolhatók ki kliensből?",
+        "A gyakori filterek indexelve vannak?",
+        "A hibás filter paraméterek érthető validációs hibát adnak?"
+      ],
+      "relations": [
+        "backend.pagination",
+        "backend.validation",
+        "database.query_optimization"
+      ]
+    },
+    {
+      "id": "backend.sorting",
+      "label": "sorting",
+      "group": "backend",
+      "description": "Adatok rendezése stabil, indexelhető és felhasználói szempontból kiszámítható szabályok szerint.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Javasolj rendezési paramétereket engedélyezett mezőkkel, irányokkal és stabil tie-breakerrel.",
+        "Mutasd meg, hogyan illeszkedik a rendezés cursor alapú lapozáshoz.",
+        "Vizsgáld meg, milyen adatbázis index kell a gyakori sort mezőkhöz."
+      ],
+      "anti_patterns": [
+        "sort_any_column: A kliens bármilyen mezőre rendezhet, akár drága vagy érzékeny mezőre is.",
+        "missing_tie_breaker: Azonos értékeknél nincs másodlagos rendezés, ezért lapozáskor ugrál a lista.",
+        "locale_surprise: Szöveges rendezésnél nincs tisztázva a nyelvi és kis-nagybetű szabály."
+      ],
+      "checklist": [
+        "A rendezhető mezők explicit engedélyezettek?",
+        "Van stabil másodlagos rendezés?",
+        "A rendezés kompatibilis a lapozási stratégiával?",
+        "A nagy listák rendezése indexet használ?"
+      ],
+      "relations": [
+        "backend.pagination",
+        "backend.filtering",
+        "database.index"
+      ]
+    },
+    {
+      "id": "backend.rate_limiting",
+      "label": "rate_limiting",
+      "group": "backend",
+      "description": "Kérésmennyiség korlátozása felhasználó, IP, token, tenant vagy művelettípus alapján a túlterhelés és visszaélés ellen.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz rate limit szabályokat publikus, bejelentkezett és admin végpontokra külön kvótákkal.",
+        "Adj választ arra, milyen kulcs alapján limitáljunk: IP, user ID, API key vagy tenant.",
+        "Írd le a 429 válasz szerződését, retry-after fejlécet és megfigyelési metrikákat."
+      ],
+      "anti_patterns": [
+        "one_limit_for_all: Ugyanaz a limit vonatkozik loginra, keresésre és admin műveletre.",
+        "ip_only_for_users: Bejelentkezett felhasználóknál csak IP alapján limitálunk, NAT mögött sok téves tiltással.",
+        "silent_throttle: A kliens nem kap egyértelmű jelzést, mikor próbálkozhat újra."
+      ],
+      "checklist": [
+        "A limit kulcsa illik a visszaélési mintához?",
+        "Külön limit van érzékeny műveletekre?",
+        "A 429 válasz tartalmaz retry-after vagy hasonló jelzést?",
+        "A limitek monitorozhatók és hangolhatók?"
+      ],
+      "relations": [
+        "security.brute_force",
+        "backend.middleware",
+        "observability.metrics"
+      ]
+    },
+    {
+      "id": "backend.caching",
+      "label": "caching",
+      "group": "backend",
+      "description": "Gyakran használt vagy drágán előállítható adatok ideiglenes tárolása gyorsabb válaszidő és kisebb terhelés érdekében.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz backend cache stratégiát kulcsnévvel, TTL-lel, invalidálással és cache miss viselkedéssel.",
+        "Döntsd el, mely adatok cache-elhetők biztonságosan, és melyek felhasználó- vagy jogosultságfüggők.",
+        "Adj cache stampede elleni megoldást nagy forgalmú végpontra."
+      ],
+      "anti_patterns": [
+        "cache_without_invalidation: Adat bekerül a cache-be, de nincs tiszta frissítési szabály.",
+        "personal_data_shared_cache: Felhasználóspecifikus válasz közös cache kulcs alá kerül.",
+        "stampede_on_expiry: Lejáratkor sok kérés egyszerre terheli meg az adatbázist."
+      ],
+      "checklist": [
+        "A cache kulcs tartalmaz minden releváns kontextust?",
+        "A TTL és invalidálás az adat frissességi igényéhez igazodik?",
+        "Személyes adat nem kerül közös cache-be?",
+        "Van védelem stampede vagy thundering herd ellen?"
+      ],
+      "relations": [
+        "performance.caching_strategy",
+        "devops_deploy.cdn",
+        "backend.idempotency"
+      ]
+    },
+    {
+      "id": "backend.queue",
+      "label": "queue",
+      "group": "backend",
+      "description": "Aszinkron feladatok sorba állítása, hogy a lassú vagy megbízhatatlan műveletek ne blokkolják a felhasználói kérést.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Döntsd el, mely műveleteket kell queue-ba tenni, és milyen payloadot kapjon a job.",
+        "Tervezz retry, dead-letter és idempotency szabályokat a háttérfeladatokhoz.",
+        "Add meg, hogyan jelzi a frontendnek a rendszer, hogy a feldolgozás folyamatban van vagy elkészült."
+      ],
+      "anti_patterns": [
+        "queue_as_black_hole: A job bekerül a sorba, de nincs státusz, log vagy hibakövetés.",
+        "non_idempotent_jobs: Újrapróbált job duplikált emailt, fizetést vagy adatváltozást okoz.",
+        "oversized_payload: A job payload teljes objektumokat tartalmaz stabil azonosító helyett."
+      ],
+      "checklist": [
+        "A job payload minimális és verziózható?",
+        "Van retry és dead-letter stratégia?",
+        "A job idempotens vagy deduplikálható?",
+        "A felhasználó követheti a hosszú feldolgozás állapotát?"
+      ],
+      "relations": [
+        "backend.worker",
+        "backend.retry_policy",
+        "backend.idempotency"
+      ]
+    },
+    {
+      "id": "backend.worker",
+      "label": "worker",
+      "group": "backend",
+      "description": "Háttérben futó folyamat, amely queue-ból, eseményből vagy időzítésből érkező feladatokat dolgoz fel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a worker felelősségét, concurrency beállítását, retry viselkedését és leállítási folyamatát.",
+        "Írd le, milyen logokat és metrikákat kell gyűjteni a worker futásáról.",
+        "Adj graceful shutdown mintát, hogy deploy közben ne vesszen el félkész munka."
+      ],
+      "anti_patterns": [
+        "infinite_job_lock: Worker hiba után a job örökre feldolgozás alatt marad.",
+        "no_graceful_shutdown: Deploy vagy restart félbeszakítja a feladatot állapotmentés nélkül.",
+        "unbounded_concurrency: A worker korlátlan párhuzamossággal terheli túl az adatbázist vagy külső API-t."
+      ],
+      "checklist": [
+        "A worker concurrency kontrollált?",
+        "A job lock és timeout kezelve van?",
+        "Restart esetén biztonságos a feldolgozás folytatása?",
+        "Vannak metrikák sikeres, hibás és újrapróbált jobokra?"
+      ],
+      "relations": [
+        "backend.queue",
+        "observability.metrics",
+        "devops_deploy.health_check"
+      ]
+    },
+    {
+      "id": "backend.cron_job",
+      "label": "cron_job",
+      "group": "backend",
+      "description": "Időzített háttérfeladat, amely ismétlődő karbantartást, szinkronizálást, riportolást vagy tisztítást futtat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz cron jobot ütemezéssel, időzónával, idempotenciával és futási naplóval.",
+        "Add meg, mi történjen kimaradt futás, átfedő futás vagy részleges hiba esetén.",
+        "Javasolj monitorozást és riasztást, ha a cron nem fut le vagy túl sokáig fut."
+      ],
+      "anti_patterns": [
+        "timezone_guessing: Az ütemezés nem tisztázza, melyik időzóna szerint fut.",
+        "overlapping_runs: Új futás indul, miközben az előző még dolgozik ugyanazon az adaton.",
+        "silent_cron_failure: A cron hibázik, de senki nem kap jelzést róla."
+      ],
+      "checklist": [
+        "Az időzóna és ütemezés dokumentált?",
+        "A futás idempotens vagy lockolt?",
+        "Van napló és riasztás sikertelen futásra?",
+        "Kezeli a kimaradt és átfedő futásokat?"
+      ],
+      "relations": [
+        "backend.worker",
+        "backend.idempotency",
+        "observability.alerting"
+      ]
+    },
+    {
+      "id": "backend.webhook",
+      "label": "webhook",
+      "group": "backend",
+      "description": "Eseményalapú HTTP értesítés külső rendszertől, amelyet aláírás-ellenőrzéssel és idempotens feldolgozással kell kezelni.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz webhook fogadó végpontot signature verificationnel, eseménytípus kezeléssel és idempotency kulccsal.",
+        "Írd le, hogyan tároljuk a nyers eseményt audit és újrafeldolgozás céljából.",
+        "Adj stratégiát ismeretlen, duplikált és sorrenden kívül érkező webhookokra."
+      ],
+      "anti_patterns": [
+        "no_signature_check: A webhookot bárki meghívhatja, mert nincs aláírás-ellenőrzés.",
+        "process_before_ack_strategy: Hosszú feldolgozás miatt a külső szolgáltató timeoutol és újraküldi az eseményt.",
+        "event_order_assumption: A rendszer feltételezi, hogy az események mindig sorrendben érkeznek."
+      ],
+      "checklist": [
+        "Ellenőrizzük a webhook aláírását?",
+        "A duplikált események idempotensen kezeltek?",
+        "A nyers esemény naplózható vagy tárolható audit célra?",
+        "Ismeretlen eseménytípus nem töri el a feldolgozást?"
+      ],
+      "relations": [
+        "backend.idempotency",
+        "security.hmac_signature",
+        "backend.queue"
+      ]
+    },
+    {
+      "id": "backend.event_driven_architecture",
+      "label": "event_driven_architecture",
+      "group": "backend",
+      "description": "Rendszerfelépítés, ahol szolgáltatások események publikálásával és fogyasztásával kapcsolódnak lazábban egymáshoz.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd át ezt a folyamatot eseményvezérelt architektúrára domain eventekkel és fogyasztókkal.",
+        "Add meg, mely események jelentenek tényt, és melyek parancs jellegű műveletindítások.",
+        "Írd le a konzisztencia, sorrendiség és újrafeldolgozás szabályait."
+      ],
+      "anti_patterns": [
+        "event_as_rpc: Az esemény csak rejtett szinkron hívás helyettesítője.",
+        "ambiguous_event_name: Az esemény neve nem múlt idejű tényt, hanem homályos szándékot jelöl.",
+        "no_consumer_ownership: Nem tiszta, mely szolgáltatás felel az esemény feldolgozásáért."
+      ],
+      "checklist": [
+        "Az események domain tényeket neveznek meg?",
+        "A fogyasztók tulajdonosa és felelőssége ismert?",
+        "Van idempotens újrafeldolgozási stratégia?",
+        "A végső konzisztencia hatása elfogadható a termékben?"
+      ],
+      "relations": [
+        "backend.message_broker",
+        "backend.idempotency",
+        "observability.tracing"
+      ]
+    },
+    {
+      "id": "backend.message_broker",
+      "label": "message_broker",
+      "group": "backend",
+      "description": "Üzenetközvetítő komponens, amely topicokon, queue-kon vagy streameken keresztül kapcsolja össze a termelőket és fogyasztókat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Válassz message broker mintát queue, pub-sub vagy stream alapú igény szerint.",
+        "Tervezz topic/queue névadást, üzenetsémát, retryt és dead-letter kezelést.",
+        "Add meg, milyen delivery garanciára van szükség: at-most-once, at-least-once vagy exactly-once jellegű feldolgozás."
+      ],
+      "anti_patterns": [
+        "broker_without_schema: Az üzenetek formája nincs verziózva vagy dokumentálva.",
+        "shared_catch_all_topic: Minden esemény egyetlen topicba kerül, fogyasztói szűrésre bízva.",
+        "exactly_once_assumption: A rendszer azt feltételezi, hogy duplikált üzenet soha nem érkezik."
+      ],
+      "checklist": [
+        "A broker típusa illik a kommunikációs mintához?",
+        "Az üzenetséma verziózott?",
+        "Van dead-letter és retry folyamat?",
+        "A fogyasztók fel vannak készítve duplikált üzenetekre?"
+      ],
+      "relations": [
+        "backend.event_driven_architecture",
+        "backend.retry_policy",
+        "backend.queue"
+      ]
+    },
+    {
+      "id": "backend.retry_policy",
+      "label": "retry_policy",
+      "group": "backend",
+      "description": "Újrapróbálási szabályrendszer átmeneti hibákhoz, amely meghatározza a próbálkozások számát, ütemét, jittert és feladási pontot.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz retry policy-t ehhez a külső API híváshoz exponential backoffal, jitterrel és timeouttal.",
+        "Döntsd el, mely hibák újrapróbálhatók, és melyek véglegesek.",
+        "Kapcsold össze a retryt idempotencyvel, circuit breakerrel és observability metrikákkal."
+      ],
+      "anti_patterns": [
+        "retry_every_error: Validációs vagy jogosultsági hibákat is újrapróbálunk.",
+        "retry_storm: Sok kliens egyszerre próbálkozik újra, tovább terhelve a hibás szolgáltatást.",
+        "retry_without_idempotency: Újrapróbált művelet duplikált mellékhatást okozhat."
+      ],
+      "checklist": [
+        "Csak átmeneti hibákat próbálunk újra?",
+        "Van backoff és jitter?",
+        "A művelet idempotens vagy deduplikált?",
+        "Mérjük a retryk számát és végső hibaarányát?"
+      ],
+      "relations": [
+        "backend.idempotency",
+        "backend.circuit_breaker",
+        "observability.metrics"
+      ]
+    },
+    {
+      "id": "backend.idempotency",
+      "label": "idempotency",
+      "group": "backend",
+      "description": "Tulajdonság, amely biztosítja, hogy ugyanaz a művelet többszöri futtatása se hozzon létre hibás vagy duplikált állapotot.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz idempotency kulcsot ehhez a létrehozó művelethez tárolással, lejárattal és válasz-visszajátszással.",
+        "Írd le, mely endpointok, webhookok és háttérjobok igényelnek idempotens feldolgozást.",
+        "Adj deduplikációs stratégiát retry, hálózati timeout és duplikált webhook esetére."
+      ],
+      "anti_patterns": [
+        "idempotency_key_ignored: A kliens küld kulcsot, de a backend nem tárolja a feldolgozási eredményt.",
+        "natural_key_confusion: Egy üzleti mezőt használunk deduplikálásra, amely nem garantáltan egyedi.",
+        "partial_success_duplicate: Félbeszakadt művelet újrapróbálása második mellékhatást hoz létre."
+      ],
+      "checklist": [
+        "Van stabil idempotency kulcs vagy deduplikációs azonosító?",
+        "A kulcshoz eltároljuk a művelet eredményét vagy státuszát?",
+        "A lejárati idő és ütközéskezelés definiált?",
+        "A kritikus mellékhatások nem futnak le duplán?"
+      ],
+      "relations": [
+        "backend.retry_policy",
+        "backend.webhook",
+        "backend.queue"
+      ]
+    },
+    {
+      "id": "backend.circuit_breaker",
+      "label": "circuit_breaker",
+      "group": "backend",
+      "description": "Hibatűrési minta, amely ideiglenesen leállítja a hibás külső függőség hívását, hogy a rendszer ne omoljon tovább.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz circuit breaker szabályt ehhez a külső szolgáltatáshoz hibaküszöbbel, nyitott állapottal és half-open próbával.",
+        "Adj fallback választ vagy degradált működést, amikor a külső függőség nem elérhető.",
+        "Írd le, milyen metrikák és riasztások mutassák a breaker állapotát."
+      ],
+      "anti_patterns": [
+        "hammering_downstream: Hibás szolgáltatást tovább hívunk teljes forgalommal.",
+        "no_fallback_experience: Breaker nyitásakor a felhasználó csak általános hibát kap.",
+        "never_half_open: A rendszer nem próbálja kontrolláltan visszaengedni a függőséget."
+      ],
+      "checklist": [
+        "Van hibaküszöb és időablak a breakerhez?",
+        "A half-open állapot kontrollált próbahívást enged?",
+        "A fallback üzletileg elfogadható?",
+        "A breaker állapota látszik metrikákban és riasztásban?"
+      ],
+      "relations": [
+        "backend.retry_policy",
+        "observability.alerting",
+        "ux_states.error_state"
+      ]
+    },
+    {
+      "id": "backend.dependency_injection",
+      "label": "dependency_injection",
+      "group": "backend",
+      "description": "Tervezési minta, ahol a komponensek a függőségeiket kívülről kapják, így könnyebben tesztelhetők és cserélhetők.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Alakítsd át ezt a service-t dependency injection szemlélettel repository, logger és külső kliens függőségekre.",
+        "Javasolj interfészeket és factoryt, hogy a production és teszt implementációk cserélhetők legyenek.",
+        "Mutasd meg, hol van szükség DI konténerre, és hol elég egyszerű konstruktoros injektálás."
+      ],
+      "anti_patterns": [
+        "new_everywhere: A service maga hozza létre az adatbázis- és API-klienseket.",
+        "service_locator_sprawl: Globális konténerből bárki bármit kikérhet, rejtett függőségekkel.",
+        "mocking_impossible: Tesztben csak valódi hálózat vagy adatbázis mellett fut a kód."
+      ],
+      "checklist": [
+        "A függőségek konstruktorból vagy explicit paraméterből érkeznek?",
+        "A külső szolgáltatások interfészen keresztül cserélhetők?",
+        "A tesztek mock vagy fake implementációt tudnak adni?",
+        "Nincs túlzott, rejtett globális konténerhasználat?"
+      ],
+      "relations": [
+        "backend.service_layer",
+        "testing_qa.unit_test",
+        "backend.repository_pattern"
+      ]
+    },
+    {
+      "id": "backend.openapi",
+      "label": "openapi",
+      "group": "backend",
+      "description": "Szabványos API specifikáció, amely géppel olvasható módon írja le a végpontokat, sémákat, válaszokat és auth mechanizmusokat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts OpenAPI specifikációt ehhez az API-hoz pathokkal, komponens sémákkal és security scheme-mel.",
+        "Kapcsold össze a validációs sémákat az OpenAPI dokumentációval, hogy ne térjenek el.",
+        "Adj contract testing tervet, amely ellenőrzi, hogy a backend válaszai megfelelnek a specifikációnak."
+      ],
+      "anti_patterns": [
+        "docs_after_release: Az OpenAPI kézzel frissül, ezért gyorsan eltér az éles API-tól.",
+        "schema_too_loose: A sémák object vagy string típusra lazulnak, elveszítve a szerződés értékét.",
+        "missing_error_responses: Csak a 200-as válasz dokumentált, a hibák nem."
+      ],
+      "checklist": [
+        "Minden publikus endpoint szerepel a specifikációban?",
+        "A request és response sémák elég szigorúak?",
+        "A hibaválaszok is dokumentáltak?",
+        "A CI ellenőrzi a specifikáció és implementáció eltérését?"
+      ],
+      "relations": [
+        "backend.swagger",
+        "backend.api",
+        "testing_qa.contract_test"
+      ]
+    },
+    {
+      "id": "backend.swagger",
+      "label": "swagger",
+      "group": "backend",
+      "description": "OpenAPI alapú dokumentációs és kipróbáló eszközkészlet, amely böngészőből teszi áttekinthetővé az API szerződést.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Állíts be Swagger UI-t az OpenAPI specifikációhoz fejlesztői és staging környezetben.",
+        "Javasolj auth beállítást a Swagger kipróbálható végpontjaihoz, hogy ne legyen nyitott veszélyes művelet.",
+        "Írd le, hogyan használja a csapat a Swagger dokumentációt fejlesztés, QA és integráció során."
+      ],
+      "anti_patterns": [
+        "public_admin_swagger: Éles admin végpontok nyitott Swagger UI-ból kipróbálhatók.",
+        "swagger_as_source_when_stale: A csapat dokumentációnak hiszi, de nem az aktuális OpenAPI-ból épül.",
+        "try_it_without_guardrails: Veszélyes módosító kérések véletlenül futtathatók tesztadat nélkül."
+      ],
+      "checklist": [
+        "A Swagger az aktuális OpenAPI specifikációból épül?",
+        "Éles környezetben védett vagy korlátozott a hozzáférés?",
+        "A kipróbálható műveletek nem veszélyeztetnek valós adatot?",
+        "A dokumentáció segíti a QA-t és külső integrációt?"
+      ],
+      "relations": [
+        "backend.openapi",
+        "documentation.api_docs",
+        "security.access_control"
+      ]
+    }
+  ]
+}

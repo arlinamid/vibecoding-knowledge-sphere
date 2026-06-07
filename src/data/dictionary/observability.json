@@ -1,0 +1,617 @@
+{
+  "group": "observability",
+  "keywords": [
+    {
+      "id": "observability.logging",
+      "label": "logging",
+      "group": "observability",
+      "description": "Rendszeresemények, üzleti műveletek és hibák értelmezhető naplózása, hogy egy fejlesztő vagy ügyeletes gyorsan vissza tudja fejteni, mi történt egy adott időpontban.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Fogalmazz meg naplózási stratégiát egy többkomponensű backendhez, külön szintekkel az üzleti eseményekre és a technikai hibákra.",
+        "Írd le, milyen mezők tegyék kereshetővé az API logokat anélkül, hogy személyes vagy titkos adat kerülne a naplóba.",
+        "Segíts eldönteni, mely eseményeket érdemes info, warning vagy error szinten naplózni egy fizetési folyamatban.",
+        "Készíts magyar fejlesztői ellenőrzőlistát arra, hogyan lehet a logokat incidensvizsgálathoz használhatóvá tenni."
+      ],
+      "anti_patterns": [
+        "zajos_info_log: Minden apró lépés info szinten kerül a naplóba, ezért a valóban fontos események elvesznek a háttérzajban.",
+        "titok_a_logban: Tokenek, jelszórészletek, teljes payloadok vagy személyes adatok kerülnek tartós naplózásra.",
+        "csak_hiba_uzenet: A log csak annyit mond, hogy valami elromlott, de nem tartalmaz műveletet, komponenst vagy döntési kontextust.",
+        "eltuno_naplo: Konténer- vagy serverless-környezetben a log nem jut központi gyűjtőbe, így újraindítás után nem vizsgálható."
+      ],
+      "checklist": [
+        "Elkülönülnek az üzleti események, a technikai diagnosztika és a biztonsági naplók?",
+        "Minden fontos logbejegyzés tartalmaz időpontot, komponenst, környezetet és műveleti kontextust?",
+        "A naplózási szintek következetesen jelzik a teendő sürgősségét?",
+        "A logokból ki vannak szűrve a titkok, tokenek és szükségtelen személyes adatok?",
+        "A központi loggyűjtésben visszakereshető egy konkrét felhasználói vagy rendszerfolyamat?",
+        "A naplómegőrzés ideje illeszkedik az üzemeltetési és megfelelőségi igényekhez?"
+      ],
+      "relations": [
+        "observability.structured_logging",
+        "observability.request_id",
+        "observability.correlation_id",
+        "debugging.error_log",
+        "security.audit_trail"
+      ]
+    },
+    {
+      "id": "observability.structured_logging",
+      "label": "structured_logging",
+      "group": "observability",
+      "description": "Egységes mezőkkel és géppel feldolgozható formában készülő naplózás, amelyből lekérdezések, dashboardok, riasztások és incidens-idővonalak építhetők.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg egy szolgáltatás strukturált logmezőit úgy, hogy API, worker és cron folyamatok is ugyanazt a nyelvet használják.",
+        "Javasolj névkonvenciót logmezőkre, ahol a hibakód, ügyfél-azonosító, komponens és művelet külön kereshető marad.",
+        "Írj iránymutatást arra, hogyan térjünk át szöveges logokról strukturált logokra fokozatos bevezetés mellett.",
+        "Segíts eldönteni, mely mezők legyenek kötelezőek minden naplóbejegyzésben egy magyar fejlesztőcsapat számára."
+      ],
+      "anti_patterns": [
+        "szoveges_morzsak: A logok hosszú mondatok, amelyekből csak kézi olvasással lehet kinyerni a hibakódot vagy az érintett entitást.",
+        "mezok_nev_kavalkadja: Ugyanazt a fogalmat több komponens más mezőnéven rögzíti, ezért a keresések és dashboardok megbízhatatlanok.",
+        "strukturalt_kaosz: Bár a log JSON-szerű, a mezők értékei szabad szövegek, kevert típusok és egymásba ágyazott véletlen objektumok.",
+        "utolagos_kitalalas: Csak incidens után derül ki, hogy a szükséges mezők hiányoznak, mert előre nem volt naplózási szerződés."
+      ],
+      "checklist": [
+        "Van dokumentált alap logmező-készlet minden szolgáltatásra?",
+        "A mezők típusa, neve és jelentése konzisztens a komponensek között?",
+        "A hibákhoz külön hibakód, hibaosztály és emberileg olvasható üzenet tartozik?",
+        "A strukturált logok kereshetők aggregációra alkalmas mezők szerint?",
+        "A mezők nem tartalmaznak nagy, véletlenszerű vagy magas kardinalitású értékeket feleslegesen?",
+        "A fejlesztők tudják, mikor kell új mezőt bevezetni és mikor kell meglévőt használni?"
+      ],
+      "relations": [
+        "observability.logging",
+        "observability.metrics",
+        "debugging.diagnostic_logging",
+        "backend.serialization",
+        "documentation.runbook"
+      ]
+    },
+    {
+      "id": "observability.monitoring",
+      "label": "monitoring",
+      "group": "observability",
+      "description": "A rendszer állapotának folyamatos figyelése olyan jelek alapján, amelyek időben megmutatják a lassulást, hibaarány-növekedést, kapacitásgondot vagy kiesést.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Állíts össze monitoring tervet egy webalkalmazáshoz, külön felhasználói élményre, backend állapotra és infrastruktúrára.",
+        "Segíts kiválasztani azokat a jeleket, amelyek előbb mutatják meg a romlást, mint az ügyfélpanaszok.",
+        "Fogalmazz meg service monitoring irányelveket staging és production környezetre eltérő érzékenységgel.",
+        "Javasolj monitorozási nézőpontokat egy csapatnak, amely eddig csak hibanaplók alapján üzemeltetett."
+      ],
+      "anti_patterns": [
+        "csak_ping_monitor: A rendszer elérhetőnek látszik, miközben a fő üzleti műveletek hibásak vagy használhatatlanul lassúak.",
+        "kesoi_lathatosag: A csapat csak akkor vesz észre problémát, amikor már ügyfél vagy partner jelzi.",
+        "mindent_merunk_semmit_sem_latunk: Rengeteg mérés készül, de nincs kiválasztva, melyik jelből következik konkrét teendő.",
+        "staging_vakfolt: Csak production van figyelve, ezért a hibás release előjelei tesztkörnyezetben észrevétlenek maradnak."
+      ],
+      "checklist": [
+        "Láthatók a fő felhasználói és üzleti folyamatok állapotjelzői?",
+        "A monitorok megkülönböztetik a teljes kiesést, részleges hibát és teljesítményromlást?",
+        "Van külön figyelés adatbázisra, külső szolgáltatásokra, háttérmunkákra és API-végpontokra?",
+        "A monitoring lefedi a production mellett a kritikus staging vagy preview környezeteket?",
+        "A monitorok tulajdonosa és teendője egyértelműen dokumentált?",
+        "Az új funkciókhoz már release előtt készül működési jel?"
+      ],
+      "relations": [
+        "observability.metrics",
+        "observability.dashboard",
+        "observability.alerting",
+        "devops_deploy.health_check",
+        "testing_qa.smoke_test"
+      ]
+    },
+    {
+      "id": "observability.observability",
+      "label": "observability",
+      "group": "observability",
+      "description": "Az a képesség, hogy a rendszer belső viselkedése logokból, metrikákból, trace-ekből és üzleti jelekből magyarázhatóvá válik előre nem ismert hibák esetén is.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Mutasd be, hogyan épül fel egy observability szemléletű fejlesztési folyamat logokkal, metrikákkal és trace-ekkel.",
+        "Segíts átalakítani egy monitoring-központú rendszert úgy, hogy ismeretlen hibák vizsgálatára is alkalmas legyen.",
+        "Írj döntési szempontokat arra, milyen kérdésekre kell választ adnia egy jól instrumentált szolgáltatásnak.",
+        "Fogalmazz meg magyar csapatnormákat arra, hogy új feature mellé milyen megfigyelhetőségi jelek készüljenek."
+      ],
+      "anti_patterns": [
+        "csak_ismert_hibara_jo: A rendszer kizárólag előre definiált riasztásokkal érthető, váratlan viselkedésnél nincs vizsgálható adat.",
+        "harom_jel_szetvalik: A logok, metrikák és trace-ek között nincs közös azonosító, ezért a történet kézzel sem áll össze könnyen.",
+        "uzleti_vaksag: A technikai mutatók rendben vannak, de nem látszik, hogy a felhasználók valóban el tudják-e végezni a céljukat.",
+        "muszerfal_szinhaz: Szép grafikonok vannak, de nem derül ki belőlük, miért történt a hiba és hol érdemes beavatkozni."
+      ],
+      "checklist": [
+        "Összeköthető egy felhasználói művelet logokkal, metrikákkal és trace-ekkel?",
+        "Lehet új, előre nem ismert kérdéseket feltenni a rendszer viselkedéséről?",
+        "Az observability adatok támogatják a fejlesztői hibakeresést és az ügyeleti döntéseket is?",
+        "Minden kritikus komponensnél ismert, milyen jelekből látszik az egészséges működés?",
+        "A megfigyelhetőség része a fejlesztési Definition of Done-nak?",
+        "Az üzleti hatás és a technikai tünet ugyanabban az incidensnarratívában vizsgálható?"
+      ],
+      "relations": [
+        "observability.logging",
+        "observability.metrics",
+        "observability.tracing",
+        "debugging.root_cause_analysis",
+        "documentation.runbook"
+      ]
+    },
+    {
+      "id": "observability.metrics",
+      "label": "metrics",
+      "group": "observability",
+      "description": "Számszerűen gyűjtött idősoros adatok, amelyek trendeket, küszöbátlépéseket, kapacitást, hibaarányt és szolgáltatási célokat tesznek mérhetővé.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Válassz metrikákat egy REST API-hoz úgy, hogy külön látszódjon a forgalom, a hibaarány, a késleltetés és a telítettség.",
+        "Segíts megkülönböztetni a rendszer-, alkalmazás- és üzleti metrikákat egy SaaS termékben.",
+        "Adj javaslatot arra, mely metrikákból legyen riasztás, és melyek maradjanak elemzési célú jelként.",
+        "Fogalmazz meg metrika-névkonvenciót, amely több szolgáltatás között is érthető marad."
+      ],
+      "anti_patterns": [
+        "hiusagi_mutato: Olyan számokat nézünk, amelyek jól mutatnak, de nem segítenek dönteni hibáról, kockázatról vagy felhasználói hatásról.",
+        "magas_kardinalitas: Véletlenszerű azonosítók vagy felhasználói értékek kerülnek címkékbe, ezért a metrikarendszer drága és lassú lesz.",
+        "atlag_elrejti_a_bajt: Csak átlagos válaszidő látszik, miközben a lassú végpontok vagy rossz percentilisek rejtve maradnak.",
+        "gazdatlan_metric: Senki sem tudja, ki használja az adott metrikát, mit jelent pontosan, és mikor lehet törölni."
+      ],
+      "checklist": [
+        "A metrikák lefedik a forgalmat, hibákat, késleltetést és erőforrás-telítettséget?",
+        "A percentilisek és eloszlások látszanak ott, ahol az átlag félrevezető lenne?",
+        "A címkék száma és értékkészlete kontrollált?",
+        "A metrikák neve és leírása elég egyértelmű más csapatok számára is?",
+        "Megkülönböztethető a technikai romlás és az üzleti hatás?",
+        "Van terv az elavult vagy félrevezető metrikák kivezetésére?"
+      ],
+      "relations": [
+        "observability.monitoring",
+        "observability.latency",
+        "observability.error_rate",
+        "observability.throughput",
+        "performance.performance_budget"
+      ]
+    },
+    {
+      "id": "observability.tracing",
+      "label": "tracing",
+      "group": "observability",
+      "description": "Egy kérés vagy háttérfolyamat útjának követése szolgáltatáshatárokon át, hogy látható legyen a késleltetés, a függőségi hívások és a hiba pontos helye.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz trace-elési nézőpontot egy API, queue és worker láncból álló folyamatra.",
+        "Segíts meghatározni, mely spanek szükségesek ahhoz, hogy egy lassú rendelésfeldolgozás oka kiderüljön.",
+        "Írj magyar magyarázatot arra, hogyan kapcsolódik össze a trace, a log és a request ID egy incidensvizsgálatban.",
+        "Adj checklistet arra, hogyan lehet hasznos trace-eket készíteni túlzott zaj és érzékeny adat nélkül."
+      ],
+      "anti_patterns": [
+        "felbeszakadt_trace: A trace elveszik az első külső hívásnál vagy queue-átadásnál, ezért a folyamat második fele láthatatlan.",
+        "span_mindent_is: Minden apró belső művelet külön span, így a valódi lassulási pontot nehéz kiszúrni.",
+        "nev_nelkuli_span: A span neve általános vagy technikai rövidítés, amelyből nem derül ki a művelet üzleti értelme.",
+        "mintavetel_vakon: A sampling beállítás eldobja a ritka hibákat vagy a legfontosabb lassú kéréseket."
+      ],
+      "checklist": [
+        "Átadódik a trace kontextus HTTP, üzenetsor és háttérmunka határokon át?",
+        "A spanek nevei üzleti és technikai szempontból is értelmezhetők?",
+        "Látható a külső függőségek és adatbázishívások időigénye?",
+        "A trace összekapcsolható releváns logokkal és metrikákkal?",
+        "A sampling stratégia megőrzi a hibás és kiugróan lassú eseteket?",
+        "Nem kerülnek érzékeny payloadok vagy titkok span attribútumokba?"
+      ],
+      "relations": [
+        "observability.request_id",
+        "observability.correlation_id",
+        "observability.latency",
+        "debugging.network_trace",
+        "backend.queue"
+      ]
+    },
+    {
+      "id": "observability.request_id",
+      "label": "request_id",
+      "group": "observability",
+      "description": "Egy konkrét bejövő kérés egyedi azonosítója, amely a logokban, hibaválaszokban és diagnosztikai adatokban ugyanarra az eseménysorra mutat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Fogalmazz meg request ID kezelési szabályt egy API gateway, middleware és backend szolgáltatás közé.",
+        "Segíts eldönteni, mikor kell új request ID-t generálni és mikor kell továbbvinni a bejövő azonosítót.",
+        "Írj le ügyféltámogatási folyamatot, ahol a hibajegyben szereplő request ID alapján indul a vizsgálat.",
+        "Adj ellenőrzési szempontokat arra, hogy a request ID megjelenjen a logokban, trace-ekben és hibaválaszokban."
+      ],
+      "anti_patterns": [
+        "azonosito_csak_backendben: A request ID csak belső logban létezik, az ügyfél vagy frontend hibajelentéséből nem derül ki.",
+        "ujrageneralas_lancban: Minden komponens új request ID-t készít, ezért a kérés útja szétesik a szolgáltatások között.",
+        "hianyzik_hibavalaszbol: A felhasználó hibát lát, de nincs olyan azonosító, amelyet support vagy fejlesztő tovább tudna keresni.",
+        "nem_biztonsagos_forras: A rendszer ellenőrzés nélkül elfogad tetszőleges külső azonosítót, amely loghamisításra vagy zavarkeltésre használható."
+      ],
+      "checklist": [
+        "Minden bejövő kérés kap request ID-t már a belépési ponton?",
+        "A request ID következetesen továbbadódik middleware-en, service layeren és külső hívásokon át?",
+        "A hibaválaszok vagy support üzenetek tartalmaznak biztonságosan megosztható azonosítót?",
+        "A request ID formátuma validált és nem tartalmaz felhasználói szabad szöveget?",
+        "A logkeresés request ID alapján egyértelműen visszaadja a kérés történetét?",
+        "A frontend és backend hibajelentések ugyanarra az azonosítóra tudnak hivatkozni?"
+      ],
+      "relations": [
+        "observability.logging",
+        "observability.tracing",
+        "observability.correlation_id",
+        "backend.middleware",
+        "debugging.request_payload"
+      ]
+    },
+    {
+      "id": "observability.correlation_id",
+      "label": "correlation_id",
+      "group": "observability",
+      "description": "Több kérésen, aszinkron feladaton vagy szolgáltatáson átívelő közös azonosító, amely egy teljes üzleti folyamatot összefűz.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg, hogyan vigyük tovább a correlation ID-t egy rendelés útján API-ból üzenetsoron át workerig.",
+        "Magyarázd el, miben más a request ID és a correlation ID egy mikroszervizes rendszerben.",
+        "Adj irányelveket arra, hogyan jelenjen meg a correlation ID logokban, trace-ekben, audit eseményekben és incident riportban.",
+        "Segíts egy aszinkron folyamat megfigyelhetőségét javítani közös korrelációs azonosítóval."
+      ],
+      "anti_patterns": [
+        "request_idvel_keverve: A csapat ugyanazt az azonosítót használja kérésre és teljes üzleti folyamatra, ezért aszinkron ágaknál elmosódik a jelentés.",
+        "queueban_elveszik: Az azonosító nem kerül be az üzenet metaadataiba, így a háttérfeldolgozás külön történetként látszik.",
+        "partnerrel_nincs_szerzodes: Külső integrációknál nincs megállapodás az azonosító továbbadásáról vagy visszajelzéséről.",
+        "veletlenul_szemelyes: A korrelációs azonosító üzleti vagy személyes adatból képződik, ezért logban és támogatási csatornán kockázatos."
+      ],
+      "checklist": [
+        "Világosan el van különítve a request ID és a correlation ID szerepe?",
+        "A correlation ID végigmegy aszinkron üzeneteken, workereken és külső integrációkon?",
+        "Az azonosító alapján összerakható egy teljes üzleti folyamat idővonala?",
+        "A korrelációs azonosító nem tartalmaz személyes vagy üzleti titkot?",
+        "A logok, trace-ek és audit események ugyanazt a mezőnevet használják?",
+        "A support és incident folyamat tudja, mikor melyik azonosítót kérje be?"
+      ],
+      "relations": [
+        "observability.request_id",
+        "observability.tracing",
+        "backend.event_driven_architecture",
+        "backend.message_broker",
+        "database.audit_log"
+      ]
+    },
+    {
+      "id": "observability.alerting",
+      "label": "alerting",
+      "group": "observability",
+      "description": "Olyan riasztási szabályok és értesítési utak kialakítása, amelyek valódi felhasználói vagy üzleti hatás esetén gyors, felelős beavatkozást indítanak.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts riasztási stratégiát egy production API-hoz, külön kritikus, sürgős és munkaidőben kezelhető jelzésekkel.",
+        "Segíts csökkenteni az alert fatigue-et úgy, hogy a fontos hibák továbbra is azonnal látszódjanak.",
+        "Fogalmazz meg riasztási szabályokat SLO burn rate, hibaarány és külső függőség romlása alapján.",
+        "Írj magyar ügyeleti irányelvet arról, mitől lesz egy alert cselekvésre alkalmas."
+      ],
+      "anti_patterns": [
+        "minden_error_riaszt: Egyetlen hibalog is ügyeleti jelzést küld, ezért a csapat gyorsan érzéketlenné válik.",
+        "nincs_teendo: A riasztás csak annyit közöl, hogy baj van, de nem mondja meg a szolgáltatást, hatást vagy első vizsgálati lépést.",
+        "tul_kesoi_kuszob: A riasztás csak akkor szól, amikor az SLO már jelentősen sérült vagy az ügyfelek tömegesen érintettek.",
+        "csatorna_zurzavar: Kritikus és tájékoztató jelzések ugyanoda érkeznek prioritás vagy tulajdonos nélkül."
+      ],
+      "checklist": [
+        "Minden riasztásnak van tulajdonosa, prioritása és első teendője?",
+        "A szabályok felhasználói vagy üzleti hatás alapján vannak kalibrálva?",
+        "A zajos, ismétlődő vagy flapping riasztások kezelve vannak?",
+        "A kritikus alerthez tartozik runbook vagy diagnosztikai link?",
+        "A riasztási küszöböket rendszeresen visszamérik incidentek után?",
+        "A riasztás jelzi, ha külső szolgáltatás vagy infrastruktúra okozza a tünetet?"
+      ],
+      "relations": [
+        "observability.monitoring",
+        "observability.slo",
+        "observability.error_rate",
+        "documentation.runbook",
+        "devops_deploy.rollback"
+      ]
+    },
+    {
+      "id": "observability.dashboard",
+      "label": "dashboard",
+      "group": "observability",
+      "description": "Áttekintő és vizsgálati felület, amely a rendszer állapotát, trendjeit és kritikus jeleit gyorsan értelmezhető képpé rendezi.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz production dashboardot ügyeletes fejlesztőknek, ahol az első képernyőn látszik az ügyfélhatás és a fő technikai tünet.",
+        "Segíts szétválasztani vezetői áttekintő, fejlesztői diagnosztikai és release monitorozó dashboard céljait.",
+        "Javasolj panelstruktúrát egy SaaS szolgáltatáshoz forgalommal, hibákkal, késleltetéssel, queue állapottal és külső függőségekkel.",
+        "Fogalmazz meg dashboard minőségi elveket magyar fejlesztői tudásbázisba."
+      ],
+      "anti_patterns": [
+        "karacsonyfa_dashboard: Túl sok grafikon zsúfolódik egy képernyőre, ezért incidens alatt nem derül ki, mit kell nézni először.",
+        "csak_atlagok: A dashboard átlagokat mutat, miközben a percentilisek, hibás útvonalak és érintett szegmensek hiányoznak.",
+        "nincs_ido_kontekstus: Nem látszanak deployok, konfigurációváltások vagy külső események, amelyek magyaráznák a görbéket.",
+        "gazdatlan_panel: Régi panelek maradnak fenn magyarázat nélkül, és a csapat már nem tudja, melyik jel megbízható."
+      ],
+      "checklist": [
+        "Az első nézet megmutatja, hogy van-e felhasználói hatás?",
+        "A dashboard külön jelzi a forgalmat, hibaarányt, késleltetést és telítettséget?",
+        "A panelekhez tartozik rövid értelmezés vagy linkelt runbook?",
+        "Láthatók deployok, incidentek vagy konfigurációs változások az idősor mellett?",
+        "Van drill-down út a grafikonoktól logokig vagy trace-ekig?",
+        "Rendszeresen törlik vagy javítják a már nem használt paneleket?"
+      ],
+      "relations": [
+        "observability.monitoring",
+        "observability.metrics",
+        "observability.latency",
+        "frontend_ui.dashboard",
+        "documentation.runbook"
+      ]
+    },
+    {
+      "id": "observability.uptime",
+      "label": "uptime",
+      "group": "observability",
+      "description": "A szolgáltatás rendelkezésre állásának mérése és értelmezése, külön figyelve arra, hogy az elérhetőség ne csak technikai pinget, hanem használható működést jelentsen.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Segíts meghatározni, mit jelentsen az uptime egy olyan alkalmazásnál, ahol a belépés, keresés és fizetés külön kritikus út.",
+        "Írj magyar magyarázatot az uptime, részleges kiesés és degradált működés különbségéről.",
+        "Javasolj elérhetőségi monitorokat több régióra és külső függőségekre támaszkodó rendszerhez.",
+        "Fogalmazz meg riportolási szempontokat havi uptime kimutatáshoz SLA és SLO nézőpontból."
+      ],
+      "anti_patterns": [
+        "ping_egyenlo_elerheto: A rendszer zöldnek látszik, mert a health endpoint válaszol, de a fő felhasználói művelet nem működik.",
+        "reszleges_kieses_lathatatlan: Egy régió, ügyfélszegmens vagy funkció hibája nem jelenik meg az uptime mutatóban.",
+        "karbantartas_elmosva: Tervezett és nem tervezett kiesés összekeveredik, ezért a riport nem támogatja a tanulást.",
+        "fuggoseg_kimarad: A külső szolgáltatás hibája miatt használhatatlan a termék, de az uptime mérés mégis sikeresnek mutatja."
+      ],
+      "checklist": [
+        "Az uptime definíció a felhasználó számára értelmes működést mér?",
+        "Külön kezelik a teljes kiesést, részleges kiesést és degradált szolgáltatást?",
+        "A kritikus user flow-khoz szintetikus ellenőrzés vagy end-to-end monitor tartozik?",
+        "A külső függőségek állapota látszik az elérhetőségi riportban?",
+        "A tervezett karbantartás és váratlan hiba elkülönül a kimutatásokban?",
+        "Az uptime mutató kapcsolódik az SLA vagy SLO kommunikációhoz?"
+      ],
+      "relations": [
+        "observability.sla",
+        "observability.slo",
+        "devops_deploy.health_check",
+        "testing_qa.e2e_test",
+        "ui_ux.user_flow"
+      ]
+    },
+    {
+      "id": "observability.latency",
+      "label": "latency",
+      "group": "observability",
+      "description": "A rendszer válaszidejének és feldolgozási idejének mérése olyan bontásokban, amelyek megmutatják a felhasználói lassulást és a belső szűk keresztmetszeteket.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Elemezd, milyen latency metrikákat érdemes figyelni egy API-nál átlag helyett percentilisekkel és végpont szerinti bontással.",
+        "Segíts felépíteni egy lassulásvizsgálati gondolatmenetet frontend, backend, adatbázis és külső szolgáltatás jeleiből.",
+        "Javasolj riasztási küszöböket késleltetésre úgy, hogy rövid tüskék és tartós romlások külön kezelhetők legyenek.",
+        "Fogalmazz meg magyar checklistet latency dashboard készítéséhez."
+      ],
+      "anti_patterns": [
+        "atlag_csapda: Az átlagos válaszidő elfedi, hogy a kérések jelentős része rossz felhasználói élményt ad.",
+        "endpoint_osszemosta: Minden végpont egy metrikába kerül, ezért a lassú admin vagy fizetési útvonal nem azonosítható.",
+        "nincs_bontas_fuggosegre: Nem derül ki, hogy az idő adatbázisban, külső API-ban, queue-ban vagy alkalmazáskódban telik el.",
+        "tuske_panik: Minden rövid kiugrás riasztást okoz, miközben nincs tartós hatás vagy SLO-kockázat."
+      ],
+      "checklist": [
+        "A latency percentilisekkel és nem csak átlaggal van mérve?",
+        "Látható a válaszidő végpont, régió, ügyfélszegmens vagy művelettípus szerint?",
+        "A trace-ekből kiderül, mely komponens adja a késleltetés nagy részét?",
+        "Külön kezelik a rövid tüskéket és a tartós romlást?",
+        "A latency célok összhangban vannak a felhasználói elvárással és teljesítménybudgettel?",
+        "A lassulás vizsgálatához elérhetők a kapcsolódó deploy- és adatbázisjelek?"
+      ],
+      "relations": [
+        "observability.metrics",
+        "observability.tracing",
+        "observability.dashboard",
+        "performance.performance_budget",
+        "debugging.performance_bottleneck"
+      ]
+    },
+    {
+      "id": "observability.error_rate",
+      "label": "error_rate",
+      "group": "observability",
+      "description": "A sikertelen műveletek arányának mérése, amely segít megkülönböztetni a normális üzemi zajt a valódi hibahullámtól vagy regressziótól.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Határozd meg, hogyan számoljuk az error rate-et egy API-ban úgy, hogy klienshiba, szerverhiba és üzleti elutasítás külön látszódjon.",
+        "Segíts riasztást tervezni hibaarányra, ahol a kis forgalmú és nagy forgalmú végpontok nem torzítják egymást.",
+        "Írj elemzési szempontokat egy release utáni hibaarány-növekedés kivizsgálásához.",
+        "Javasolj dashboard bontásokat error rate-hez státuszkód, végpont, tenant és régió szerint."
+      ],
+      "anti_patterns": [
+        "minden_4xx_hiba: A felhasználói validációs hibák és a rendszerhibák egy kosárba kerülnek, ezért a mutató félrevezető.",
+        "kis_minta_riaszt: Egyetlen hiba alacsony forgalomnál óriási százalékot ad, és felesleges pánikot okoz.",
+        "sikeresnek_latszo_bukas: A backend technikailag 200-as választ ad, de az üzleti művelet valójában nem teljesült.",
+        "hibakod_nelkul: A hibaarány nő, de nincs stabil hibakód vagy kategória, amely alapján a gyökérok kereshető lenne."
+      ],
+      "checklist": [
+        "Elkülönülnek a klienshibák, szerverhibák és üzleti szabály miatti elutasítások?",
+        "A hibaarány forgalommal együtt értelmezhető, nem önmagában áll?",
+        "Vannak stabil hibakódok és kategóriák a trendek magyarázatához?",
+        "A riasztás figyelembe veszi a minimum forgalmat és az időablakot?",
+        "Release, konfigurációváltás vagy külső függőség szerint visszakereshető a növekedés oka?",
+        "A felhasználói hatás mérhető a technikai hibaarány mellett?"
+      ],
+      "relations": [
+        "observability.metrics",
+        "observability.alerting",
+        "observability.slo",
+        "debugging.error_log",
+        "testing_qa.regression_test"
+      ]
+    },
+    {
+      "id": "observability.throughput",
+      "label": "throughput",
+      "group": "observability",
+      "description": "Az időegység alatt feldolgozott kérések, események vagy munkák mennyisége, amelyből forgalmi trendek, kapacitáshatárok és feldolgozási torlódások olvashatók ki.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz throughput metrikákat API, queue és worker feldolgozásra külön bejövő, sikeres és elmaradt munkákkal.",
+        "Segíts megérteni, hogyan kapcsolódik a throughput a latencyhez, autoscalinghez és kapacitástervezéshez.",
+        "Írj magyar magyarázatot arról, mikor baj a throughput csökkenése és mikor csak normális forgalmi változás.",
+        "Javasolj dashboard nézetet feldolgozási sebességre, backlogra és hibás újrapróbálkozásokra."
+      ],
+      "anti_patterns": [
+        "csak_bejovo_forgalom: Csak azt mérjük, mennyi kérés érkezik, de nem látszik, mennyit dolgoz fel sikeresen a rendszer.",
+        "backlog_nelkul: A feldolgozási sebesség önmagában zöld, miközben a queue hátralék folyamatosan nő.",
+        "retry_felfujja: Az újrapróbálkozások mesterségesen növelik a throughputot, így a valós üzleti teljesítés túl jónak látszik.",
+        "kapacitas_vakon: Nincs kapcsolat a forgalom, worker darabszám, adatbázisterhelés és autoscaling döntések között."
+      ],
+      "checklist": [
+        "Külön mérjük a bejövő, feldolgozott, sikeres és hibás műveleteket?",
+        "A throughput együtt látszik a latencyvel és a hibaaránnyal?",
+        "A queue mérete, backlog kora és feldolgozási sebessége ugyanazon nézetben értelmezhető?",
+        "Az újrapróbálkozások és duplikált események nem torzítják az üzleti teljesítést?",
+        "A kapacitásbővítés vagy autoscaling döntéseihez használható a mutató?",
+        "A szezonális vagy kampányhatások felismerhetők a trendekben?"
+      ],
+      "relations": [
+        "observability.metrics",
+        "observability.latency",
+        "backend.queue",
+        "backend.worker",
+        "devops_deploy.autoscaling"
+      ]
+    },
+    {
+      "id": "observability.slo",
+      "label": "slo",
+      "group": "observability",
+      "description": "Belső szolgáltatási cél, amely mérhető módon mondja ki, milyen megbízhatósági vagy teljesítmény szintet akar tartani a csapat egy adott időablakban.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Segíts SLO-t megfogalmazni egy kritikus API-ra elérhetőség, hibaarány és p95 latency alapján.",
+        "Írj magyar magyarázatot az SLI, SLO és error budget kapcsolatáról fejlesztőcsapatnak.",
+        "Javasolj burn rate alapú riasztást, amely az SLO gyors és lassú fogyását is észreveszi.",
+        "Fogalmazz meg döntési szabályokat arra, mikor állítsunk meg feature fejlesztést megbízhatósági tartozás miatt."
+      ],
+      "anti_patterns": [
+        "homalyos_cel: Az SLO olyan mondat, mint hogy legyen gyors és stabil, de nincs mérhető SLI vagy időablak.",
+        "sla_masolat: A belső cél csak a szerződéses minimumot ismétli, így nem segít korábban reagálni.",
+        "error_budget_nelkul: Van célérték, de nincs kimondva, mennyi hibát engedhet meg a csapat és mi történik túllépésnél.",
+        "mindenre_slo: Túl sok apró cél készül, ezért a csapat nem tudja, melyik szolgáltatási ígéret a legfontosabb."
+      ],
+      "checklist": [
+        "Az SLO konkrét SLI-re, célértékre és időablakra épül?",
+        "A cél a felhasználói vagy üzleti szempontból fontos műveletet méri?",
+        "Ismert az error budget és a túlfogyás következménye?",
+        "A riasztások burn rate vagy hasonló kockázati logika alapján működnek?",
+        "Az SLO különbözik a külső SLA-tól, de támogatja annak betartását?",
+        "A csapat rendszeresen felülvizsgálja, hogy a cél túl laza vagy túl szigorú-e?"
+      ],
+      "relations": [
+        "observability.sla",
+        "observability.alerting",
+        "observability.error_rate",
+        "observability.latency",
+        "documentation.decision_log"
+      ]
+    },
+    {
+      "id": "observability.sla",
+      "label": "sla",
+      "group": "observability",
+      "description": "Ügyféllel vagy partnerrel vállalt szolgáltatási megállapodás, amely üzleti következményeket kapcsol az elérhetőséghez, válaszidőhöz vagy támogatási szinthez.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Magyarázd el magyarul a különbséget SLA, SLO és belső monitoring célok között egy termékcsapatnak.",
+        "Segíts SLA riportot előkészíteni úgy, hogy a számok auditálhatók és ügyfélnek is érthetők legyenek.",
+        "Javasolj observability adatokat, amelyek alátámasztják egy havi rendelkezésre állási vállalás teljesülését.",
+        "Fogalmazz meg kockázati szempontokat, amikor egy új SLA-t kell támogatnia az üzemeltetésnek."
+      ],
+      "anti_patterns": [
+        "szerzodes_meres_nelkul: Az SLA-ban szerepel vállalás, de nincs megbízható adatforrás, amely bizonyítaná a teljesülést.",
+        "belsonek_kezelt_kulso_igeret: A csapat úgy kezeli az SLA-t, mint puha belső célt, pedig ügyfélkommunikációs és pénzügyi következménye van.",
+        "kivetel_nincs_definialva: Nem világos, mi számít karbantartásnak, külső szolgáltatói hibának vagy ügyféloldali problémának.",
+        "riport_manualis_excel: A havi SLA kimutatás kézi másolgatással készül, így hibás, vitatható és lassan előállítható."
+      ],
+      "checklist": [
+        "Az SLA mérőszámai közvetlenül leképezhetők megbízható observability adatokra?",
+        "A kivételek, karbantartási ablakok és részleges kiesések kezelése dokumentált?",
+        "A belső SLO szigorúbb vagy előrébb jelző, mint a külső vállalás?",
+        "Az SLA riport reprodukálható és auditálható adatforrásból készül?",
+        "Ügyfélkommunikációra alkalmas magyarázat tartozik az esetleges sérülésekhez?",
+        "A vállalt célokhoz van kapacitás, ügyelet és incident folyamat?"
+      ],
+      "relations": [
+        "observability.slo",
+        "observability.uptime",
+        "observability.incident_report",
+        "documentation.release_notes",
+        "devops_deploy.production"
+      ]
+    },
+    {
+      "id": "observability.incident_report",
+      "label": "incident_report",
+      "group": "observability",
+      "description": "Egy hibaesemény tényszerű, időrendi és hatásközpontú összefoglalója, amely támogatja az ügyfélkommunikációt, a vezetői áttekintést és a későbbi tanulást.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts incident report vázlatot magyarul, amely külön kezeli az idővonalat, ügyfélhatást, gyökérokot és javító intézkedéseket.",
+        "Segíts átfogalmazni egy technikai incidensleírást ügyfélbarát, de nem elkenő kommunikációvá.",
+        "Adj kérdéssort, amelyből összeállítható egy pontos hibaesemény-jelentés logok, metrikák és deploy adatok alapján.",
+        "Fogalmazz meg minőségi elveket incident reportokhoz, hogy ne hibáztatásról, hanem tanulásról szóljanak."
+      ],
+      "anti_patterns": [
+        "hibaztato_hangnem: A jelentés személyeket keres bűnbaknak, ezért a csapat kevésbé őszintén tárja fel a valódi rendszerhibákat.",
+        "idoablak_hianyos: Nem derül ki, mikor kezdődött, mikor észlelték, mikor enyhítették és mikor zárták le az incidenst.",
+        "hatas_elkenve: A leírás technikai részletekbe menekül, de nem mondja ki, hány ügyfél vagy mely funkciók sérültek.",
+        "akciok_felelos_nelkul: Vannak tanulságok, de nincs határidő, tulajdonos és visszaellenőrzés a javító lépésekhez."
+      ],
+      "checklist": [
+        "A report tartalmaz pontos idővonalat és észlelési pontokat?",
+        "Világosan szerepel az ügyfél-, üzleti és technikai hatás?",
+        "A gyökérok bizonyítékokra épül, nem feltételezésre?",
+        "Elkülönül az azonnali enyhítés és a tartós javítás?",
+        "Minden follow-up feladathoz tulajdonos és határidő tartozik?",
+        "A hangnem blameless, tényszerű és tanulásközpontú?"
+      ],
+      "relations": [
+        "observability.postmortem",
+        "observability.logging",
+        "observability.dashboard",
+        "debugging.root_cause_analysis",
+        "vibe_coding.issue"
+      ]
+    },
+    {
+      "id": "observability.postmortem",
+      "label": "postmortem",
+      "group": "observability",
+      "description": "Incidens utáni mélyebb okfeltárás és tanulási folyamat, amely a rendszer, folyamat és kommunikáció javítására összpontosít hibáztatás helyett.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Vezess végig egy blameless postmortem struktúrán egy production kiesés után, magyar fejlesztői csapatnak szóló kérdésekkel.",
+        "Segíts azonosítani, mely megfigyelhetőségi hiányosságok hosszabbították meg az incidenst.",
+        "Írj postmortem tanulságokat úgy, hogy konkrét rendszerjavítás, monitoring változtatás és folyamatmódosítás szülessen belőlük.",
+        "Fogalmazz meg facilitátori szempontokat, hogy a postmortem ne védőbeszéd, hanem közös tanulás legyen."
+      ],
+      "anti_patterns": [
+        "postmortem_mint_formalitas: A megbeszélés csak dokumentumkitöltés, valódi döntések és javító intézkedések nélkül.",
+        "egy_okos_magyarazat: A csapat egyetlen hibás lépésre egyszerűsíti az incidenst, miközben rendszer- és folyamatokok maradnak rejtve.",
+        "tanulsag_nem_merheto: A follow-up olyan általános, mint hogy jobban figyelünk, ezért később nem ellenőrizhető.",
+        "adatok_nelkul_emlekezetbol: A postmortem logok, metrikák és idővonal helyett emlékezetből rekonstruálja a történteket."
+      ],
+      "checklist": [
+        "A postmortem blameless szemléletben, bizonyítékokra támaszkodva zajlik?",
+        "Megkülönbözteti a közvetlen kiváltó okot, a mélyebb rendszerokot és a folyamatbeli hiányt?",
+        "A javító intézkedések konkrétak, mérhetők és tulajdonossal rendelkeznek?",
+        "Kiderül, milyen observability hiány miatt tartott tovább az észlelés vagy javítás?",
+        "A tanulságok bekerülnek runbookba, monitoringba vagy fejlesztési normába?",
+        "Van utókövetés arra, hogy a vállalt javítások tényleg elkészültek?"
+      ],
+      "relations": [
+        "observability.incident_report",
+        "observability.alerting",
+        "debugging.root_cause_analysis",
+        "documentation.runbook",
+        "vibe_coding.backlog"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,962 @@
+{
+  "group": "ai_agentic",
+  "keywords": [
+    {
+      "id": "ai_agentic.llm",
+      "label": "llm",
+      "group": "ai_agentic",
+      "description": "Nagy nyelvi modell, amely szöveges mintákból következtet, de termékben csak pontos feladathatárokkal, ellenőrzéssel és mérhető minőségi célokkal lesz megbízható építőelem.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Határozd meg, milyen üzleti döntésben vagy fejlesztői munkában segít az LLM, és hol kell emberi jóváhagyás.",
+        "Írd le, milyen bemeneteket kap a modell, milyen kimenetet várunk tőle, és milyen esetekben kell visszakérdeznie.",
+        "Kezeld külön a modell képességeit, korlátait, költségét és késleltetését, ne egyetlen varázsdobozként tervezd.",
+        "Adj minőségi mérőszámokat a válasz pontosságára, hasznosságára, biztonságára és reprodukálhatóságára."
+      ],
+      "anti_patterns": [
+        "modell_mindent_megold: A rendszer minden bizonytalan feladatot az LLM-re tol, üzleti szabály vagy ellenőrzés nélkül.",
+        "szerep_nelkul: A modell nem kap világos feladatkört, ezért egyszerre próbál tanácsadó, kereső és végrehajtó lenni.",
+        "latszat_intelligencia: A gördülékeny megfogalmazást ténybeli megbízhatóságnak veszik, külön validáció nélkül.",
+        "rejtett_koltseg: A tokenhasználat, modellválasztás és retry viselkedés nincs beépítve a működési tervbe."
+      ],
+      "checklist": [
+        "Világos, hogy az LLM mely feladatokat végezheti és melyeket nem?",
+        "Van mérés a válaszminőségre, nem csak kézi benyomás?",
+        "A felhasználó látja, mikor bizonytalan vagy hiányos a modell válasza?",
+        "Dokumentált a modellválasztás költség, késleltetés és kockázat szerint?",
+        "Van fallback vagy emberi átadás kritikus hibák esetére?"
+      ],
+      "relations": [
+        "ai_agentic.evaluation",
+        "ai_agentic.guardrails",
+        "ai_agentic.model_routing",
+        "observability.metrics",
+        "documentation.decision_log"
+      ]
+    },
+    {
+      "id": "ai_agentic.prompt_engineering",
+      "label": "prompt_engineering",
+      "group": "ai_agentic",
+      "description": "Prompttervezési gyakorlat, amely a modellnek adott szerepet, feladatot, kontextust, korlátokat és elvárt kimenetet úgy rendezi, hogy a válasz ellenőrizhető és ismételhető legyen.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Fogalmazd meg a prompt célját egyetlen konkrét munkafolyamatra, és különítsd el a háttérinformációt az utasítástól.",
+        "Adj a modellnek döntési szempontokat, nem csak hangulatot vagy homályos elvárást.",
+        "Írd elő, mikor kell a modellnek kérdeznie, mikor kell röviden válaszolnia, és mikor kell bizonytalanságot jeleznie.",
+        "Készíts promptváltozatokat mérhető hipotézissel, hogy látszódjon, melyik módosítás mit javít."
+      ],
+      "anti_patterns": [
+        "udvarias_kodosites: A prompt sok udvariasságot és kevés végrehajtható feltételt tartalmaz.",
+        "formatum_keveres: A kimeneti elvárás többféle alakot enged, ezért az integráció törékennyé válik.",
+        "peldak_tulhatalma: Egyetlen példa véletlen stílusjegyei irányítják a modellt, nem a valódi szabályok.",
+        "teszteles_nelkul: A promptot éles forgalomba teszik anélkül, hogy edge case-ekkel kipróbálták volna."
+      ],
+      "checklist": [
+        "A promptban külön szerepel a cél, a kontextus, a korlát és az elvárt válaszforma?",
+        "Van negatív példa vagy tiltott viselkedés ott, ahol félreérthető a feladat?",
+        "A prompt módosításait verzió és indok alapján lehet követni?",
+        "Legalább néhány valós felhasználói bemenettel ellenőrizve lett?",
+        "A prompt nem tartalmaz felesleges, egymásnak ellentmondó utasításokat?"
+      ],
+      "relations": [
+        "ai_agentic.system_prompt",
+        "ai_agentic.prompt_versioning",
+        "ai_agentic.evaluation",
+        "documentation.decision_log",
+        "testing_qa.test_case"
+      ]
+    },
+    {
+      "id": "ai_agentic.system_prompt",
+      "label": "system_prompt",
+      "group": "ai_agentic",
+      "description": "A modell tartós viselkedési kerete: szerep, felelősség, tiltások, prioritások és biztonsági szabályok együttese, amelyet a felhasználói kérés nem írhat felül.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Rögzítsd, milyen szerepben válaszoljon a modell, és milyen döntéseket nem hozhat meg önállóan.",
+        "Tedd egyértelművé az utasítási hierarchiát: rendszerutasítás, fejlesztői szabály, felhasználói kérés, külső adat.",
+        "Írd bele, hogyan kezelje a modell a rosszindulatú, hiányos vagy ellentmondó felhasználói bemenetet.",
+        "Fogalmazd meg röviden a biztonsági és adatkezelési határokat, hogy ne a felhasználói promptban kelljen improvizálni."
+      ],
+      "anti_patterns": [
+        "minden_szabaly_egyben: A system prompt túl hosszú kézikönyvvé válik, és a fontos prioritások elvesznek benne.",
+        "felulirhato_identitas: A felhasználói kérés könnyen más szerepre vagy tiltott viselkedésre tereli a modellt.",
+        "rejtett_uzleti_logika: Üzleti szabályok kerülnek a promptba, amelyeket inkább alkalmazáskódban kellene kezelni.",
+        "nincs_konfliktuskezeles: A prompt nem mondja meg, mi történjen egymásnak ellentmondó utasításoknál."
+      ],
+      "checklist": [
+        "A system prompt röviden megmondja a modell szerepét és felelősségi körét?",
+        "A tiltott műveletek és adatkategóriák konkrétan szerepelnek?",
+        "Van szabály az utasítási konfliktusok feloldására?",
+        "A külső tartalom nem kaphat system szintű tekintélyt?",
+        "A prompt karbantartható, és nem kever üzleti konfigurációt titkos szabályokkal?"
+      ],
+      "relations": [
+        "ai_agentic.prompt_engineering",
+        "ai_agentic.guardrails",
+        "security.prompt_injection",
+        "security.input_validation",
+        "documentation.adr"
+      ]
+    },
+    {
+      "id": "ai_agentic.context_window",
+      "label": "context_window",
+      "group": "ai_agentic",
+      "description": "Az egyszerre feldolgozható tokenmennyiség gyakorlati kerete, amely meghatározza, mennyi előzmény, dokumentumrészlet és utasítás fér be minőségromlás nélkül.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg, mi kerülhet a kontextusba kötelezően, mi opcionális, és mi maradjon külső keresésben.",
+        "Rangsorold a kontextuselelemeket frissesség, relevancia és megbízhatóság szerint.",
+        "Kérj tömörített előzményt hosszú párbeszédeknél, de őrizd meg a döntéseket és nyitott kérdéseket.",
+        "Adj szabályt arra, mikor kell új retrieval kör, nem pedig újabb nyers dokumentum beemelése."
+      ],
+      "anti_patterns": [
+        "kontekstus_tomles: Minden megtalált szöveg bekerül a promptba, relevanciaszűrés nélkül.",
+        "elveszo_prioritas: A lényeges rendszerutasításokat háttérbe szorítja a túl sok mellékes adat.",
+        "regi_allapot: Régi beszélgetésrészletek maradnak bent, miközben a döntések már megváltoztak.",
+        "meret_osszeteves: A nagy context window-t minőségi garanciának tekintik, pedig a figyelem továbbra is véges."
+      ],
+      "checklist": [
+        "Van sorrend arra, mely kontextusdarabok a legfontosabbak?",
+        "A hosszú előzményekből készül megbízható, ellenőrizhető összegzés?",
+        "A retrieval találatok nem nyomják ki a rendszer- és fejlesztői utasításokat?",
+        "Figyeljük a kontextusméretet és a válaszminőség közti kapcsolatot?",
+        "A felhasználói adatok csak szükséges mértékben kerülnek a modell elé?"
+      ],
+      "relations": [
+        "ai_agentic.token_budget",
+        "ai_agentic.rag",
+        "ai_agentic.memory",
+        "observability.metrics",
+        "security.input_validation"
+      ]
+    },
+    {
+      "id": "ai_agentic.token_budget",
+      "label": "token_budget",
+      "group": "ai_agentic",
+      "description": "A bemeneti, kimeneti és köztes modellhívások tokenkeretének tudatos kezelése, hogy a rendszer költsége, sebessége és válaszminősége kiszámítható maradjon.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Bontsd szét a tokenkeretet prompt, retrieval kontextus, gondolkodási lépések és végső válasz szerint.",
+        "Adj rövid válaszstratégiát alacsony kockázatú feladatokra, és részletesebbet a kritikus döntésekre.",
+        "Mérd, mely bemeneti részek növelik ténylegesen a minőséget, és melyek csak költséget termelnek.",
+        "Határozd meg, mikor kell olcsóbb modell, összegzés vagy cache a teljes újrafuttatás helyett."
+      ],
+      "anti_patterns": [
+        "vegtelen_valasz: A modell túl hosszú választ ad, mert nincs kimeneti cél vagy terjedelmi korlát.",
+        "draga_retry: Hibánál ugyanaz a nagy prompt fut újra, olcsó diagnosztika vagy részleges ismétlés nélkül.",
+        "rejtett_lanc: Több agenthívás halmozódik egymásra úgy, hogy senki nem látja az összköltséget.",
+        "vak_truncalas: A rendszer levágja a kontextust, de nem jelzi, hogy fontos információ veszett el."
+      ],
+      "checklist": [
+        "Mérjük a tokenhasználatot feladattípusonként és modellhívásonként?",
+        "Van felső korlát a válasz hosszára és az agentlépések számára?",
+        "A drága modellhívásoknak van indokolt minőségi haszna?",
+        "A túllépés nem csendes hibát, hanem kezelhető fallbacket okoz?",
+        "A cache, összegzés vagy retrieval csökkenti a felesleges ismétlést?"
+      ],
+      "relations": [
+        "ai_agentic.context_window",
+        "ai_agentic.model_routing",
+        "observability.metrics",
+        "observability.latency",
+        "documentation.runbook"
+      ]
+    },
+    {
+      "id": "ai_agentic.rag",
+      "label": "rag",
+      "group": "ai_agentic",
+      "description": "Retrieval-Augmented Generation megközelítés, ahol a modell válasza külső tudásforrásokból keresett, rangsorolt és ellenőrizhető kontextusra épül.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg a RAG folyamatot adatforrás, feldolgozás, keresés, kontextusépítés és válaszellenőrzés szerint.",
+        "Kösd a válasz állításait megtalált forrásrészletekhez, és kezeld külön a nem bizonyított következtetést.",
+        "Adj stratégiát frissítésre, újraindexelésre és elavult dokumentumok kiszűrésére.",
+        "Mérd külön a retrieval találati minőségét és a generált válasz pontosságát."
+      ],
+      "anti_patterns": [
+        "rag_cimke_disznek: A rendszer RAG-nak nevezi magát, de a modell nem kap ténylegesen releváns forrásokat.",
+        "forras_nelkul_osszegzes: A válasz dokumentumra hivatkozik, de nem követhető, mely részletből származik.",
+        "egyszeri_index: Az index elkészül, majd nincs frissítési, törlési vagy jogosultsági folyamat.",
+        "kereses_egyenlo_igazsag: A top találatot automatikusan igaznak veszik, rangsorolási és tartalmi ellenőrzés nélkül."
+      ],
+      "checklist": [
+        "Az adatforrások tulajdonosa és frissítési rendje ismert?",
+        "A retrieval találatok relevanciája külön mérhető a generálástól?",
+        "A válaszban elkülönül a forrásból vett tény és a modell következtetése?",
+        "A jogosultságok érvényesülnek kereséskor és válaszkészítéskor is?",
+        "Van eljárás elavult, törölt vagy hibás dokumentumok kezelésére?"
+      ],
+      "relations": [
+        "ai_agentic.retrieval_pipeline",
+        "ai_agentic.embedding",
+        "ai_agentic.chunking",
+        "ai_agentic.grounding",
+        "database.vector_database"
+      ]
+    },
+    {
+      "id": "ai_agentic.embedding",
+      "label": "embedding",
+      "group": "ai_agentic",
+      "description": "Szövegek vagy más tartalmak vektoros reprezentációja, amely hasonlósági keresést, klaszterezést és RAG alapú kontextusválasztást tesz lehetővé.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Válassz embedding modellt a nyelv, domén, frissíthetőség és lekérdezési minta alapján.",
+        "Ellenőrizd, hogy a magyar szakmai kifejezések, rövidítések és többnyelvű tartalmak jól kereshetők-e.",
+        "Dokumentáld, mikor kell újraembedelni a tartalmat modellváltás vagy chunkolási változás után.",
+        "Hasonlítsd össze az embedding alapú találatokat kulcsszavas kereséssel, ne csak érzésre dönts."
+      ],
+      "anti_patterns": [
+        "modellcsere_index_nelkul: Új embedding modell kerül be, de a régi vektorok maradnak az adatbázisban.",
+        "nyelvi_vaksag: A választott modell gyengén kezeli a magyar vagy kevert nyelvű fejlesztői szövegeket.",
+        "tul_altalanos_vektor: Rövid címkékből készül embedding, ezért a szemantikus jel túl szegény lesz.",
+        "hasonlosag_mint_bizonyitek: A magas vektoros hasonlóságot ténybeli helyességnek tekintik."
+      ],
+      "checklist": [
+        "Az embedding modell illik a tartalom nyelvéhez és doménjéhez?",
+        "Van verziómező az embedding modellhez és a feldolgozási beállításokhoz?",
+        "Újraindexeléskor kezeljük a régi és új vektorok keveredését?",
+        "Teszteltük rövid, hosszú és szinonimás lekérdezésekkel?",
+        "A találati minőséget nem csak top-k megjelenéssel, hanem értékelt példákkal mérjük?"
+      ],
+      "relations": [
+        "ai_agentic.vector_database",
+        "ai_agentic.semantic_search",
+        "ai_agentic.chunking",
+        "database.vector_database",
+        "observability.metrics"
+      ]
+    },
+    {
+      "id": "ai_agentic.vector_database",
+      "label": "vector_database",
+      "group": "ai_agentic",
+      "description": "Vektorok tárolására és hasonlósági lekérdezésére szolgáló adatbázis vagy index, amelynek minőségét az adatséma, a metadata-szűrés és az újraindexelési folyamat együtt adja.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezz metadata mezőket jogosultságra, dokumentumtípusra, verzióra, frissességre és forrásazonosítóra.",
+        "Írd le, hogyan történik beszúrás, törlés, újraindexelés és indexkonzisztencia ellenőrzés.",
+        "Állíts be szűrést a vektoros keresés mellé, hogy a modell csak engedélyezett dokumentumokat lásson.",
+        "Mérd a lekérdezési késleltetést, találati minőséget és tárolási költséget együtt."
+      ],
+      "anti_patterns": [
+        "metadata_hiany: A vektor mellől hiányzik a forrás, verzió vagy jogosultsági adat, ezért a találat nem kontrollálható.",
+        "torles_arnyekban: A dokumentum törlődik az alkalmazásból, de a vektoros indexben tovább él.",
+        "topk_varazsszam: A top-k érték véletlenül választott, és nincs doménspecifikus validációja.",
+        "index_mint_archivum: A vektoradatbázist elsődleges igazságforrásként használják, nem keresési rétegként."
+      ],
+      "checklist": [
+        "Minden vektorhoz visszakereshető az eredeti forrás és annak verziója?",
+        "A jogosultsági szűrés már retrieval előtt érvényesül?",
+        "Van újraindexelési és törlési runbook?",
+        "A keresési paramétereket értékelt lekérdezésekkel hangoltuk?",
+        "Figyeljük a latency, hibaarány és indexméret változását?"
+      ],
+      "relations": [
+        "database.vector_database",
+        "database.index",
+        "ai_agentic.embedding",
+        "ai_agentic.rag",
+        "security.audit_trail"
+      ]
+    },
+    {
+      "id": "ai_agentic.chunking",
+      "label": "chunking",
+      "group": "ai_agentic",
+      "description": "Dokumentumok értelmes egységekre bontása úgy, hogy a keresés elég pontos legyen, a modell pedig a szükséges környezetet ne veszítse el.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Válassz chunkolási stratégiát a dokumentum szerkezete alapján: fejezet, bekezdés, táblázat vagy döntési pont szerint.",
+        "Őrizd meg a címeket, hierarchiát és forrásmetadata-t, mert ezek adják a találatok értelmezési keretét.",
+        "Állíts be átfedést ott, ahol a jelentés mondatok vagy bekezdések között folytonos.",
+        "Teszteld, hogy egy valós kérdéshez a chunk önmagában is elég információt ad-e."
+      ],
+      "anti_patterns": [
+        "merev_meretvagas: A dokumentumokat fix karakterszám alapján vágják, tartalmi határok figyelembevétele nélkül.",
+        "cim_nelkul: A chunk elveszíti a fejezetcímet vagy kontextust, ezért kereséskor félrevezető lesz.",
+        "tulaprozott_tudas: A túl kicsi chunkokból hiányzik az összefüggés, a modell pedig találgatással tölti ki.",
+        "orias_chunk: A túl nagy darab sok zajt visz a promptba, és kiszorítja a pontosabb forrásokat."
+      ],
+      "checklist": [
+        "A chunkolás követi a dokumentum természetes szerkezetét?",
+        "Megmarad a forrás, cím, szakasz és verzió metadata?",
+        "Az átfedés mértéke indokolt és mérhető?",
+        "Külön kezeltük a listákat, táblázatokat és kódrészletek nélküli leírásokat?",
+        "A retrieval tesztekből látszik, hogy a chunkméret jó kompromisszum?"
+      ],
+      "relations": [
+        "ai_agentic.rag",
+        "ai_agentic.embedding",
+        "ai_agentic.context_window",
+        "documentation.function_map",
+        "documentation.api_docs"
+      ]
+    },
+    {
+      "id": "ai_agentic.semantic_search",
+      "label": "semantic_search",
+      "group": "ai_agentic",
+      "description": "Jelentésalapú keresés, amely nem pontos kulcsszóegyezést, hanem tartalmi hasonlóságot használ a releváns tudásrészek megtalálásához.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Fogalmazd meg, milyen felhasználói szándékokat kell a keresésnek felismernie pontos kulcsszó nélkül is.",
+        "Mérd a találatokat szinonimák, rövid kérdések, szakmai zsargon és elírások esetén.",
+        "Adj metadata-szűrést a szemantikus hasonlóság mellé, hogy a találat ne legyen jogilag vagy üzletileg téves.",
+        "Mutasd meg a modellnek a találat releváns részletét, ne csak a dokumentum címét."
+      ],
+      "anti_patterns": [
+        "szep_de_irrelevans: A találat nyelvileg hasonló, de a felhasználói probléma szempontjából nem hasznos.",
+        "kulcsszo_elvetese: A szemantikus keresés teljesen kiváltja a pontos terméknevek és azonosítók keresését.",
+        "score_fetis: A hasonlósági pontszámot abszolút minőségként értelmezik, küszöbkalibrálás nélkül.",
+        "nincs_null_talalat: A keresés mindig ad valamit, akkor is, amikor helyesebb lenne azt mondani, hogy nincs jó forrás."
+      ],
+      "checklist": [
+        "Van értékelt kérdéskészlet különböző megfogalmazásokkal?",
+        "A szemantikus találatok mellett működik pontos szűrés azonosítókra és jogosultságra?",
+        "Kalibráltuk, mikor számít egy találat túl gyengének?",
+        "A felhasználó vagy modell látja, miért került be egy találat?",
+        "A keresés kezeli a magyar ragozást és szakmai rövidítéseket?"
+      ],
+      "relations": [
+        "ai_agentic.embedding",
+        "ai_agentic.hybrid_search",
+        "ai_agentic.reranking",
+        "database.index",
+        "observability.metrics"
+      ]
+    },
+    {
+      "id": "ai_agentic.hybrid_search",
+      "label": "hybrid_search",
+      "group": "ai_agentic",
+      "description": "Kulcsszavas és szemantikus keresés kombinációja, amely egyszerre tartja meg a pontos egyezések fegyelmét és a jelentésalapú találatok rugalmasságát.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Kombináld a pontos kifejezések, azonosítók és szemantikus hasonlóság találatait súlyozott rangsorolással.",
+        "Adj eltérő keresési stratégiát hibakódokra, fogalmi kérdésekre, dokumentumcímekre és természetes nyelvű problémákra.",
+        "Mérd, mely lekérdezéstípusnál javít a hybrid keresés a tisztán vektoros vagy tisztán kulcsszavas módszerhez képest.",
+        "Tartsd meg a találatok magyarázhatóságát: látszódjon, hogy kulcsszó, vektor vagy metadata miatt kerültek előre."
+      ],
+      "anti_patterns": [
+        "ket_kereso_osszeontve: A kulcsszavas és vektoros eredmények egyszerűen össze vannak fűzve, normálás és rangsorlogika nélkül.",
+        "azonosito_elmosasa: A szemantikus komponens hátrébb sorolja a pontos terméknevet, hibakódot vagy dokumentumazonosítót.",
+        "nem_merheto_sulyok: A súlyok érzésre állnak, és nincs lekérdezéskészlet, amely igazolná őket.",
+        "dupla_zaj: Mindkét keresési ág gyenge találatai bekerülnek, így a modell több téves kontextust kap."
+      ],
+      "checklist": [
+        "Külön mérjük a kulcsszavas, szemantikus és kombinált találatok minőségét?",
+        "A pontos azonosítók és hibakódok nem vesznek el a szemantikus rangsorban?",
+        "Van normalizált pontozás vagy szabály a két találati lista összevetésére?",
+        "A gyenge találatok kiszűrésére van küszöb vagy reranking?",
+        "A keresési döntés megmagyarázható üzemeltetés és hibakeresés közben?"
+      ],
+      "relations": [
+        "ai_agentic.semantic_search",
+        "ai_agentic.reranking",
+        "database.index",
+        "observability.logging",
+        "testing_qa.regression_test"
+      ]
+    },
+    {
+      "id": "ai_agentic.reranking",
+      "label": "reranking",
+      "group": "ai_agentic",
+      "description": "A keresési találatok második körös újrasorrendezése, amely a nyers hasonlósági vagy kulcsszavas eredményekből a feladat szempontjából legjobb kontextust választja ki.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Használj rerankinget akkor, amikor sok közepes találatból kell kevés, valóban válaszadó forrást választani.",
+        "Határozd meg, milyen szempont szerint rangsorolunk: kérdésre válaszolás, frissesség, forrásminőség vagy jogosultság.",
+        "Mérd a reranking hatását végső válaszpontossággal, nem csak magasabb belső score-ral.",
+        "Állíts be limitet, hogy a reranker ne váljon minden kérdésnél drága kötelező lépéssé."
+      ],
+      "anti_patterns": [
+        "reranker_mindenre: A rendszer kis találati listán vagy egyszerű kérdésen is költséges újrarangsorolást futtat.",
+        "rossz_celmetrika: A reranker olyan szöveget hoz előre, amely hasonló a kérdéshez, de nem tartalmaz választ.",
+        "metadata_vaksag: A második kör figyelmen kívül hagyja a dokumentum frissességét, típusát vagy jogosultságát.",
+        "lathatatlan_dontes: Nincs naplózva, mit cserélt hátrébb vagy előrébb a reranking."
+      ],
+      "checklist": [
+        "Világos, milyen esetekben indul reranking és mikor marad el?",
+        "A reranker bemenete már jogosultság és metadata szerint szűrt?",
+        "Mérjük a végső válaszminőségre gyakorolt hatását?",
+        "A többlet latency és költség elfogadható a feladat értékéhez képest?",
+        "Hibakereséskor visszanézhető az eredeti és új sorrend?"
+      ],
+      "relations": [
+        "ai_agentic.hybrid_search",
+        "ai_agentic.retrieval_pipeline",
+        "observability.tracing",
+        "performance.latency",
+        "ai_agentic.evaluation"
+      ]
+    },
+    {
+      "id": "ai_agentic.retrieval_pipeline",
+      "label": "retrieval_pipeline",
+      "group": "ai_agentic",
+      "description": "A dokumentumok előkészítésétől a lekérdezésen és rangsoroláson át a promptba kerülő kontextus összeállításáig tartó teljes keresési folyamat.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Rajzold fel a retrieval pipeline lépéseit ingesttől válaszig, és jelöld, hol történik szűrés, rangsorolás és audit.",
+        "Tervezz külön hibakezelést üres találatra, túl sok találatra, elavult forrásra és jogosultsági kizárásra.",
+        "Adj observability pontokat minden lépéshez: lekérdezés, találatszám, score, kiválasztott kontextus és válaszkapcsolat.",
+        "Kezeld a pipeline-t termékfunkcióként, nem egyszeri indexelő scriptként."
+      ],
+      "anti_patterns": [
+        "dobozolt_kereses: A csapat csak annyit lát, hogy van keresés, de nem tudja, mely lépés rontja a választ.",
+        "ingest_felejtes: Az adatbeolvasás egyszer elkészül, majd nincs monitorozva a frissítés és hibás feldolgozás.",
+        "ures_talalat_hallucinacio: Rossz vagy üres találatnál a modell ugyanúgy magabiztos választ generál.",
+        "nincs_auditnyom: Nem derül ki, mely dokumentumrészek alapján született a válasz."
+      ],
+      "checklist": [
+        "A pipeline minden lépése naplózható és külön mérhető?",
+        "Van kezelési mód üres, gyenge és túl sok találatra?",
+        "Az ingest, chunking, embedding és indexelés verziózott?",
+        "A kiválasztott kontextus visszaköthető a végső válaszhoz?",
+        "A jogosultsági és frissességi szűrés nem csak a felületen történik?"
+      ],
+      "relations": [
+        "ai_agentic.rag",
+        "ai_agentic.chunking",
+        "ai_agentic.reranking",
+        "observability.tracing",
+        "documentation.architecture_diagram"
+      ]
+    },
+    {
+      "id": "ai_agentic.tool_calling",
+      "label": "tool_calling",
+      "group": "ai_agentic",
+      "description": "Külső eszközök, API-k vagy belső műveletek modell általi meghívása kontrollált szerződéssel, jogosultsággal, validációval és auditálható végrehajtással.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Határozd meg, mely feladatokra használhat eszközt a modell, és mely műveletekhez kell emberi megerősítés.",
+        "Adj minden toolhoz világos célt, bemeneti korlátot, várható eredményt és hibakezelési szabályt.",
+        "Különítsd el az információlekérő eszközöket a módosító vagy költséget okozó műveletektől.",
+        "Naplózd a toolválasztást, a bemenetet, az eredményt és azt, hogyan hatott a végső válaszra."
+      ],
+      "anti_patterns": [
+        "minden_api_tool: Túl sok eszköz kerül a modell elé, ezért a választás bizonytalan és lassú lesz.",
+        "validalatlan_parameterek: A modell által javasolt tool input közvetlenül végrehajtódik üzleti ellenőrzés nélkül.",
+        "rejtett_modositas: A felhasználó nem látja, hogy az agent adatot módosított vagy külső műveletet indított.",
+        "hibas_tool_utan_folytat: Toolhiba után a modell úgy tesz, mintha sikerült volna a művelet."
+      ],
+      "checklist": [
+        "Minden toolhoz van bemeneti séma és üzleti validáció?",
+        "A veszélyes vagy költséges műveletekhez van explicit megerősítés?",
+        "A toolhívások auditálhatók felhasználó, kérés és eredmény szerint?",
+        "A modell tudja, mikor ne hívjon eszközt?",
+        "A toolhiba nem vezet hamis sikerüzenethez?"
+      ],
+      "relations": [
+        "ai_agentic.function_calling",
+        "ai_agentic.agent",
+        "backend.api",
+        "security.input_validation",
+        "observability.structured_logging"
+      ]
+    },
+    {
+      "id": "ai_agentic.function_calling",
+      "label": "function_calling",
+      "group": "ai_agentic",
+      "description": "Strukturált függvényhívási minta, ahol a modell nem szabad szövegben utasít, hanem előre meghatározott paraméterezett műveletet választ.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írd le a függvények célját természetes nyelven, de a paraméterek jelentését és kötelezőségét pontosan.",
+        "Validáld a modell által adott paramétereket ugyanúgy, mintha külső kliens küldte volna őket.",
+        "Adj vissza a modellnek elég részletes, de nem túl bő tooleredményt a következő döntéshez.",
+        "Tervezz külön választ arra, ha a modell rossz függvényt választ vagy hiányos paramétereket ad."
+      ],
+      "anti_patterns": [
+        "schema_mint_biztonsag: A JSON-szerű séma meglétét összekeverik a valódi jogosultsági és üzleti validációval.",
+        "szoveges_parametertenger: A paraméterek túl laza szövegmezők, ezért a végrehajtó réteg nem tudja megbízhatóan értelmezni őket.",
+        "tul_sok_fuggveny: A modell több tucat hasonló művelet közül választ, és gyakran félrehív.",
+        "eredmeny_tulbeszelve: A függvény visszatérési értéke túl hosszú, és zajként kerül vissza a promptba."
+      ],
+      "checklist": [
+        "A függvények neve és leírása egyértelműen különbözik egymástól?",
+        "A paraméterekhez van típus, kötelezőség, tartomány és validáció?",
+        "A végrehajtó réteg nem bízik vakon a modellben?",
+        "A visszatérési adat rövid, döntésre alkalmas és naplózható?",
+        "Van teszt rossz függvényválasztásra és hiányzó paraméterre?"
+      ],
+      "relations": [
+        "ai_agentic.tool_calling",
+        "backend.validation",
+        "backend.serialization",
+        "backend.openapi",
+        "security.input_validation"
+      ]
+    },
+    {
+      "id": "ai_agentic.mcp",
+      "label": "mcp",
+      "group": "ai_agentic",
+      "description": "Model Context Protocol alapú integrációs minta, amely egységes módot ad eszközök, erőforrások és kontextusok modellhez kapcsolására.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Tervezd meg, mely MCP szerver milyen erőforrást, toolt vagy kontextust ad a modellnek.",
+        "Válaszd szét az olvasási képességeket a módosító műveletektől, és adj külön jogosultsági határt mindkettőre.",
+        "Dokumentáld a toolok leírását úgy, hogy a modell pontosan értse, mikor érdemes használni őket.",
+        "Figyeld a MCP hívások hibáit, időtúllépését és adatvédelmi kockázatát ugyanúgy, mint bármely backend integrációnál."
+      ],
+      "anti_patterns": [
+        "mcp_mint_varazskapcsolo: A protokolltól várják a terméklogikát, jogosultságot és promptminőséget is.",
+        "tul_szeles_eroforras: A modell több adatot lát, mint amennyi a feladathoz szükséges.",
+        "homalyos_tool_leiras: A toolleírás nem mondja meg, milyen bemenetnél hasznos, ezért a modell rosszkor hívja.",
+        "integracios_vaksag: Nincs tracing vagy log a modell és MCP szerver közötti hibákra."
+      ],
+      "checklist": [
+        "Az MCP szerverek képességei és jogosultságai dokumentáltak?",
+        "A modell csak a feladathoz szükséges erőforrásokat látja?",
+        "A toolleírások üzleti nyelven is egyértelműek?",
+        "A hívásokhoz van timeout, retry és hibaüzenet stratégia?",
+        "A kapcsolódó adatforrások kezelik a hozzáférési naplózást?"
+      ],
+      "relations": [
+        "ai_agentic.tool_calling",
+        "ai_agentic.context_window",
+        "backend.api",
+        "security.secrets_management",
+        "observability.tracing"
+      ]
+    },
+    {
+      "id": "ai_agentic.agent",
+      "label": "agent",
+      "group": "ai_agentic",
+      "description": "Célvezérelt AI komponens, amely több lépésben tervez, eszközöket használ, állapotot tart és eredményt ellenőriz, de csak jól meghatározott határok között működhet biztonságosan.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Határozd meg az agent célját, döntési mozgásterét, elérhető eszközeit és leállási feltételeit.",
+        "Kérj minden több lépéses feladathoz rövid tervet, majd végrehajtás után ellenőrzött összegzést.",
+        "Adj az agentnek explicit szabályt arra, mikor kell emberi segítséget kérnie.",
+        "Mérd az agent sikerét végrehajtott feladat, hibaarány, költség és felhasználói beavatkozás szerint."
+      ],
+      "anti_patterns": [
+        "autonomia_cel_nelkul: Az agent sok mindent tehet, de nincs világos eredménydefiníciója.",
+        "vegtelen_lepesek: Nincs max lépésszám vagy stop feltétel, ezért a folyamat körbe járhat.",
+        "eszkoz_fuggoseg: Az agent minden bizonytalanságra toolhívással reagál, még akkor is, ha vissza kellene kérdeznie.",
+        "ellenorzes_hianya: A végrehajtás után nincs külön önellenőrzés vagy külső validáció."
+      ],
+      "checklist": [
+        "Az agent feladatköre egy mondatban leírható?",
+        "Van lépéslimit, költséglimit és időkorlát?",
+        "A módosító műveletek előtt van jóváhagyási pont?",
+        "A végső eredmény ellenőrzése elkülönül a végrehajtástól?",
+        "A hibákból és megszakításokból visszanyerhető állapot marad?"
+      ],
+      "relations": [
+        "ai_agentic.planner",
+        "ai_agentic.executor",
+        "ai_agentic.tool_calling",
+        "ai_agentic.guardrails",
+        "observability.tracing"
+      ]
+    },
+    {
+      "id": "ai_agentic.agent_orchestration",
+      "label": "agent_orchestration",
+      "group": "ai_agentic",
+      "description": "Több agent, modellhívás vagy részfolyamat összehangolása úgy, hogy a szerepek, átadások, állapotok és hibakezelés ne váljanak átláthatatlan lánccá.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Oszd fel a többagent rendszer szerepeit tervezés, végrehajtás, ellenőrzés és felhasználói kommunikáció szerint.",
+        "Adj átadási szerződést az agentek között: milyen állapot, döntés és bizonyíték megy tovább.",
+        "Határozd meg, ki dönt konfliktusnál, és mikor kell központi koordinátornak vagy embernek beavatkoznia.",
+        "Naplózd a teljes útvonalat, hogy egy rossz döntés visszakövethető legyen az eredeti lépésig."
+      ],
+      "anti_patterns": [
+        "agent_korus: Több agent ugyanazt a feladatot ismétli más megfogalmazásban, valódi felelősségmegosztás nélkül.",
+        "allapotvesztes: Az egyik agent döntése vagy feltételezése nem kerül át a következőhöz.",
+        "koordinator_hianya: Konfliktusnál nincs végső döntési pont, ezért a rendszer körkörös vitába fordul.",
+        "lathatatlan_lanc: A felhasználó és az üzemeltetés sem látja, melyik agent mit tett hozzá."
+      ],
+      "checklist": [
+        "Minden agent szerepe és kimenete elkülönül?",
+        "Az átadások tartalmazzák a döntések indokát és bizonyítékát?",
+        "Van konfliktusfeloldási és megszakítási szabály?",
+        "A teljes orchestráció trace-elhető kérésazonosítóval?",
+        "A párhuzamos lépések nem írják felül egymás állapotát?"
+      ],
+      "relations": [
+        "ai_agentic.workflow",
+        "ai_agentic.planner",
+        "ai_agentic.executor",
+        "backend.queue",
+        "observability.correlation_id"
+      ]
+    },
+    {
+      "id": "ai_agentic.workflow",
+      "label": "workflow",
+      "group": "ai_agentic",
+      "description": "Több lépésből álló, részben vagy teljesen automatizált folyamat, amelyben az AI döntési vagy végrehajtási pontokat kap, de a folyamatállapot és a visszanyerhetőség továbbra is kulcsfontosságú.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Írd le a workflow állapotait, belépési feltételeit, kimeneteit és hibás átmeneteit.",
+        "Jelöld, mely lépések determinisztikusak, melyek AI-segítettek, és melyek igényelnek emberi döntést.",
+        "Tervezz idempotens újrafuttatást, hogy megszakítás után ne történjen dupla módosítás.",
+        "Adj runbookot a gyakori elakadásokra, például toolhiba, hiányzó adat vagy bizonytalan modellválasz esetére."
+      ],
+      "anti_patterns": [
+        "chat_mint_workflow: A folyamat csak beszélgetési előzményben él, tartós állapotmodell nélkül.",
+        "dupla_vegzettseg: Retry után ugyanaz a művelet kétszer fut le, mert nincs idempotencia.",
+        "rejtett_elagazas: A modell dönt el üzleti ágakat dokumentált szabály nélkül.",
+        "nincs_visszaut: Hiba esetén nem lehet folytatni, visszalépni vagy emberhez átadni."
+      ],
+      "checklist": [
+        "A workflow állapotai és átmenetei dokumentáltak?",
+        "A kritikus lépések idempotensek vagy védettek dupla végrehajtás ellen?",
+        "A modell döntési pontjai ellenőrizhetők és naplózottak?",
+        "Van emberi átadás ott, ahol a kockázat vagy bizonytalanság magas?",
+        "A folyamat megszakítás után folytatható konzisztens állapotból?"
+      ],
+      "relations": [
+        "backend.worker",
+        "backend.queue",
+        "backend.idempotency",
+        "documentation.runbook",
+        "ai_agentic.agent_orchestration"
+      ]
+    },
+    {
+      "id": "ai_agentic.memory",
+      "label": "memory",
+      "group": "ai_agentic",
+      "description": "AI rendszerben használt rövid vagy hosszú távú állapot, amely felhasználói preferenciákat, döntéseket vagy munkafolyamat-kontextust őrizhet, de adatvédelmi és frissességi szabályokat igényel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Határozd meg, milyen információ érdemes emlékezetbe, mennyi ideig élhet, és ki módosíthatja.",
+        "Különítsd el a beszélgetési összegzést, felhasználói preferenciát, feladatállapotot és tartós tudásbázist.",
+        "Adj törlési, helyesbítési és megtekintési lehetőséget a felhasználóhoz kötött memóriára.",
+        "Kérj frissességi ellenőrzést, mielőtt a modell régi emlékre épít fontos döntést."
+      ],
+      "anti_patterns": [
+        "minden_emlek: A rendszer túl sok személyes vagy ideiglenes adatot ment el világos cél nélkül.",
+        "regi_preferencia: Egy korábbi felhasználói igény tovább él, pedig azóta megváltozott a helyzet.",
+        "memoria_mint_teny: A modell ellenőrzés nélkül igazságként kezeli a korábbi összegzést.",
+        "torolhetetlen_allapot: A felhasználó nem tudja megnézni, javítani vagy törölni a róla tárolt információt."
+      ],
+      "checklist": [
+        "A memória célja és megőrzési ideje dokumentált?",
+        "Külön kezeljük a személyes adatot, munkafolyamat-állapotot és tudásbázis-tartalmat?",
+        "Van felhasználói törlés vagy helyesbítés kritikus emlékekre?",
+        "A régi emlékek frissessége ellenőrzött, mielőtt döntést befolyásolnak?",
+        "A memória hozzáférése és módosítása auditálható?"
+      ],
+      "relations": [
+        "ai_agentic.context_window",
+        "ai_agentic.rag",
+        "database.audit_log",
+        "security.secrets_management",
+        "documentation.decision_log"
+      ]
+    },
+    {
+      "id": "ai_agentic.planner",
+      "label": "planner",
+      "group": "ai_agentic",
+      "description": "Agent- vagy workflow-komponens, amely a célt lépésekre, döntési pontokra és ellenőrzési feltételekre bontja, mielőtt a végrehajtás elindulna.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Kérj a plannertől rövid, ellenőrizhető lépéssort, amely jelzi a függőségeket és a kockázatos pontokat.",
+        "A terv különböztesse meg az adatgyűjtést, döntést, végrehajtást és validációt.",
+        "Írasd ki, mely lépés igényel toolhívást, emberi jóváhagyást vagy további információt.",
+        "Tartsd a tervet frissíthető állapotként, ne egyszeri szöveges ígéretként."
+      ],
+      "anti_patterns": [
+        "terv_mint_diszlet: A modell tervet ír, de a végrehajtás már nem követi és nem frissíti.",
+        "tulreszletezett_start: A planner apró feladatokra bont mindent, és elhasználja a keretet a munka előtt.",
+        "feltetelezes_rejtve: A terv nem jelzi, milyen adatok hiányoznak vagy milyen feltételezésre épít.",
+        "validacio_kimarad: A terv végén nincs ellenőrzési lépés, csak végrehajtási lista."
+      ],
+      "checklist": [
+        "A terv lépései végrehajthatók és nem puszta szándékok?",
+        "A hiányzó információk és feltételezések külön szerepelnek?",
+        "A terv jelöli a toolhívásokat és emberi döntési pontokat?",
+        "Van záró validáció vagy elfogadási kritérium?",
+        "A végrehajtó komponens vissza tud jelezni a terv módosítására?"
+      ],
+      "relations": [
+        "ai_agentic.agent",
+        "ai_agentic.executor",
+        "ai_agentic.evaluation",
+        "documentation.decision_log",
+        "observability.tracing"
+      ]
+    },
+    {
+      "id": "ai_agentic.executor",
+      "label": "executor",
+      "group": "ai_agentic",
+      "description": "A terv lépéseit végrehajtó komponens, amelynek fegyelmezett eszközhasználatra, állapotkezelésre, hibajelzésre és eredmény-visszacsatolásra van szüksége.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Az executor csak jóváhagyott tervlépést hajtson végre, és jelezze, ha a környezet eltér a tervtől.",
+        "Minden művelet után rögzítse, mi sikerült, mi változott, és mi maradt nyitva.",
+        "Toolhívás előtt validálja a szükséges bemeneteket, toolhívás után ellenőrizze az eredményt.",
+        "Kezelje külön a visszafordítható, ismételhető és kockázatos műveleteket."
+      ],
+      "anti_patterns": [
+        "vak_vegrehajtas: Az executor folytatja a tervet akkor is, ha egy korábbi lépés hibás vagy hiányos.",
+        "allapot_nelkul: A végrehajtás eredménye csak válaszszövegben él, nem tartós folyamatállapotban.",
+        "hibak_elmaszatolva: A toolhiba vagy részleges siker természetes nyelvi sikerüzenetté szépül.",
+        "engedely_tullepes: A komponens módosító műveletet hajt végre jóváhagyási pont nélkül."
+      ],
+      "checklist": [
+        "Az executor látja a terv aktuális állapotát és elfogadási kritériumait?",
+        "Minden művelet eredménye naplózott és visszakövethető?",
+        "Hiba esetén leáll, visszakérdez vagy biztonságos fallbacket választ?",
+        "A kockázatos műveletekhez külön engedélyezési pont tartozik?",
+        "A végrehajtás után készül ellenőrzött összegzés a planner vagy evaluator felé?"
+      ],
+      "relations": [
+        "ai_agentic.planner",
+        "ai_agentic.tool_calling",
+        "backend.worker",
+        "observability.request_id",
+        "security.audit_trail"
+      ]
+    },
+    {
+      "id": "ai_agentic.evaluation",
+      "label": "evaluation",
+      "group": "ai_agentic",
+      "description": "AI válaszok, retrieval találatok, toolhasználat és agentfolyamatok minőségének szisztematikus mérése valós példák, mérőszámok és regressziós ellenőrzések alapján.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts eval készletet tipikus, nehéz, félrevezető és üzletileg kritikus felhasználói esetekből.",
+        "Válaszd szét a ténybeli pontosságot, használhatóságot, stílust, biztonságot és költséget.",
+        "Futtass regressziós ellenőrzést prompt-, modell-, retrieval- és toolváltoztatás után.",
+        "Kombináld az automatikus pontozást emberi mintavétellel ott, ahol a minőség árnyalt."
+      ],
+      "anti_patterns": [
+        "demo_alapu_bizalom: A rendszer néhány látványos példán jól működik, de nincs reprezentatív mérés.",
+        "egy_pontszam_mindent_visz: Egyetlen átlagolt score elfedi a biztonsági vagy doménspecifikus hibákat.",
+        "golden_set_rohad: Az eval készlet elavul, és már nem tükrözi a valós felhasználói kérdéseket.",
+        "model_biro_magat: Ugyanaz a modell értékeli a saját válaszát megfelelő kontroll nélkül."
+      ],
+      "checklist": [
+        "Az eval készlet lefedi a legfontosabb felhasználói és hibás bemeneti eseteket?",
+        "Külön mérjük a retrievalt, generálást, toolhasználatot és végső választ?",
+        "Van regressziós kapu élesítés vagy promptmódosítás előtt?",
+        "A mérőszámokhoz tartozik emberi értelmezés és elfogadási küszöb?",
+        "A hibák visszakerülnek prompt, adat, modell vagy workflow javításba?"
+      ],
+      "relations": [
+        "ai_agentic.benchmark",
+        "ai_agentic.prompt_versioning",
+        "observability.metrics",
+        "testing_qa.regression_test",
+        "documentation.decision_log"
+      ]
+    },
+    {
+      "id": "ai_agentic.benchmark",
+      "label": "benchmark",
+      "group": "ai_agentic",
+      "description": "Összehasonlításra használt tesztkészlet vagy mérési eljárás, amely modellek, promptok, retrieval stratégiák és agent-architektúrák döntéseit teszi összevethetővé.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Állíts össze benchmarkot valós magyar fejlesztői kérdésekből, nem csak általános angol mintákból.",
+        "Mérj több dimenziót: pontosság, teljesíthetőség, válaszidő, költség, biztonság és felhasználói haszon.",
+        "Tarts külön holdout készletet, hogy a prompt ne tanulja be a teljes tesztanyagot.",
+        "Jegyezd fel minden futásnál a modellverziót, promptverziót, adatverziót és értékelési szabályt."
+      ],
+      "anti_patterns": [
+        "leaderboard_vaksag: Nyilvános benchmark alapján választanak modellt, miközben a saját doménfeladat más jellegű.",
+        "teszt_tanitas: A fejlesztés közben ugyanazokat a példákat optimalizálják újra és újra.",
+        "metrika_kontekstus_nelkul: A számok mellől hiányzik, milyen hibák elfogadhatók és melyek kritikusak.",
+        "nem_reprodukalhato_futas: Nincs rögzítve a prompt, modell, adat és beállítás, ezért az eredmény nem ismételhető."
+      ],
+      "checklist": [
+        "A benchmark a saját termékfeladatokat és nyelvi környezetet tükrözi?",
+        "Van külön fejlesztési és holdout tesztkészlet?",
+        "A futások konfigurációja reprodukálható?",
+        "A metrikák mellett hibakategóriákat is elemzünk?",
+        "A benchmark döntésekhez vezet, nem csak rangsort gyárt?"
+      ],
+      "relations": [
+        "ai_agentic.evaluation",
+        "ai_agentic.model_routing",
+        "observability.dashboard",
+        "testing_qa.test_case",
+        "documentation.changelog"
+      ]
+    },
+    {
+      "id": "ai_agentic.hallucination",
+      "label": "hallucination",
+      "group": "ai_agentic",
+      "description": "Olyan modellkimenet, amely folyékony és hihető, de nem támasztható alá a megadott forrásokkal, elérhető adatokkal vagy a rendszer tényleges képességeivel.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Kérd a modelltől, hogy külön jelölje, mi forráson alapul, mi következtetés, és mi bizonytalan.",
+        "Adj szabályt arra, hogy hiányzó adatnál visszakérdezzen vagy mondja ki a korlátot, ne találjon ki választ.",
+        "Ellenőrizd a kritikus állításokat retrieval, üzleti szabály vagy determinisztikus validáció alapján.",
+        "Gyűjtsd a hallucinációs eseteket hibakategóriák szerint, hogy javítható legyen az adat, prompt vagy workflow."
+      ],
+      "anti_patterns": [
+        "magabiztos_tipp: A modell akkor is határozottan válaszol, amikor nincs elég adat.",
+        "hamis_hivatkozas: A válasz forrást említ, de az adott állítás nem található benne.",
+        "kepesseg_kitalalas: A modell azt állítja, hogy elvégzett egy műveletet, amelyre nem volt toolja vagy jogosultsága.",
+        "stilus_elfedi_hibat: A jól szerkesztett magyar mondatok miatt senki nem ellenőrzi a tényeket."
+      ],
+      "checklist": [
+        "A válaszoknál látszik a bizonyosság vagy forráskapcsolat?",
+        "A kritikus állításokat külön ellenőrzés védi?",
+        "A modell nem állít végrehajtott műveletet tooleredmény nélkül?",
+        "A hallucinációs hibákat kategóriázzuk és visszacsatoljuk?",
+        "A felhasználó kap tiszta jelzést, ha nincs elég adat a válaszhoz?"
+      ],
+      "relations": [
+        "ai_agentic.grounding",
+        "ai_agentic.rag",
+        "ai_agentic.evaluation",
+        "security.prompt_injection",
+        "observability.logging"
+      ]
+    },
+    {
+      "id": "ai_agentic.grounding",
+      "label": "grounding",
+      "group": "ai_agentic",
+      "description": "A modell válaszának konkrét forrásokhoz, adatrekordokhoz, tooleredményekhez vagy dokumentált szabályokhoz kötése, hogy az állítás ellenőrizhető maradjon.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Kösd minden fontos állítást forrásrészlethez, tooleredményhez vagy dokumentált üzleti szabályhoz.",
+        "Kérd a modelltől, hogy jelezze, ha a forrás csak részben válaszolja meg a kérdést.",
+        "Válaszd szét a forrásból idézhető tényt, a modell összegzését és a javasolt következő lépést.",
+        "Építs ellenőrzési pontot arra, hogy a válasz ne hivatkozzon nem látott vagy nem engedélyezett adatra."
+      ],
+      "anti_patterns": [
+        "forras_diszites: A válasz végére kerül néhány forrás, de az állítások nem köthetők hozzájuk.",
+        "tooleredmeny_tulirasa: A modell felülírja vagy kiszínezi a tool által visszaadott tényleges adatot.",
+        "reszleges_bizonyitek: Egy forrás csak a válasz egy részét támasztja alá, mégis teljes bizonyítékként jelenik meg.",
+        "hozzaferesi_atugras: A grounding olyan adatot használna, amelyhez a felhasználónak nincs joga."
+      ],
+      "checklist": [
+        "A fontos állítások visszavezethetők konkrét forrásra vagy tooleredményre?",
+        "A modell külön jelzi, ha a forrás hiányos vagy ellentmondásos?",
+        "A válasz nem keveri össze a tényt, összegzést és ajánlást?",
+        "A forráskapcsolat megmarad naplóban vagy auditnyomban?",
+        "A jogosultsági szűrés a grounding forrásaira is érvényes?"
+      ],
+      "relations": [
+        "ai_agentic.hallucination",
+        "ai_agentic.rag",
+        "ai_agentic.retrieval_pipeline",
+        "database.audit_log",
+        "documentation.api_docs"
+      ]
+    },
+    {
+      "id": "ai_agentic.guardrails",
+      "label": "guardrails",
+      "group": "ai_agentic",
+      "description": "Technikai, promptszintű és folyamatbeli korlátok együttese, amelyek az AI rendszert biztonságos, kiszámítható és üzletileg elfogadható viselkedésben tartják.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Határozd meg a tiltott bemeneteket, tiltott kimeneteket, kockázatos műveleteket és emberi jóváhagyási pontokat.",
+        "Kombináld a promptszabályokat determinisztikus validációval, jogosultságkezeléssel és auditálással.",
+        "Tervezz külön guardrailt prompt injection, adatkiadás, veszélyes toolhívás és téves végrehajtás ellen.",
+        "Mérd a guardrail hatását hamis pozitív, hamis negatív és felhasználói súrlódás szerint."
+      ],
+      "anti_patterns": [
+        "prompt_mint_pajzs: Csak szöveges utasítás védi a rendszert, technikai ellenőrzés nélkül.",
+        "tul_szeles_tiltas: A guardrail annyi legitim feladatot blokkol, hogy a felhasználók kerülőutakat keresnek.",
+        "csendes_blokk: A rendszer tilt, de nem magyarázza el, miért vagy milyen biztonságos alternatíva van.",
+        "nem_tesztelt_vedelem: A szabályok nem futnak ellenséges és határeset bemeneteken."
+      ],
+      "checklist": [
+        "A guardrailek több rétegben működnek, nem csak promptban?",
+        "A veszélyes toolhívások és adatkiadások külön védettek?",
+        "Van mérés hamis blokkolásra és átcsúszó kockázatokra?",
+        "A felhasználó érthető visszajelzést kap tiltáskor?",
+        "A szabályokat rendszeresen teszteljük új támadási mintákkal?"
+      ],
+      "relations": [
+        "security.prompt_injection",
+        "security.input_validation",
+        "security.rate_limiting",
+        "ai_agentic.tool_calling",
+        "ai_agentic.evaluation"
+      ]
+    },
+    {
+      "id": "ai_agentic.prompt_versioning",
+      "label": "prompt_versioning",
+      "group": "ai_agentic",
+      "description": "Promptok, rendszerutasítások és példakészletek verziózott kezelése, hogy a modellviselkedés változásai visszakövethetők, mérhetők és visszagörgethetők legyenek.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Adj minden promptnak verziót, tulajdonost, célfeladatot és változtatási indokot.",
+        "Köss promptváltoztatást eval futáshoz, hogy látszódjon a minőség, költség és biztonság változása.",
+        "Dokumentáld, mely promptverzió mely modellverzióval és adatverzióval került élesbe.",
+        "Tarts visszagörgetési lehetőséget, ha egy új prompt regressziót vagy biztonsági hibát hoz."
+      ],
+      "anti_patterns": [
+        "prompt_sprawl: Több helyen élnek hasonló promptok név, tulajdonos és változtatási napló nélkül.",
+        "chatbol_elesbe: Egy sikeres beszélgetés promptja ellenőrzés nélkül termékkonfigurációvá válik.",
+        "nincs_diff: Nem látszik, mely mondat változott, ezért a viselkedésromlás nehezen nyomozható.",
+        "eval_nelkul_release: Promptmódosítás élesedik regressziós mérés és rollback terv nélkül."
+      ],
+      "checklist": [
+        "Minden éles prompt verziózott és tulajdonoshoz kötött?",
+        "A módosításokhoz tartozik indok, diff és várható hatás?",
+        "Promptváltozás előtt fut eval vagy legalább célzott regressziós ellenőrzés?",
+        "Éles környezetben visszakereshető, mely promptverzió válaszolt?",
+        "Van gyors rollback, ha a minőség vagy biztonság romlik?"
+      ],
+      "relations": [
+        "ai_agentic.prompt_engineering",
+        "ai_agentic.system_prompt",
+        "ai_agentic.evaluation",
+        "documentation.changelog",
+        "documentation.decision_log"
+      ]
+    },
+    {
+      "id": "ai_agentic.model_routing",
+      "label": "model_routing",
+      "group": "ai_agentic",
+      "description": "Feladatok, kockázati szintek és költségcélok alapján történő modellválasztás, amely eldönti, mikor kell gyors, olcsó, erős, multimodális vagy speciális modell.",
+      "type": "keyword",
+      "prompt_phrases": [
+        "Készíts routing szabályt feladattípus, kockázat, szükséges kontextus, válaszidő és költség alapján.",
+        "Használj erősebb modellt ott, ahol a hiba drága, és egyszerűbbet ott, ahol a feladat jól korlátozott.",
+        "Mérd, hogy a routing döntés javít-e a költség-minőség arányon, nem csak olcsóbbá teszi a rendszert.",
+        "Adj fallbacket modellhiba, rate limit, túl nagy kontextus vagy biztonsági bizonytalanság esetére."
+      ],
+      "anti_patterns": [
+        "legjobb_modell_mindenre: Minden kérés a legerősebb modellhez megy, így a költség és latency feleslegesen nő.",
+        "olcso_modell_kritikusra: Költségcsökkentés miatt kockázatos döntések is gyenge modellre kerülnek.",
+        "routing_magyarazat_nelkul: Nem naplózott, miért egy adott modell kapta a feladatot.",
+        "fallback_hiany: Modellhiba vagy limit esetén a felhasználó általános hibát kap, nincs alternatív út."
+      ],
+      "checklist": [
+        "A routing szabályok feladattípushoz és kockázathoz kötöttek?",
+        "A modellválasztás döntése naplózott és elemezhető?",
+        "A költség, latency és minőség együtt jelenik meg a mérésben?",
+        "Van fallback rate limitre, modellhibára és túl nagy kontextusra?",
+        "A routing változtatását benchmark vagy eval eredmény támasztja alá?"
+      ],
+      "relations": [
+        "ai_agentic.llm",
+        "ai_agentic.token_budget",
+        "ai_agentic.benchmark",
+        "observability.metrics",
+        "observability.latency"
+      ]
+    }
+  ]
+}
