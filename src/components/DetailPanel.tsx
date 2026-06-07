@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from "react";
 import { KeywordNode, KeywordLink } from "../types";
 import { GROUPS } from "../data/dictionaryService";
+import { getBeginnerExplanation } from "../data/beginnerContent";
 import {
   ChevronDown,
   ChevronUp,
@@ -16,7 +17,11 @@ import {
   X,
   Compass,
   Copy,
-  Check
+  Check,
+  BookOpen,
+  Lightbulb,
+  Code,
+  HelpCircle
 } from "lucide-react";
 
 interface DetailPanelProps {
@@ -43,6 +48,10 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
   const [copiedPhraseIdx, setCopiedPhraseIdx] = useState<number | null>(null);
   const [copiedSteps, setCopiedSteps] = useState(false);
   const [copiedAnti, setCopiedAnti] = useState(false);
+  const [copiedSnippet, setCopiedSnippet] = useState(false);
+
+  // Fetch customized junior content
+  const beginnerData = selectedNode ? getBeginnerExplanation(selectedNode) : null;
 
   // Reset collapse views when node changes
   useEffect(() => {
@@ -52,6 +61,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
     setCopiedPhraseIdx(null);
     setCopiedSteps(false);
     setCopiedAnti(false);
+    setCopiedSnippet(false);
   }, [selectedNode]);
 
   // Copy helper functions
@@ -104,6 +114,17 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
           <div className="space-y-1">
             <p className="font-serif text-base italic leading-relaxed opacity-80 pl-3 border-l border-white/10">
               Isten hozott az AI fejlesztői tudásgömb interaktív 3D birodalmában! Itt a szoftveres és prompt fogalmak egy összefüggő gondolati térképet alkotnak.
+            </p>
+          </div>
+
+          {/* Core User Request Onboarding highlight card */}
+          <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl space-y-1.5 animate-pulse-slow">
+            <div className="flex items-center gap-1.5 text-amber-400 font-sans text-[10px] font-semibold uppercase tracking-wider">
+              <Lightbulb className="w-3.5 h-3.5" />
+              <span>Gyorstanulás indítása</span>
+            </div>
+            <p className="text-xs text-white/95 font-medium leading-relaxed">
+              „Kattints egy fogalomra, és megmutatom, mire való, mikor használd, milyen promptban jelenik meg, és mihez kapcsolódik.”
             </p>
           </div>
 
@@ -202,18 +223,94 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
       {/* Accordion List Body Scroll */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6 pr-3 scrolling-mask scrollbar-thin scrollbar-thumb-white/10">
         
-        {/* Hungarian Description with serif quote display */}
-        <div className="space-y-1">
-          <h4 className="text-[9px] uppercase tracking-[0.2em] opacity-40 font-sans font-semibold">
-            Magyarázat / Fogalom
-          </h4>
-          <p 
-            className="font-serif text-base italic leading-relaxed text-[#E0D8D0] opacity-85 pl-4 border-l-2"
-            style={{ borderLeftColor: `${accentColor}50` }}
-          >
-            &ldquo;{selectedNode.description}&rdquo;
-          </p>
-        </div>
+        {/* Expanded Beginner-Friendly Concept Cards Section */}
+        {beginnerData && (
+          <div className="space-y-4">
+            
+            {/* 1. Mi ez? Magyarázat */}
+            <div className="space-y-1">
+              <h4 className="text-[9px] uppercase tracking-[0.2em] opacity-40 font-sans font-semibold flex items-center gap-1.5">
+                <BookOpen className="w-3 h-3" style={{ color: accentColor }} />
+                Mi ez a fogalom?
+              </h4>
+              <p 
+                className="font-serif text-base italic leading-relaxed text-[#E0D8D0] opacity-90 pl-4 border-l-2"
+                style={{ borderLeftColor: `${accentColor}50` }}
+              >
+                &ldquo;{selectedNode.description}&rdquo;
+              </p>
+            </div>
+
+            {/* 2. Mikor használd? */}
+            <div className="space-y-1 bg-white/2 border border-white/5 p-3 rounded-xl">
+              <h4 className="text-[9px] uppercase tracking-[0.2em] text-white/50 font-sans font-semibold flex items-center gap-1.5">
+                <Lightbulb className="w-3 h-3 text-amber-400" />
+                Mikor használd?
+              </h4>
+              <p className="text-xs text-[#E0D8D0] opacity-80 leading-relaxed pl-1 font-sans">
+                {beginnerData.whenToUse}
+              </p>
+            </div>
+
+            {/* 3. Milyen elakadást / problémát old meg? */}
+            <div className="space-y-1 bg-white/2 border border-white/5 p-3 rounded-xl">
+              <h4 className="text-[9px] uppercase tracking-[0.2em] text-white/50 font-sans font-semibold flex items-center gap-1.5">
+                <HelpCircle className="w-3 h-3 text-emerald-400" />
+                Milyen elakadást old meg?
+              </h4>
+              <p className="text-xs text-[#E0D8D0] opacity-80 leading-relaxed pl-1 font-sans">
+                {beginnerData.blockerSolved}
+              </p>
+            </div>
+
+            {/* 4. Mini kezdő kód / prompt példa window */}
+            <div className="border border-white/10 rounded-xl overflow-hidden bg-[#07070d] space-y-2">
+              <div className="flex items-center justify-between bg-black/40 px-3 py-2 border-b border-white/5">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-red-500/60" />
+                  <span className="w-2 h-2 rounded-full bg-yellow-500/60" />
+                  <span className="w-2 h-2 rounded-full bg-green-500/60" />
+                  <span className="text-[9px] font-mono text-white/40 uppercase tracking-widest ml-1">{beginnerData.miniSnippet.title}</span>
+                </div>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(beginnerData.miniSnippet.code);
+                    setCopiedSnippet(true);
+                    setTimeout(() => setCopiedSnippet(false), 1500);
+                  }}
+                  className="p-1 px-2.5 text-[9px] font-mono font-bold tracking-wider text-white/55 hover:text-white bg-white/5 hover:bg-white/10 rounded border border-white/10 flex items-center gap-1 transition-all cursor-pointer"
+                  title="Példa másolása"
+                >
+                  {copiedSnippet ? (
+                    <>
+                      <Check className="w-3 h-3 text-emerald-400" />
+                      MÁSOLVA
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3 h-3 text-white/60" />
+                      MÁSOLÁS
+                    </>
+                  )}
+                </button>
+              </div>
+              <div className="p-3">
+                <pre className="text-[11px] font-mono leading-relaxed text-[#5bc0be] overflow-x-auto whitespace-pre-wrap select-all">
+                  <code>{beginnerData.miniSnippet.code}</code>
+                </pre>
+              </div>
+            </div>
+
+            {/* Prompt tanácsok header */}
+            <div className="p-3 bg-white/3 border-l-2 border-amber-500/30 rounded-r-xl space-y-1">
+              <h5 className="text-[8px] tracking-[0.15em] text-amber-400 uppercase font-sans font-bold">Hogyan instruáld az AI-t?</h5>
+              <p className="text-[11px] leading-relaxed italic text-white/80 font-serif">
+                {beginnerData.promptInstructions}
+              </p>
+            </div>
+
+          </div>
+        )}
 
         {/* Floating Related Connections Links on structure diagram */}
         {relatedNodes.length > 0 && (

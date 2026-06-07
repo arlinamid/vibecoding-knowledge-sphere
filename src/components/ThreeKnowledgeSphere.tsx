@@ -23,6 +23,8 @@ interface ThreeKnowledgeSphereProps {
   onHoverNode: (id: string | null) => void;
   cameraMode: "inside" | "outside";
   setCameraMode: (mode: "inside" | "outside") => void;
+  sidebarTab: "explore" | "beginner" | "roadmap";
+  aiSearchActiveMatches?: string[] | null;
 }
 
 export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
@@ -38,6 +40,8 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
   onSelectNode,
   onHoverNode,
   cameraMode,
+  sidebarTab,
+  aiSearchActiveMatches = null,
 }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -55,6 +59,8 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
   const linksRef = useRef(links);
   const cameraModeRef = useRef(cameraMode);
   const reducedMotionRef = useRef(reducedMotion);
+  const sidebarTabRef = useRef(sidebarTab);
+  const aiSearchActiveMatchesRef = useRef<string[] | null>(aiSearchActiveMatches);
 
   // Update refs reactively
   useEffect(() => { selectedNodeIdRef.current = selectedNodeId; }, [selectedNodeId]);
@@ -66,6 +72,8 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
   useEffect(() => { linksRef.current = links; }, [links]);
   useEffect(() => { cameraModeRef.current = cameraMode; }, [cameraMode]);
   useEffect(() => { reducedMotionRef.current = reducedMotion; }, [reducedMotion]);
+  useEffect(() => { sidebarTabRef.current = sidebarTab; }, [sidebarTab]);
+  useEffect(() => { aiSearchActiveMatchesRef.current = aiSearchActiveMatches; }, [aiSearchActiveMatches]);
 
   // Sync external layout changes (structure vs chaos coordinates) smoothly using GSAP
   useEffect(() => {
@@ -76,9 +84,9 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
       const liveNode = nodesRef.current.find((n) => n.id === updatedNode.id);
       if (liveNode) {
         gsap.to(liveNode, {
-          x: updatedNode.tx,
-          y: updatedNode.ty,
-          z: updatedNode.tz,
+          tx: updatedNode.tx,
+          ty: updatedNode.ty,
+          tz: updatedNode.tz,
           duration,
           ease,
           overwrite: "auto",
@@ -222,6 +230,8 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
     controls.maxDistance = 75;
     controls.enablePan = true;
     controls.zoomSpeed = 1.2;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.6;
     controlsRef.current = controls;
 
     // 8. Robust Resize Observer that passes updateStyle=false to block layout updates loop feedback
@@ -272,17 +282,18 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
       const currentActiveGroup = activeGroupRef.current;
       const currentShowRelations = showRelationsRef.current;
       const currentLinks = linksRef.current;
+      const currentAiSearchActiveMatches = aiSearchActiveMatchesRef.current;
 
-      // 1. Slanted orbital drift in chaos mode
+      // 1. Organic wave drift relative to targeting anchors in chaos mode
       if (currentViewMode === "chaos") {
         currentNodes.forEach((node, i) => {
-          const waveX = Math.sin(elapsedTime * 0.45 + i * 2.3) * 0.038;
-          const waveY = Math.cos(elapsedTime * 0.35 + i * 1.7) * 0.038;
-          const waveZ = Math.sin(elapsedTime * 0.52 + i * 3.1) * 0.038;
+          const waveX = Math.sin(elapsedTime * 0.5 + i * 2.3) * 0.45;
+          const waveY = Math.cos(elapsedTime * 0.4 + i * 1.7) * 0.45;
+          const waveZ = Math.sin(elapsedTime * 0.6 + i * 3.1) * 0.45;
 
-          node.x += waveX;
-          node.y += waveY;
-          node.z += waveZ;
+          node.x = node.tx + waveX;
+          node.y = node.ty + waveY;
+          node.z = node.tz + waveZ;
         });
 
         if (particles) {
@@ -290,11 +301,18 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
           particles.rotation.x = elapsedTime * 0.006;
         }
       } else {
-        // Subtle suspension hover float in focused layout mode
+        // Subtle suspension hover float in focused layout mode centered around targets
         currentNodes.forEach((node, i) => {
-          if (node.id === currentSelectedNodeId) return; // parent anchor stays locked
-          const hoverWave = Math.sin(elapsedTime * 0.72 + i * 0.5) * 0.011;
-          node.y += hoverWave;
+          if (node.id === currentSelectedNodeId) {
+            node.x = node.tx;
+            node.y = node.ty;
+            node.z = node.tz;
+            return; // parent anchor stays locked
+          }
+          const hoverWave = Math.sin(elapsedTime * 0.8 + i * 0.5) * 0.18;
+          node.x = node.tx;
+          node.y = node.ty + hoverWave;
+          node.z = node.tz;
         });
 
         if (particles) {
@@ -339,7 +357,13 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
             colorStrength = Math.max(colorStrength, 0.45);
           }
 
-          if (currentSearchQuery) {
+          if (currentAiSearchActiveMatches) {
+            const sMatch = currentAiSearchActiveMatches.includes(sNode.id);
+            const tMatch = currentAiSearchActiveMatches.includes(tNode.id);
+            if (!sMatch || !tMatch) {
+              colorStrength *= 0.15;
+            }
+          } else if (currentSearchQuery) {
             const sMatch = sNode.label.toLowerCase().includes(currentSearchQuery) || sNode.group.toLowerCase().includes(currentSearchQuery);
             const tMatch = tNode.label.toLowerCase().includes(currentSearchQuery) || tNode.group.toLowerCase().includes(currentSearchQuery);
             if (!sMatch || !tMatch) {
@@ -404,7 +428,11 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
             alwaysShow = true;
           }
 
-          if (currentSearchQuery) {
+          if (currentAiSearchActiveMatches) {
+            if (currentAiSearchActiveMatches.includes(node.id)) {
+              alwaysShow = true;
+            }
+          } else if (currentSearchQuery) {
             const matchesQuery =
               node.label.toLowerCase().includes(currentSearchQuery) ||
               node.group.toLowerCase().includes(currentSearchQuery) ||
@@ -519,7 +547,7 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
           const scale = Math.max(0.48, Math.min(1.4, 28 / distance));
           const zIndex = Math.round((100 - distance) * 10);
 
-          let opacity = 0.85;
+          let opacity = 1.0;
           let isDimmed = false;
           let sizeMultiplier = 1.0;
 
@@ -535,42 +563,59 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
               opacity = 1.0;
               sizeMultiplier = 1.35;
             } else if (isDirectRelation) {
-              opacity = 0.95;
-              sizeMultiplier = 1.1;
+              opacity = 1.0;
+              sizeMultiplier = 1.15;
             } else {
-              opacity = 0.22;
+              opacity = 0.35;
               isDimmed = true;
             }
           }
 
-          if (currentActiveGroup && node.group !== currentActiveGroup) {
-            opacity *= 0.15;
-            isDimmed = true;
+          if (currentActiveGroup) {
+            if (node.group === currentActiveGroup) {
+              opacity = 1.0;
+              isDimmed = false;
+            } else {
+              opacity = isDimmed ? opacity * 0.35 : 0.25;
+              isDimmed = true;
+            }
           }
 
-          if (currentSearchQuery) {
+          if (currentAiSearchActiveMatches) {
+            const matchesQuery = currentAiSearchActiveMatches.includes(node.id);
+
+            if (!matchesQuery) {
+              opacity = isDimmed ? opacity * 0.25 : 0.2;
+              isDimmed = true;
+            } else {
+              opacity = 1.0;
+              sizeMultiplier *= 1.25;
+              isDimmed = false;
+            }
+          } else if (currentSearchQuery) {
             const matchesQuery =
               node.label.toLowerCase().includes(currentSearchQuery) ||
               node.group.toLowerCase().includes(currentSearchQuery) ||
               node.description.toLowerCase().includes(currentSearchQuery);
 
             if (!matchesQuery) {
-              opacity *= 0.12;
+              opacity = isDimmed ? opacity * 0.25 : 0.2;
               isDimmed = true;
             } else {
               opacity = 1.0;
               sizeMultiplier *= 1.25;
+              isDimmed = false;
             }
           }
 
           // Edge of sphere horizon fading for beautiful spherical scroll feeling
           const candidateData = candidates.find((c) => c.node.id === node.id);
           if (candidateData && !candidateData.alwaysShow) {
-            const fadeStart = -1.5;
-            const fadeEnd = -5.0;
+            const fadeStart = -2.5;
+            const fadeEnd = -6.5;
             if (candidateData.proj < fadeStart) {
               const fadeRatio = Math.max(0, (candidateData.proj - fadeEnd) / (fadeStart - fadeEnd));
-              opacity *= fadeRatio;
+              opacity *= (0.35 + 0.65 * fadeRatio);
             }
           }
 
@@ -579,7 +624,7 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
           el.style.zIndex = zIndex.toString();
           el.style.opacity = opacity.toString();
 
-          if (isDimmed) {
+          if (isDimmed && opacity < 0.2) {
             el.classList.add("pointer-events-none");
             el.classList.remove("pointer-events-auto");
           } else {
@@ -690,6 +735,49 @@ export const ThreeKnowledgeSphere: React.FC<ThreeKnowledgeSphereProps> = ({
       }
     }
   }, [selectedNodeId, viewMode, reducedMotion, nodes]);
+
+  // Physics impulse on tab switch and layout reset, launching a fresh rotation direction
+  useEffect(() => {
+    const controls = controlsRef.current;
+    if (!controls) return;
+
+    // Reset controls auto-rotation active parameters
+    controls.autoRotate = true;
+
+    if (reducedMotion) {
+      controls.autoRotateSpeed = 0.5;
+      return;
+    }
+
+    // Determine random new rotation direction and push high initial spin speed
+    const direction = Math.random() > 0.5 ? 1 : -1;
+    const peakSpeed = direction * (4.5 + Math.random() * 3.5); // Fast rotation boost impulse
+    const finalSpeed = direction * (viewMode === "chaos" ? 0.6 : 0.2); // Slower drifting spin for elegant focused layout
+
+    controls.autoRotateSpeed = peakSpeed;
+
+    gsap.killTweensOf(controls);
+    gsap.to(controls, {
+      autoRotateSpeed: finalSpeed,
+      duration: 3.2,
+      ease: "power2.out",
+    });
+
+    // Also push a gorgeous physical orbit pivot camera wobble to animate transition feel
+    const camera = cameraRef.current;
+    if (camera) {
+      const currentPos = { ...camera.position };
+      gsap.to(camera.position, {
+        x: currentPos.x + (Math.random() - 0.5) * 6,
+        y: currentPos.y + (Math.random() - 0.5) * 4,
+        duration: 1.5,
+        ease: "power2.out",
+        onUpdate: () => {
+          controls.update();
+        },
+      });
+    }
+  }, [sidebarTab, viewMode, selectedNodeId, activeGroup, reducedMotion]);
 
   return (
     <div className="relative w-full h-full select-none overflow-hidden" ref={containerRef}>

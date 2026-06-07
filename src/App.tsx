@@ -29,8 +29,112 @@ import {
   Info,
   Calendar,
   Settings,
-  Github
+  Github,
+  Brain
 } from "lucide-react";
+
+// Beginner Mode Problems config dataset
+const BEGINNER_PROBLEMS = [
+  {
+    id: "shiner_ui",
+    title: "„Szebb UI-t akarok”",
+    description: "Hogyan építs vizuálisan tökéletes, esztétikus, reszponzív modern felületeket.",
+    relatedGroups: ["ui_ux", "frontend_ui", "accessibility"],
+    focusedKeywordId: "frontend_ui.tailwind_css",
+  },
+  {
+    id: "login_issue",
+    title: "„Nem működik a login”",
+    description: "Hitelesítési tokenek, sessionök és CORS szabályok diagnosztizálása.",
+    relatedGroups: ["authentication", "security", "ux_states"],
+    focusedKeywordId: "authentication.jwt",
+  },
+  {
+    id: "deploy_issue",
+    title: "„Deployolni akarok”",
+    description: "Éles webalkalmazások közzététele az internetre és automatizációs pipeline-ok.",
+    relatedGroups: ["devops_deploy", "observability", "performance"],
+    focusedKeywordId: "devops_deploy.github_actions",
+  },
+  {
+    id: "error_undone",
+    title: "„Nem értem az error üzenetet”",
+    description: "Bugok diagnosztizálása a kódhibákból és hívási láncokból (Stack Trace).",
+    relatedGroups: ["debugging", "observability"],
+    focusedKeywordId: "debugging.stack_trace",
+  },
+  {
+    id: "save_data",
+    title: "„Adatot akarok menteni”",
+    description: "Tartós adatkezelés, sémák és adatbázis integrálása.",
+    relatedGroups: ["database", "backend"],
+    focusedKeywordId: "database.schema",
+  },
+  {
+    id: "api_hook",
+    title: "„API-t akarok bekötni”",
+    description: "Hogyan lekérdezz és továbbíts adatokat a szerver és a kliens között.",
+    relatedGroups: ["backend", "frontend_architecture"],
+    focusedKeywordId: "backend.api",
+  },
+  {
+    id: "slow_page",
+    title: "„Lassú az alkalmazásom”",
+    description: "Késleltetett betöltés (lazy loading), csomagméret csökkentése és gyorsítótárazás (caching).",
+    relatedGroups: ["performance", "observability"],
+    focusedKeywordId: "performance.lazy_loading",
+  },
+  {
+    id: "blind_spots",
+    title: "„Akadálymentesíteni akarok”",
+    description: "Szemantikus HTML elemek, képernyőolvasó támogatás (ARIA) és billentyűzet-navigáció.",
+    relatedGroups: ["accessibility"],
+    focusedKeywordId: "accessibility.semantic_html",
+  },
+  {
+    id: "ai_tools",
+    title: "„AI eszközmeghívást akarok”",
+    description: "Hogyan hívhat meg az AI ágens (pl. Gemini) egyedi API funkciókat, mint pl. e-mail küldést.",
+    relatedGroups: ["ai_agentic"],
+    focusedKeywordId: "ai_agentic.tool_calling",
+  },
+  {
+    id: "team_rules",
+    title: "„Projekt indítás és leírások”",
+    description: "Rendszerezett README fájlok, telepítési útmutatók és világos kóddokumentáció.",
+    relatedGroups: ["documentation", "vibe_coding"],
+    focusedKeywordId: "documentation.readme",
+  }
+];
+
+// Learning Roadmap Steps config dataset
+const ROADMAP_STEPS = [
+  { step: "01", label: "Frontend alapok", desc: "HTML, CSS és reszponzív mobilbarát elrendezések.", group: "frontend_ui", keyId: "frontend_ui.responsive_layout" },
+  { step: "02", label: "UI / UX elvek", desc: "Vizuális hierarchia, színkontraszt és elrendezések.", group: "ui_ux", keyId: "ui_ux.visual_hierarchy" },
+  { step: "03", label: "Állapotkezelés", desc: "Betöltés, gépelés, hibás és üres UX állapotok.", group: "ux_states", keyId: "ux_states.loading_state" },
+  { step: "04", label: "Kommunikáció (API)", desc: "API kérések, REST, JSON és aszinkron adatfolyamok.", group: "backend", keyId: "backend.api" },
+  { step: "05", label: "Backend szerver", desc: "Szerveroldali végpontok, Express API routing.", group: "backend", keyId: "backend.route" },
+  { step: "06", label: "Hitelesítés (Auth)", desc: "Biztonságos munkamenet, JWT bejelentkezés.", group: "authentication", keyId: "authentication.jwt" },
+  { step: "07", label: "Adatbázisok", desc: "Adatmodellek, táblák és sémák tervezése.", group: "database", keyId: "database.schema" },
+  { step: "08", label: "Hibakeresés (Debug)", desc: "Stack Trace értelmezés és konzolos diagnosztika.", group: "debugging", keyId: "debugging.stack_trace" },
+  { step: "09", label: "Élesítés (Deploy)", desc: "GitHub Actions CI/CD élesítés és felhő alapok.", group: "devops_deploy", keyId: "devops_deploy.github_actions" },
+  { step: "10", label: "Biztonság (Security)", desc: "Eltitkolt környezeti változók és titkok menedzsmentje.", group: "security", keyId: "security.secrets_management" },
+  { step: "11", label: "Production Checklist", desc: "Vibe kódoló Git minták és verziókövetés.", group: "vibe_coding", keyId: "vibe_coding.git" }
+];
+
+// Simplified Filter tags
+const QUICK_TAGS = [
+  { label: "frontend", group: "frontend_ui", name: "Frontend" },
+  { label: "backend", group: "backend", name: "Backend" },
+  { label: "auth", group: "authentication", name: "Authentication" },
+  { label: "debug", group: "debugging", name: "Debugging" },
+  { label: "deploy", group: "devops_deploy", name: "Devops & Deploy" },
+  { label: "database", group: "database", name: "Database" },
+  { label: "UI/UX", group: "ui_ux", name: "UI/UX" },
+  { label: "security", group: "security", name: "Security" },
+  { label: "prompting", group: "vibe_coding", name: "Prompting" },
+  { label: "production", group: "observability", name: "Production" }
+];
 
 export default function App() {
   // 1. Core Graph Data (Memoized and mapped state)
@@ -54,6 +158,89 @@ export default function App() {
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
   const [showRelations, setShowRelations] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+
+  // AI Semantic Search States
+  const [isAiSearch, setIsAiSearch] = useState(true);
+  const [aiSearchMatches, setAiSearchMatches] = useState<{ id: string; matchReason: string }[] | null>(null);
+  const [aiSearchSummary, setAiSearchSummary] = useState<string | null>(null);
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+
+  // Debounce and trigger server-side Gemini Intelligent Search with cancel request (AbortController) and length limitation
+  useEffect(() => {
+    if (!searchQuery || searchQuery.trim().length < 2) {
+      setAiSearchMatches(null);
+      setAiSearchSummary(null);
+      setAiError(null);
+      setIsAiLoading(false);
+      return;
+    }
+
+    if (searchQuery.trim().length > 20) {
+      setAiSearchMatches(null);
+      setAiSearchSummary(null);
+      setAiError("Az intelligens (AI) keresés legfeljebb 20 karakter hosszúságú lehet.");
+      setIsAiLoading(false);
+      return;
+    }
+
+    if (!isAiSearch) {
+      setAiSearchMatches(null);
+      setAiSearchSummary(null);
+      setAiError(null);
+      setIsAiLoading(false);
+      return;
+    }
+
+    setIsAiLoading(true);
+    setAiError(null);
+
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    const handler = setTimeout(async () => {
+      try {
+        const response = await fetch("/api/ai-search", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ q: searchQuery }),
+          signal,
+        });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || "Hiba történt az intelligens keresés során.");
+        }
+
+        const data = await response.json();
+        setAiSearchMatches(data.matches || []);
+        setAiSearchSummary(data.aiSummary || null);
+        setIsAiLoading(false);
+      } catch (err: any) {
+        if (err.name === "AbortError") {
+          // Silent catch for cancelled request
+          return;
+        }
+        console.error("AI Search HTTP error:", err);
+        setAiError(err.message || "Szerver kapcsolódási hiba.");
+        setAiSearchMatches([]);
+        setIsAiLoading(false);
+      }
+    }, 3500); // 3-4 másodperc türelmi idő (3.5 ms debounce)
+
+    return () => {
+      clearTimeout(handler);
+      controller.abort();
+    };
+  }, [searchQuery, isAiSearch]);
+
+  // New Beginner-Focused Interactive States
+  const [sidebarTab, setSidebarTab] = useState<"explore" | "beginner" | "roadmap">("explore");
+  const [activeBeginnerProblemId, setActiveBeginnerProblemId] = useState<string | null>(null);
+  const [activeRoadmapStepIndex, setActiveRoadmapStepIndex] = useState<number | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(true);
 
   // Real-time ticking clock state & Modal system states
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -93,6 +280,9 @@ export default function App() {
   // Handle active search highlight counting
   const matchingCount = useMemo(() => {
     if (!searchQuery) return 0;
+    if (isAiSearch && aiSearchMatches) {
+      return aiSearchMatches.length;
+    }
     const lower = searchQuery.toLowerCase();
     return nodes.filter(
       (n) =>
@@ -100,7 +290,7 @@ export default function App() {
         n.group.toLowerCase().includes(lower) ||
         n.description.toLowerCase().includes(lower)
     ).length;
-  }, [searchQuery, nodes]);
+  }, [searchQuery, nodes, isAiSearch, aiSearchMatches]);
 
   // 5. Layout Transition dispatching
   const handleSelectNode = (nodeId: string | null) => {
@@ -127,6 +317,9 @@ export default function App() {
     setSearchQuery("");
     setCameraMode("outside");
     setViewMode("chaos");
+    setAiSearchMatches(null);
+    setAiSearchSummary(null);
+    setAiError(null);
 
     const resetNodes = [...nodes];
     calculateChaosLayout(resetNodes);
@@ -143,6 +336,40 @@ export default function App() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [nodes]);
+
+  // Handle active category changes vs selected node focus compatibility
+  useEffect(() => {
+    if (activeGroup && selectedNodeId) {
+      const currentlySelectedNode = nodes.find((n) => n.id === selectedNodeId);
+      if (currentlySelectedNode && currentlySelectedNode.group !== activeGroup) {
+        // If the selected node does not belong to the newly selected category, we check bypasses
+        let bypassReset = false;
+        
+        if (sidebarTab === "beginner" && activeBeginnerProblemId) {
+          const activeProb = BEGINNER_PROBLEMS.find((p) => p.id === activeBeginnerProblemId);
+          if (activeProb && activeProb.focusedKeywordId === selectedNodeId) {
+            bypassReset = true;
+          }
+        } else if (sidebarTab === "roadmap" && activeRoadmapStepIndex !== null) {
+          const activeStep = ROADMAP_STEPS[activeRoadmapStepIndex];
+          if (activeStep && activeStep.keyId === selectedNodeId) {
+            bypassReset = true;
+          }
+        }
+
+        if (!bypassReset) {
+          // Release target focus but keep the active category filter active so all matching elements are highlighted
+          setSelectedNodeId(null);
+          setHoveredNodeId(null);
+          setViewMode("chaos");
+
+          const nextNodes = [...nodes];
+          calculateChaosLayout(nextNodes);
+          setNodes(nextNodes);
+        }
+      }
+    }
+  }, [activeGroup, selectedNodeId, sidebarTab, activeBeginnerProblemId, activeRoadmapStepIndex]);
 
   return (
     <div className="relative h-screen bg-[#050508] text-[#E0D8D0] flex flex-col overflow-hidden font-sans select-none selection:bg-white/10 selection:text-white">
@@ -161,8 +388,8 @@ export default function App() {
             <h1 className="text-xs tracking-[0.4em] font-semibold uppercase text-white/80">
               Vibekóding Tudásgömb <span className="text-white/20 font-light mx-1">|</span> AI FEJLESZTŐI TUDÁSGÖMB
             </h1>
-            <p className="text-[9px] text-white/40 tracking-[0.1em] uppercase mt-1 font-mono">
-              {META.purpose}
+            <p className="text-[10px] text-white/60 tracking-[0.05em] uppercase mt-1 font-mono">
+              Interaktív tudástérkép kezdő AI-kódolóknak, amely megmutatja, milyen fogalmakkal kell gondolkodnod, amikor AI-val appot építesz.
             </p>
           </div>
         </div>
@@ -182,56 +409,392 @@ export default function App() {
         </div>
       </header>
 
+      {/* Core Onboarding Highlight Banner Ribbon */}
+      {showOnboarding && (
+        <div id="onboarding-banner" className="relative z-20 bg-amber-500/10 border-b border-amber-500/20 px-6 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 backdrop-blur-md animate-fade-in shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+            </div>
+            <p className="text-xs text-[#E0D8D0] leading-relaxed">
+              <span className="text-amber-400 font-sans font-bold uppercase tracking-wider text-[9px] mr-2">Iránytű kezdőknek:</span>
+              <strong>„Kattints egy fogalomra, és megmutatom, mire való, mikor használd, milyen promptban jelenik meg, és mihez kapcsolódik.”</strong>
+            </p>
+          </div>
+          <button
+            id="dismiss-onboarding-btn"
+            onClick={() => setShowOnboarding(false)}
+            className="px-3.5 py-1 bg-white/5 hover:bg-white/10 text-[9px] font-mono font-bold text-white/60 hover:text-white rounded-full border border-white/10 transition-all cursor-pointer self-start sm:self-auto"
+          >
+            [ Értem ]
+          </button>
+        </div>
+      )}
+
       {/* Main Core Layout Deck */}
       <main className="flex-1 relative z-10 flex flex-col md:flex-row overflow-hidden min-h-0">
         
         {/* Left Side: Controls, Searches and Categories Badges */}
         <section
           id="left-control-sidebar"
-          className="w-full md:w-[320px] shrink-0 border-r border-white/5 bg-[#050508]/20 backdrop-blur-sm p-4 overflow-y-auto space-y-4 flex flex-col order-2 md:order-1 select-none scrollbar-thin scrollbar-thumb-white/10"
+          className="w-full md:w-[325px] shrink-0 border-r border-white/5 bg-[#050508]/40 backdrop-blur-md p-4 overflow-hidden space-y-4 flex flex-col order-2 md:order-1 select-none h-full md:h-auto"
         >
-          {/* Module 1: Searching Input with rounded-full design layout mapping */}
-          <div className="bg-white/3 border border-white/5 rounded-2xl p-4 space-y-3 backdrop-blur-xl glass-panel">
-            <label id="search-input-label" htmlFor="search-input" className="block text-[10px] font-semibold text-white/50 uppercase tracking-[0.2em]">
-              Intelligens kereső
-            </label>
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 text-white/30 absolute left-4 top-3.5" />
-              <input
-                id="search-input"
-                type="text"
-                placeholder="Search knowledge..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-black/40 border border-white/10 rounded-full pl-9 pr-9 py-2.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-all font-mono"
-              />
-              {searchQuery && (
-                <button
-                  id="clear-search-btn"
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3.5 top-2.5 p-1 text-white/40 hover:text-white hover:bg-white/5 rounded-full cursor-pointer transition-colors"
-                >
-                  <XIcon />
-                </button>
-              )}
-            </div>
+          {/* Main Sidebar Modes Navigation Tabs */}
+          <div className="grid grid-cols-3 gap-1 bg-black/40 p-1 rounded-xl border border-white/5 shrink-0">
+            <button
+              onClick={() => {
+                setSidebarTab("explore");
+                handleResetView();
+              }}
+              className={`py-2 text-[9px] font-sans font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer text-center ${
+                sidebarTab === "explore"
+                  ? "bg-white text-black font-extrabold"
+                  : "text-white/60 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              Böngészés
+            </button>
+            <button
+              onClick={() => {
+                setSidebarTab("beginner");
+                handleResetView();
+              }}
+              className={`py-2 text-[9px] font-sans font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer text-center ${
+                sidebarTab === "beginner"
+                  ? "bg-amber-400 text-black font-extrabold"
+                  : "text-white/60 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              Kezdő Mód
+            </button>
+            <button
+              onClick={() => {
+                setSidebarTab("roadmap");
+                handleResetView();
+              }}
+              className={`py-2 text-[9px] font-sans font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer text-center ${
+                sidebarTab === "roadmap"
+                  ? "bg-sky-400 text-black font-extrabold"
+                  : "text-white/60 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              Tanulási Út
+            </button>
+          </div>
 
-            {searchQuery && (
-              <div id="search-matches-badge" className="text-[10px] bg-sky-950/20 text-sky-300 px-3 py-1.5 rounded-full border border-sky-500/10 font-mono flex items-center justify-between">
-                <span>Találati lista:</span>
-                <span className="font-bold bg-sky-500/25 px-2 py-0.5 rounded-full text-white text-[11px]">{matchingCount} szó</span>
+          {/* Unified Middle Scroll Viewport Container */}
+          <div className="flex-1 overflow-y-auto min-h-0 space-y-4 pr-1 scrollbar-thin scrollbar-thumb-white/10">
+            {/* Tab View Conditionals */}
+            {sidebarTab === "explore" && (
+              <div className="space-y-4 flex flex-col pb-4">
+                {/* Module 1: Searching Input with rounded-full design layout mapping */}
+                <div className="bg-white/3 border border-white/5 rounded-2xl p-4 space-y-3 backdrop-blur-xl glass-panel">
+                  <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                    <label id="search-input-label" htmlFor="search-input" className="block text-[10px] font-semibold text-white/50 uppercase tracking-[0.2em]">
+                      Intelligens kereső
+                    </label>
+                    <button
+                      onClick={() => {
+                        setIsAiSearch(!isAiSearch);
+                        setAiSearchMatches(null);
+                        setAiSearchSummary(null);
+                      }}
+                      className={`px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider font-mono cursor-pointer transition-all flex items-center gap-1 ${
+                        isAiSearch
+                          ? "bg-sky-500/20 text-sky-300 border border-sky-400/35 shadow-[0_0_10px_rgba(14,165,233,0.15)] animate-pulse"
+                          : "bg-white/5 text-white/40 border border-white/10"
+                      }`}
+                    >
+                      <Brain className="w-2.5 h-2.5" />
+                      {isAiSearch ? "🧠 AI Aktív" : "Normál"}
+                    </button>
+                  </div>
+
+                  <div className="relative">
+                    <Search className="w-3.5 h-3.5 text-white/30 absolute left-4 top-3.5" />
+                    <input
+                      id="search-input"
+                      type="text"
+                      placeholder={isAiSearch ? "Próbáld: biztonság, gyors, animáció..." : "Search knowledge..."}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full bg-black/40 border border-white/10 rounded-full pl-9 pr-9 py-2.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-all font-mono"
+                    />
+                    {searchQuery && (
+                      <button
+                        id="clear-search-btn"
+                        onClick={() => setSearchQuery("")}
+                        className="absolute right-3.5 top-2.5 p-1 text-white/40 hover:text-white hover:bg-white/5 rounded-full cursor-pointer transition-colors"
+                      >
+                        <XIcon />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* AI Loading State */}
+                  {isAiLoading && (
+                    <div className="flex items-center justify-center gap-2 py-3 text-sky-400 text-xs font-mono animate-pulse">
+                      <div className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
+                      <span>Gemini gondolkodik a kereséseden...</span>
+                    </div>
+                  )}
+
+                  {/* AI Error Fallback State */}
+                  {aiError && (
+                    <div className="text-[10px] text-amber-300 bg-amber-950/25 border border-amber-500/20 rounded-xl p-3 font-mono leading-normal">
+                      ⚠ {aiError} (Normál szövegkeresést használunk)
+                    </div>
+                  )}
+
+                  {/* AI Conceptual Intent Summary */}
+                  {isAiSearch && aiSearchSummary && !isAiLoading && (
+                    <div className="text-[11px] text-sky-200 bg-sky-950/20 border border-sky-500/10 rounded-xl p-3 leading-relaxed font-sans shadow-inner">
+                      <div className="flex items-center gap-1 mb-1 text-sky-400 font-bold uppercase tracking-wider text-[8px] font-mono">
+                        <HelpCircle className="w-3 h-3" />
+                        AI Értelmezés / Kontextus
+                      </div>
+                      {aiSearchSummary}
+                    </div>
+                  )}
+
+                  {searchQuery && (
+                    <div id="search-matches-badge" className="text-[10px] bg-sky-950/20 text-sky-300 px-3 py-1.5 rounded-full border border-sky-500/10 font-mono flex items-center justify-between animate-fade-in">
+                      <span>Találati lista:</span>
+                      <span className="font-bold bg-sky-500/25 px-2 py-0.5 rounded-full text-white text-[11px]">{matchingCount} szó</span>
+                    </div>
+                  )}
+
+                  {/* AI Semantic Matches List with Reasons */}
+                  {isAiSearch && aiSearchMatches && aiSearchMatches.length > 0 && !isAiLoading && (
+                    <div className="space-y-1.5 mt-2 pt-2 border-t border-white/5 max-h-[220px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-white/10">
+                      <div className="text-[9px] font-bold text-white/30 uppercase tracking-wider font-sans mb-1.5 pl-1">
+                        Szemantikus egyezések (kattints a fókuszhoz):
+                      </div>
+                      {aiSearchMatches.map((match) => {
+                        const fullNode = nodes.find((n) => n.id === match.id);
+                        if (!fullNode) return null;
+                        const isCurrent = selectedNodeId === match.id;
+                        return (
+                          <button
+                            key={match.id}
+                            onClick={() => handleSelectNode(match.id)}
+                            className={`w-full text-left p-2 rounded-xl transition-all border text-xs cursor-pointer flex flex-col gap-1 ${
+                              isCurrent
+                                ? "bg-sky-500/15 border-sky-500/40 text-white"
+                                : "bg-black/35 border-white/5 hover:border-white/15 text-white/80 hover:text-white"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between w-full">
+                              <span className="font-mono font-bold text-sky-300 text-[11px]">
+                                {fullNode.label}
+                              </span>
+                              <span
+                                className="text-[9px] uppercase tracking-wider px-1.5 py-0.2 rounded bg-white/5 font-mono"
+                                style={{ color: fullNode.color }}
+                              >
+                                {GROUPS[fullNode.group]?.name || fullNode.group}
+                              </span>
+                            </div>
+                            {match.matchReason && (
+                              <p className="text-[10px] text-white/50 leading-normal font-sans italic">
+                                {match.matchReason}
+                              </p>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Module B: Quick Simplified Tags */}
+                <div className="bg-white/3 border border-white/5 rounded-2xl p-4 space-y-2.5 backdrop-blur-xl glass-panel">
+                  <h3 className="font-sans text-[10px] font-semibold text-white/50 uppercase tracking-[0.2em] flex items-center gap-1.5">
+                    <Sparkles className="w-3 h-3 text-sky-450" />
+                    Gyorsszűrő Címkék
+                  </h3>
+                  <div className="flex flex-wrap gap-1.5">
+                    {QUICK_TAGS.map((tag) => {
+                      const isTagSelected = activeGroup === tag.group;
+                      return (
+                        <button
+                          key={tag.label}
+                          onClick={() => {
+                            setActiveGroup(isTagSelected ? null : tag.group);
+                            setSearchQuery("");
+                          }}
+                          className={`px-2.5 py-1 text-[10px] font-mono rounded-lg border transition-all cursor-pointer select-none ${
+                            isTagSelected
+                              ? "bg-sky-500/25 border-sky-400 text-white font-bold shadow-[0_0_8px_rgba(56,189,248,0.2)]"
+                              : "bg-black/45 border-white/5 text-[#E0D8D0]/60 hover:text-white hover:border-white/20"
+                          }`}
+                        >
+                          #{tag.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Module 2: Category Badge Filtering */}
+                <GroupFilter
+                  activeGroup={activeGroup}
+                  onSelectGroup={setActiveGroup}
+                />
+              </div>
+            )}
+
+            {sidebarTab === "beginner" && (
+              <div className="space-y-4 animate-fade-in pb-4">
+                <div className="bg-amber-500/5 border border-amber-500/15 rounded-2xl p-4 space-y-1.5 backdrop-blur-xl">
+                  <h3 className="text-xs text-amber-400 uppercase tracking-wider font-semibold font-sans flex items-center gap-1.5">
+                    <HelpCircle className="w-3.5 h-3.5" />
+                    Kezdő Elakadások
+                  </h3>
+                  <p className="text-[11px] leading-relaxed text-[#E0D8D0]/80 font-sans">
+                    Nem elméleti szavakban gondolkodsz? Válaszd ki, milyen gyakorlati kihívással vagy elakadással küzdesz éppen, és kattints egy fogalomra tippekért!
+                  </p>
+                </div>
+
+                <div className="space-y-2.5">
+                  {BEGINNER_PROBLEMS.map((prob) => {
+                    const isSelected = activeBeginnerProblemId === prob.id;
+                    return (
+                      <div
+                        key={prob.id}
+                        className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none ${
+                          isSelected
+                            ? "bg-amber-500/10 border-amber-450 shadow-lg"
+                            : "bg-black/30 border-white/5 hover:border-white/20"
+                        }`}
+                        onClick={() => {
+                          const nextSelect = isSelected ? null : prob.id;
+                          setActiveBeginnerProblemId(nextSelect);
+                          if (nextSelect) {
+                            // Filter view to focus the relevant elements
+                            setActiveGroup(prob.relatedGroups[0]);
+                            handleSelectNode(prob.focusedKeywordId);
+                          } else {
+                            handleResetView();
+                          }
+                        }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-serif text-xs font-semibold text-white tracking-wide">
+                            {prob.title}
+                          </span>
+                          <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-amber-450 animate-pulse" : "bg-white/20"}`} />
+                        </div>
+                        
+                        <p className="text-[11px] leading-relaxed text-[#E0D8D0]/70 mt-1.5 font-sans pl-2 border-l border-white/10">
+                          {prob.description}
+                        </p>
+
+                        {isSelected && (
+                          <div className="mt-3 pt-2.5 border-t border-amber-550/20 space-y-1.5">
+                            <div className="text-[9px] uppercase tracking-wider text-amber-400/80 font-mono font-bold">
+                              Alapvető megoldások itt:
+                            </div>
+                            <div className="flex flex-wrap gap-1">
+                              {nodes.filter(n => prob.relatedGroups.includes(n.group)).slice(0, 5).map(node => (
+                                <button
+                                  key={node.id}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleSelectNode(node.id);
+                                  }}
+                                  className="px-2 py-0.5 text-[9px] font-mono bg-black/50 hover:bg-amber-500/20 text-[#E0D8D0] hover:text-white rounded border border-white/10 transition-all"
+                                >
+                                  {node.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {sidebarTab === "roadmap" && (
+              <div className="space-y-4 animate-fade-in pb-4">
+                <div className="bg-sky-500/5 border border-sky-500/15 rounded-2xl p-4 space-y-1.5 backdrop-blur-xl">
+                  <h3 className="text-xs text-sky-400 uppercase tracking-wider font-semibold font-sans flex items-center gap-1.5">
+                    <Compass className="w-3.5 h-3.5" />
+                    AI Kóder Útiterv
+                  </h3>
+                  <p className="text-[11px] leading-relaxed text-[#E0D8D0]/80 font-sans">
+                    Kövesd ezt a lineáris tanulási utat lépésről lépésre, így megbízható rendszerben építhetsz alkalmazásokat a semmiből a produkciós élesítésig!
+                  </p>
+                </div>
+
+                {/* Vertical connected timeline */}
+                <div className="relative pl-4 space-y-3 pt-2 pb-6">
+                  {/* Connected Line overlay */}
+                  <div className="absolute left-1.5 top-0 bottom-8 w-0.5 bg-gradient-to-b from-sky-400/40 via-sky-450/20 to-transparent pointer-events-none" />
+
+                  {ROADMAP_STEPS.map((step, idx) => {
+                    const isSelected = activeRoadmapStepIndex === idx;
+                    return (
+                      <div
+                        key={idx}
+                        className={`relative p-3 rounded-xl border transition-all cursor-pointer select-none ${
+                          isSelected
+                            ? "bg-sky-500/10 border-sky-400 shadow-lg"
+                            : "bg-black/30 border-white/5 hover:border-white/20"
+                        }`}
+                        onClick={() => {
+                          const nextSelect = isSelected ? null : idx;
+                          setActiveRoadmapStepIndex(nextSelect);
+                          if (nextSelect !== null) {
+                            setActiveGroup(step.group);
+                            handleSelectNode(step.keyId);
+                          } else {
+                            handleResetView();
+                          }
+                        }}
+                      >
+                        {/* Connection bullet */}
+                        <div className="absolute left-[-21px] top-4.5 w-3 h-3 rounded-full border-2 border-[#050508] flex items-center justify-center transition-all bg-sky-950"
+                          style={{
+                            borderColor: isSelected ? "#38bdf8" : "#1e293b",
+                            backgroundColor: isSelected ? "#38bdf8" : "transparent"
+                          }}
+                        />
+
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[9px] font-mono text-sky-400 font-bold tracking-widest uppercase">
+                            Lépés {step.step}
+                          </span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-sky-400/20" />
+                        </div>
+
+                        <h4 className="font-serif text-xs font-semibold text-white tracking-wide mt-0.5">
+                          {step.label}
+                        </h4>
+
+                        <p className="text-[10px] leading-normal text-[#E0D8D0]/70 mt-1 font-sans">
+                          {step.desc}
+                        </p>
+
+                        {isSelected && (
+                          <div className="mt-2.5 pt-2 border-t border-sky-500/15 flex items-center justify-between text-[9px] font-mono">
+                            <span className="text-sky-450">Fókuszban:</span>
+                            <span className="font-bold underline text-white uppercase">{step.keyId.split(".")[1]}</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
 
-          {/* Module 2: Category Badge Filtering */}
-          <GroupFilter
-            activeGroup={activeGroup}
-            onSelectGroup={setActiveGroup}
-          />
-
           {/* Module 3: Active Layout Mode state display in glass-panel format */}
-          <div className="bg-white/3 border border-white/5 rounded-2xl p-4 space-y-4 backdrop-blur-xl glass-panel">
+          <div className="bg-white/3 border border-white/5 rounded-2xl p-4 space-y-4 backdrop-blur-xl glass-panel shrink-0">
             <div>
               <h3 id="layout-title" className="text-[10px] font-semibold text-white/50 uppercase tracking-[0.2em]">
                 Vizuális Állapotgép
@@ -243,14 +806,14 @@ export default function App() {
 
             <div className="space-y-2 pt-1 border-t border-white/5">
               {/* Reset to chaos button */}
-              {viewMode === "focused" && (
+              {(viewMode === "focused" || activeGroup !== null) && (
                 <button
                   id="reset-chaos-btn"
                   onClick={handleResetView}
-                  className="w-full flex items-center justify-center gap-2 bg-[#E0D8D0]/5 hover:bg-[#E0D8D0]/10 border border-white/10 text-[#E0D8D0] text-[10px] font-semibold py-2.5 px-3 rounded-full cursor-pointer active:scale-95 transition-all text-center uppercase tracking-widest"
+                  className="w-full flex items-center justify-center gap-2 bg-[#E0D8D0]/5 hover:bg-[#E0D8D0]/10 border border-white/10 text-[#E0D8D0] text-[10px] font-semibold py-2 px-3 rounded-full cursor-pointer active:scale-95 transition-all text-center uppercase tracking-widest"
                 >
                   <RotateCcw className="w-3.5 h-3.5 animate-spin-slow" />
-                  Reset Sphere Space
+                  Nézet Visszaállítása
                 </button>
               )}
 
@@ -313,6 +876,8 @@ export default function App() {
             onHoverNode={setHoveredNodeId}
             cameraMode={cameraMode}
             setCameraMode={setCameraMode}
+            sidebarTab={sidebarTab}
+            aiSearchActiveMatches={aiSearchMatches ? aiSearchMatches.map(m => m.id) : null}
           />
 
           {/* Floaters overlays controls bar */}
