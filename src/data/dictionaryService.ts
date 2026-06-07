@@ -280,7 +280,38 @@ export const RAW_NODES: RawKeywordNode[] = CATEGORY_DATA.flatMap((category) => c
 
 // Pre-generated colors or color fallback
 export function getGroupColor(group: string): string {
-  return GROUPS[group]?.color || "#FFFFFF";
+  const groupsMap = new Map<string, GroupConfig>(Object.entries(GROUPS));
+  return groupsMap.get(group)?.color || "#FFFFFF";
+}
+
+function hasWord(text: string, word: string): boolean {
+  let index = text.indexOf(word);
+  while (index !== -1) {
+    let beforeIsBoundary = true;
+    let afterIsBoundary = true;
+    
+    if (index > 0) {
+      const prevChar = text.charAt(index - 1);
+      if (/[a-zA-Z0-9_]/.test(prevChar)) {
+        beforeIsBoundary = false;
+      }
+    }
+    
+    const nextIndex = index + word.length;
+    if (nextIndex < text.length) {
+      const nextChar = text.charAt(nextIndex);
+      if (/[a-zA-Z0-9_]/.test(nextChar)) {
+        afterIsBoundary = false;
+      }
+    }
+    
+    if (beforeIsBoundary && afterIsBoundary) {
+      return true;
+    }
+    
+    index = text.indexOf(word, index + 1);
+  }
+  return false;
 }
 
 /**
@@ -344,12 +375,7 @@ export function buildLinks(nodes: RawKeywordNode[]): KeywordLink[] {
     for (const [targetLabel, targetId] of labelsMap.entries()) {
       if (node.id === targetId) continue;
       
-      // Match with simple word boundary / substring checking
-      // Using a regex to check if the word exists
-      const escapedLabel = targetLabel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const regex = new RegExp(`\\b${escapedLabel}\\b`, "i");
-      
-      if (regex.test(allText) || allText.includes(targetLabel)) {
+      if (hasWord(allText, targetLabel)) {
         addLink(node.id, targetId, "reference");
       }
     }

@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { KeywordNode, KeywordLink } from "../types";
+import { KeywordNode, KeywordLink, GroupConfig } from "../types";
 import { GROUPS } from "../data/dictionaryService";
 import { getBeginnerExplanation } from "../data/beginnerContent";
 import {
@@ -22,6 +22,41 @@ import {
   Lightbulb,
   HelpCircle
 } from "lucide-react";
+
+const translations = new Map<string, string>([
+  ["explore_guide_title", "Térbeli Felfedezés"],
+  ["explore_guide_welcome", "Isten hozott az AI fejlesztői tudásgömb interaktív 3D birodalmában! Itt a szoftveres és prompt fogalmak egy összefüggő gondolati térképet alkotnak."],
+  ["explore_guide_tour_title", "Gyorstanuló Útmutató"],
+  ["explore_guide_tour_desc", "Ismerd meg a 3D tudásgráf alapfunkcióit a beépített vezetett túrával! Megmutatja, hogyan tudsz keresni, szűrni, és hogyan instruálhatod az AI-t."],
+  ["explore_guide_tour_btn", "Vezetett Túra Indítása"],
+  ["explore_guide_interaction_title", "Interakciós Útmutató"],
+  ["explore_guide_rotation", "Forgatás"],
+  ["explore_guide_rotation_desc", ": Kattints és húzd az egérrel a gömb megpörgetéséhez a 3D térben."],
+  ["explore_guide_zoom", "Zoom"],
+  ["explore_guide_zoom_desc", ": Görgess a szavak közé való mély behatoláshoz vagy tágabb szemléléséhez."],
+  ["explore_guide_selection", "Kiválasztás"],
+  ["explore_guide_selection_desc", ": Kattints egy lebegő tokenre! Ekkor a kaotikus gömb egy precíz "],
+  ["explore_guide_selection_desc_strong", "csillagképszerű struktúrába"],
+  ["explore_guide_selection_desc_end", " rendeződik."],
+  ["system_stable", "Rendszerállapot: STABLE"],
+  ["db_density", "Adatbázis sűrűség: "],
+  ["keywords_unit", "kulcsszó"],
+  ["concept_what_is", "Mi ez a fogalom?"],
+  ["concept_when_to_use", "Mikor használd?"],
+  ["concept_blocker_solved", "Milyen elakadást old meg?"],
+  ["how_to_instruct_ai", "Hogyan instruáld az AI-t?"],
+  ["relation_network", "Kapcsolati Háló ("],
+  ["implementation_steps", "Megvalósítási lépések"],
+  ["anti_patterns", "Anti-Patternök"],
+  ["sample_phrases", "Mintamondatok"],
+  ["copied_label", "MÁSOLVA"],
+  ["copy_label", "MÁSOL"],
+  ["copy_all_steps_tooltip", "Összes lépés másolása"],
+  ["copy_all_anti_tooltip", "Összes anti-pattern másolása"],
+  ["copy_phrase_tooltip", "Mondat másolása"]
+]);
+
+const t = (key: string) => translations.get(key) || key;
 
 interface DetailPanelProps {
   selectedNode: KeywordNode | null;
@@ -55,38 +90,33 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
   // Fetch customized junior content
   const beginnerData = selectedNode ? getBeginnerExplanation(selectedNode) : null;
 
-  // Onboarding "Első 5 perc" flow state
-  const [onboardingSteps, setOnboardingSteps] = useState<{ [key: string]: boolean }>(() => {
-    try {
-      const saved = localStorage.getItem("ONBOARDING_5MIN_FLOW");
-      return saved ? JSON.parse(saved) : { step1: false, step2: false, step3: false, step4: false, step5: false };
-    } catch {
-      return { step1: false, step2: false, step3: false, step4: false, step5: false };
-    }
-  });
-
-  const toggleOnboardingStep = (stepKey: string) => {
-    const nextSteps = { ...onboardingSteps, [stepKey]: !onboardingSteps[stepKey] };
-    setOnboardingSteps(nextSteps);
-    try {
-      localStorage.setItem("ONBOARDING_5MIN_FLOW", JSON.stringify(nextSteps));
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   const autoCompleteStep = (stepKey: string) => {
     try {
       const saved = localStorage.getItem("ONBOARDING_5MIN_FLOW");
       let current = { step1: false, step2: false, step3: false, step4: false, step5: false };
       if (saved) current = JSON.parse(saved);
-      if (current[stepKey as keyof typeof current]) return;
       
-      const nextSteps = { ...current, [stepKey]: true };
+      if (
+        (stepKey === "step1" && current.step1) ||
+        (stepKey === "step2" && current.step2) ||
+        (stepKey === "step3" && current.step3) ||
+        (stepKey === "step4" && current.step4) ||
+        (stepKey === "step5" && current.step5)
+      ) {
+        return;
+      }
+      
+      const nextSteps = {
+        step1: stepKey === "step1" ? true : current.step1,
+        step2: stepKey === "step2" ? true : current.step2,
+        step3: stepKey === "step3" ? true : current.step3,
+        step4: stepKey === "step4" ? true : current.step4,
+        step5: stepKey === "step5" ? true : current.step5,
+      };
+
       if (nextSteps.step1 && nextSteps.step2 && nextSteps.step3 && nextSteps.step4) {
         nextSteps.step5 = true;
       }
-      setOnboardingSteps(nextSteps);
       localStorage.setItem("ONBOARDING_5MIN_FLOW", JSON.stringify(nextSteps));
     } catch (e) {
       console.error(e);
@@ -145,8 +175,6 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
   };
 
   if (!selectedNode) {
-    const progressCount = Object.values(onboardingSteps).filter(Boolean).length;
-
     // Show high-end Atmospheric / Immersive Media "Exploring / Instructions" guide
     return (
       <div 
@@ -159,13 +187,13 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
               <Compass className="w-4 h-4 text-white/70 animate-spin-slow" />
             </div>
             <h2 className="text-xs uppercase tracking-[0.3em] font-sans font-semibold opacity-70">
-              Térbeli Felfedezés
+              {t("explore_guide_title")}
             </h2>
           </div>
           
           <div className="space-y-1">
             <p className="font-serif text-base italic leading-relaxed opacity-80 pl-3 border-l border-white/10">
-              Isten hozott az AI fejlesztői tudásgömb interaktív 3D birodalmában! Itt a szoftveres és prompt fogalmak egy összefüggő gondolati térképet alkotnak.
+              {t("explore_guide_welcome")}
             </p>
           </div>
 
@@ -173,23 +201,23 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
           <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl space-y-3">
             <div className="flex items-center gap-1.5 text-amber-400 font-sans text-[10px] font-semibold uppercase tracking-wider">
               <Lightbulb className="w-3.5 h-3.5 animate-pulse" />
-              <span>Gyorstanuló Útmutató</span>
+              <span>{t("explore_guide_tour_title")}</span>
             </div>
             <p className="text-xs text-[#E0D8D0] opacity-80 leading-relaxed font-sans">
-              Ismerd meg a 3D tudásgráf alapfunkcióit a beépített vezetett túrával! Megmutatja, hogyan tudsz keresni, szűrni, és hogyan instruálhatod az AI-t.
+              {t("explore_guide_tour_desc")}
             </p>
             <button
               onClick={onStartTour}
               className="w-full py-2 bg-amber-500 hover:bg-amber-400 text-black text-xs font-sans font-bold rounded-lg tracking-wider uppercase transition-all cursor-pointer shadow-md shadow-amber-500/10 flex items-center justify-center gap-1.5"
             >
               <Compass className="w-4 h-4" />
-              Vezetett Túra Indítása
+              {t("explore_guide_tour_btn")}
             </button>
           </div>
 
           <div className="space-y-3 pt-3 border-t border-white/5">
             <h4 className="text-[10px] font-sans font-semibold text-white/50 uppercase tracking-[0.2em]">
-              Interakciós Útmutató
+              {t("explore_guide_interaction_title")}
             </h4>
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-xs leading-normal text-[#E0D8D0]/80">
@@ -197,7 +225,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
                   1
                 </span>
                 <span>
-                  <strong>Forgatás</strong>: Kattints és húzd az egérrel a gömb megpörgetéséhez a 3D térben.
+                  <strong>{t("explore_guide_rotation")}</strong>{t("explore_guide_rotation_desc")}
                 </span>
               </li>
               <li className="flex items-start gap-3 text-xs leading-normal text-[#E0D8D0]/80">
@@ -205,7 +233,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
                   2
                 </span>
                 <span>
-                  <strong>Zoom</strong>: Görgess a szavak közé való mély behatoláshoz vagy tágabb szemléléséhez.
+                  <strong>{t("explore_guide_zoom")}</strong>{t("explore_guide_zoom_desc")}
                 </span>
               </li>
               <li className="flex items-start gap-3 text-xs leading-normal text-[#E0D8D0]/80">
@@ -213,7 +241,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
                   3
                 </span>
                 <span>
-                  <strong>Kiválasztás</strong>: Kattints egy lebegő tokenre! Ekkor a kaotikus gömb egy precíz <strong>csillagképszerű struktúrába</strong> rendeződik.
+                  <strong>{t("explore_guide_selection")}</strong>{t("explore_guide_selection_desc")}<strong>{t("explore_guide_selection_desc_strong")}</strong>{t("explore_guide_selection_desc_end")}
                 </span>
               </li>
             </ul>
@@ -223,15 +251,16 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
         <div className="border-t border-white/10 pt-4 text-[10px] text-white/30 font-mono tracking-widest uppercase flex flex-col gap-1.5">
           <div className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/80 animate-pulse" />
-            <span>Rendszerállapot: STABLE</span>
+            <span>{t("system_stable")}</span>
           </div>
-          <div>Adatbázis sűrűség: {allNodes.length} kulcsszó</div>
+          <div>{t("db_density")}{allNodes.length} {t("keywords_unit")}</div>
         </div>
       </div>
     );
   }
 
-  const groupMeta = GROUPS[selectedNode.group];
+  const groupsMap = new Map<string, GroupConfig>(Object.entries(GROUPS));
+  const groupMeta = groupsMap.get(selectedNode.group);
   const accentColor = selectedNode.color || "#FFFFFF";
 
   // Gather actual connected keywords
@@ -290,7 +319,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
             <div className="space-y-1">
               <h4 className="text-[9px] uppercase tracking-[0.2em] opacity-40 font-sans font-semibold flex items-center gap-1.5">
                 <BookOpen className="w-3 h-3" style={{ color: accentColor }} />
-                Mi ez a fogalom?
+                {t("concept_what_is")}
               </h4>
               <p 
                 className="font-serif text-base italic leading-relaxed text-[#E0D8D0] opacity-90 pl-4 border-l-2"
@@ -304,7 +333,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
             <div className="space-y-1 bg-white/2 border border-white/5 p-3 rounded-xl">
               <h4 className="text-[9px] uppercase tracking-[0.2em] text-white/50 font-sans font-semibold flex items-center gap-1.5">
                 <Lightbulb className="w-3 h-3 text-amber-400" />
-                Mikor használd?
+                {t("concept_when_to_use")}
               </h4>
               <p className="text-xs text-[#E0D8D0] opacity-80 leading-relaxed pl-1 font-sans">
                 {beginnerData.whenToUse}
@@ -315,7 +344,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
             <div className="space-y-1 bg-white/2 border border-white/5 p-3 rounded-xl">
               <h4 className="text-[9px] uppercase tracking-[0.2em] text-white/50 font-sans font-semibold flex items-center gap-1.5">
                 <HelpCircle className="w-3 h-3 text-emerald-400" />
-                Milyen elakadást old meg?
+                {t("concept_blocker_solved")}
               </h4>
               <p className="text-xs text-[#E0D8D0] opacity-80 leading-relaxed pl-1 font-sans">
                 {beginnerData.blockerSolved}
@@ -324,7 +353,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
 
             {/* Prompt tanácsok header */}
             <div className="p-3 bg-white/3 border-l-2 border-amber-500/30 rounded-r-xl space-y-1">
-              <h5 className="text-[8px] tracking-[0.15em] text-amber-400 uppercase font-sans font-bold">Hogyan instruáld az AI-t?</h5>
+              <h5 className="text-[8px] tracking-[0.15em] text-amber-400 uppercase font-sans font-bold">{t("how_to_instruct_ai")}</h5>
               <p className="text-[11px] leading-relaxed italic text-white/80 font-serif">
                 {beginnerData.promptInstructions}
               </p>
@@ -338,7 +367,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
           <div id="related-nodes-section" className="space-y-2 pt-1 border-t border-white/5">
             <h4 className="text-[9px] uppercase tracking-[0.2em] opacity-40 font-sans font-semibold flex items-center gap-1.5">
               <Network className="w-3 h-3" style={{ color: accentColor }} />
-              Kapcsolati Háló ({relatedNodes.length})
+              {t("relation_network")}{relatedNodes.length})
             </h4>
             <div className="flex flex-wrap gap-1.5">
               {relatedNodes.map((rn) => (
@@ -374,7 +403,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
                 className="flex items-center gap-2 flex-1 text-left cursor-pointer"
               >
                 <CheckSquare className="w-3.5 h-3.5" style={{ color: accentColor }} />
-                Megvalósítási lépések
+                {t("implementation_steps")}
               </button>
               <div className="flex items-center gap-2 shrink-0">
                 <button
@@ -383,17 +412,17 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
                     copyAllSteps();
                   }}
                   className="p-1 px-2.5 text-[9px] font-mono font-bold tracking-wider text-white/55 hover:text-white bg-white/5 hover:bg-white/10 rounded border border-white/10 flex items-center gap-1.5 transition-all cursor-pointer"
-                  title="Összes lépés másolása"
+                  title={t("copy_all_steps_tooltip")}
                 >
                   {copiedSteps ? (
                     <>
                       <Check className="w-3 h-3 text-emerald-400" />
-                      MÁSOLVA
+                      {t("copied_label")}
                     </>
                   ) : (
                     <>
                       <Copy className="w-3 h-3 text-white/60" />
-                      MÁSOL
+                      {t("copy_label")}
                     </>
                   )}
                 </button>
@@ -434,7 +463,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
                 className="flex items-center gap-2 flex-1 text-left cursor-pointer"
               >
                 <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
-                Anti-Patternök
+                {t("anti_patterns")}
               </button>
               <div className="flex items-center gap-2 shrink-0">
                 <button
@@ -443,17 +472,17 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
                     copyAllAntiPatterns();
                   }}
                   className="p-1 px-2.5 text-[9px] font-mono font-bold tracking-wider text-white/55 hover:text-white bg-white/5 hover:bg-white/10 rounded border border-white/10 flex items-center gap-1.5 transition-all cursor-pointer"
-                  title="Összes anti-pattern másolása"
+                  title={t("copy_all_anti_tooltip")}
                 >
                   {copiedAnti ? (
                     <>
                       <Check className="w-3 h-3 text-emerald-400" />
-                      MÁSOLVA
+                      {t("copied_label")}
                     </>
                   ) : (
                     <>
                       <Copy className="w-3 h-3 text-white/60" />
-                      MÁSOL
+                      {t("copy_label")}
                     </>
                   )}
                 </button>
@@ -506,7 +535,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
             >
               <span className="flex items-center gap-2">
                 <Terminal className="w-3.5 h-3.5 text-amber-400" />
-                Mintamondatok
+                {t("sample_phrases")}
               </span>
               {showPrompts ? (
                 <ChevronUp className="w-3.5 h-3.5 text-white/45" />
@@ -526,7 +555,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
                     <button
                       onClick={() => copyPhrase(phrase, idx)}
                       className="p-1.5 rounded-lg bg-white/5 text-white/45 hover:text-white hover:bg-white/10 shrink-0 transition-all cursor-pointer"
-                      title="Mondat másolása"
+                      title={t("copy_phrase_tooltip")}
                     >
                       {copiedPhraseIdx === idx ? (
                         <Check className="w-3.5 h-3.5 text-emerald-400" />

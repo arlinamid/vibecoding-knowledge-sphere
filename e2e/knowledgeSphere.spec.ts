@@ -9,6 +9,11 @@ test.describe("Keyword Sphere / AI fejlesztői tudásgömb E2E Tests", () => {
   test.beforeEach(async ({ page }) => {
     // Open the local development URL
     await page.goto("http://localhost:3000/");
+    
+    // Enable reduced motion to stop physics animations and make clicks on moving elements completely stable
+    const toggleMotionBtn = page.locator("#toggle-motion-btn");
+    await expect(toggleMotionBtn).toBeVisible();
+    await toggleMotionBtn.click();
   });
 
   test("should load the landing page successfully and render the knowledge sphere core components", async ({ page }) => {

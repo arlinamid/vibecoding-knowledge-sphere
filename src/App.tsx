@@ -39,6 +39,55 @@ type AiSearchMatch = { id: string; matchReason: string };
 type AiSearchResponse = { matches?: AiSearchMatch[]; aiSummary?: string };
 type AiSearchErrorResponse = { error?: string };
 
+interface GroupConfig {
+  name: string;
+  color: string;
+}
+
+const translations = new Map<string, string>([
+  ["interactive_tour", "Interaktív Bemutató:"],
+  ["tour_desc", "Ismerd meg az alkalmazást az interaktív vezetett túrával 5 lépésben!"],
+  ["tour_start_btn", "[ TÚRA INDÍTÁSA ]"],
+  ["tour_skip_btn", "[ KÉSŐBB ]"],
+  ["how_to_get_key", "Hogyan szerezhetsz kulcsot?"],
+  ["click_link", "Kattints a fenti Google AI Studio linkre (ingyenes)"],
+  ["press_btn", "Nyomj a "],
+  ["key_prefix", "AIzaSy..."],
+  ["override_key", "Egyéni API kulcs felülbírálás megadása:"],
+  ["custom_key", "Egyedi kulcs: "],
+  ["gemini_thinking", "Gemini gondolkodik a kereséseden..."],
+  ["search_results", "Találati lista:"],
+  ["nodes", "Nodes: "],
+  ["relations", "Relations: "],
+  ["app_title", "Vibekóding Tudásgömb"],
+  ["program_name", "PROGRAM NÉV"],
+  ["zoom_label", "Nagyítás (Zoom):"],
+  ["lod_label", "Kapcsolatok szűrése (LOD):"],
+  ["github_handle", "github.com/arlinamid"],
+  ["system_online", "SYSTEM: ONLINE"],
+  ["est_2026", "EST. 2026"],
+  ["explore_guide_welcome", "A "],
+  ["explore_guide_welcome_end", " egy interaktív, 3D-s hálózati elrendezésű intelligens tudástérkép, amely tartalmazza az AI fejlesztések, prompt engineering, dizájn elvek, UI/UX állapotok, backend, adatbázisok és biztonságtechnika alapvető fogalmait és JSON-alapú összefüggéseit."],
+  ["total_keywords", "ÖSSZES FOGALOM"],
+  ["keywords_count_unit", " Kulcsszó"],
+  ["modal_instruction_01_title", "Gömb Forgatása:"],
+  ["modal_instruction_01_desc", " Fogd meg a gömböt a bal egérgombbal tetszőleges ponton, és húzd a kívánt irányba."],
+  ["modal_instruction_02_title", "Nagyítás (Zoom):"],
+  ["modal_instruction_02_desc", " Forgasd az egérgörgőt a szavak közti magassági szintekre való ráközelítéshez."],
+  ["modal_instruction_03_title", "Részletes Adatlap Lekérése:"],
+  ["modal_instruction_03_desc", " Kattints bármelyik szóra a gömbben! Ekkor a jobb oldalon megjelenik az adatlap."],
+  ["modal_instruction_04_title", "Kapcsolatok szűrése (LOD):"],
+  ["modal_instruction_04_desc", " Forgatás közben az FPS sebesség magasan tartása érdekében a gömb intelligens lazy load és Level of Detail (LOD) logikát alkalmaz. Amikor kiválasztasz egy szót, annak közvetlen és másodlagos (depth-2) kapcsolatai azonnal részletesen kirajzolódnak a képernyőn."],
+  ["developer_title", "Szoftverfejlesztő & AI Architekt"],
+  ["technologies_label", "Főbb technológiák:"],
+  ["technologies_desc", " React, Three.js, TypeScript, Vite, Tailwind CSS, high-fidelity WebGL interakciók és webes optimalizálások."],
+  ["tech_pipeline_desc", "Ezt a 3D hálózatos tudástérképet kiegészítettük egy sávszélesség-takarékos és processzor-kímélő rendering pipeline-nal, így bármely laptopon tökéletesen folyékony animációkkal üzemel."]
+]);
+
+const t = (key: string) => translations.get(key) || key;
+
+const groupsMap = new Map<string, GroupConfig>(Object.entries(GROUPS));
+
 // Beginner Mode Problems config dataset
 const BEGINNER_PROBLEMS = [
   {
@@ -259,12 +308,14 @@ export default function App() {
 
     const handler = setTimeout(async () => {
       try {
-        const headers: Record<string, string> = {
-          "Content-Type": "application/json",
-        };
-        if (byokKey.trim()) {
-          headers["x-api-key"] = byokKey.trim();
-        }
+        const headers: Record<string, string> = byokKey.trim()
+          ? {
+              "Content-Type": "application/json",
+              "x-api-key": byokKey.trim(),
+            }
+          : {
+              "Content-Type": "application/json",
+            };
 
         const response = await fetch("/api/ai-search", {
           method: "POST",
@@ -410,7 +461,7 @@ export default function App() {
             bypassReset = true;
           }
         } else if (sidebarTab === "roadmap" && activeRoadmapStepIndex !== null) {
-          const activeStep = ROADMAP_STEPS[activeRoadmapStepIndex];
+          const activeStep = ROADMAP_STEPS.find((_, idx) => idx === activeRoadmapStepIndex);
           if (activeStep && activeStep.keyId === selectedNodeId) {
             bypassReset = true;
           }
@@ -461,8 +512,8 @@ export default function App() {
               <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
             </div>
             <p className="text-xs text-[#E0D8D0] leading-relaxed">
-              <span className="text-amber-400 font-sans font-bold uppercase tracking-wider text-[9px] mr-2">Interaktív Bemutató:</span>
-              <strong>Ismerd meg az alkalmazást az interaktív vezetett túrával 5 lépésben!</strong>
+              <span className="text-amber-400 font-sans font-bold uppercase tracking-wider text-[9px] mr-2">{t("interactive_tour")}</span>
+              <strong>{t("tour_desc")}</strong>
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -474,14 +525,14 @@ export default function App() {
               }}
               className="px-3.5 py-1 bg-amber-500 hover:bg-amber-400 text-black text-[9px] font-mono font-bold rounded-full transition-all cursor-pointer shadow-md shadow-amber-500/10"
             >
-              [ TÚRA INDÍTÁSA ]
+              {t("tour_start_btn")}
             </button>
             <button
               id="dismiss-onboarding-btn"
               onClick={() => setShowOnboarding(false)}
               className="px-3.5 py-1 bg-white/5 hover:bg-white/10 text-[9px] font-mono font-bold text-white/60 hover:text-white rounded-full border border-white/10 transition-all cursor-pointer"
             >
-              [ Bezárás ]
+              {t("tour_skip_btn")}
             </button>
           </div>
         </div>
@@ -607,7 +658,7 @@ export default function App() {
                             {/* How-to helper prompt */}
                             <div className="bg-black/40 border border-white/5 rounded-lg p-2.5 text-[10px] space-y-1.5 text-white/70 pb-3">
                               <div className="flex items-center justify-between font-bold text-white/90">
-                                <span>Hogyan szerezhetsz kulcsot?</span>
+                                <span>{t("how_to_get_key")}</span>
                                 <a
                                   href="https://aistudio.google.com/"
                                   target="_blank"
@@ -619,9 +670,9 @@ export default function App() {
                                 </a>
                               </div>
                               <ol className="list-decimal pl-3.5 font-sans space-y-0.5 text-white/60">
-                                <li>Kattints a fenti Google AI Studio linkre (ingyenes)</li>
-                                <li>Nyomj a <strong className="text-white/85">"Get API key"</strong> gombra</li>
-                                <li>Másold ki a kulcsot (<code className="text-amber-300 font-mono text-[9px]">AIzaSy...</code>) és illeszd be ide:</li>
+                                <li>{t("click_link")}</li>
+                                <li>{t("press_btn")}<strong className="text-white/85">"Get API key"</strong> gombra</li>
+                                <li>Másold ki a kulcsot (<code className="text-amber-300 font-mono text-[9px]">{t("key_prefix")}</code>) és illeszd be ide:</li>
                               </ol>
                             </div>
 
@@ -674,7 +725,7 @@ export default function App() {
                         ) : (
                           /* If has private server-side key but no custom user override entered yet, provide a toggle button to show form */
                           <div className="bg-white/3 border border-white/5 rounded-xl p-2.5 text-[10px] flex items-center justify-between font-sans">
-                            <span className="text-white/45">Egyéni API kulcs felülbírálás megadása:</span>
+                            <span className="text-white/45">{t("override_key")}</span>
                             <button
                               onClick={() => {
                                 setTempKey("");
@@ -692,7 +743,7 @@ export default function App() {
                           <div className="text-sky-300 flex flex-col gap-1">
                             <span className="flex items-center gap-1.5">
                               <Key className="w-3.5 h-3.5 text-sky-400 font-normal" />
-                              <span>Egyedi kulcs: <strong className="text-white">••••••••{byokKey.slice(-4)}</strong></span>
+                              <span>{t("custom_key")}<strong className="text-white">••••••••{byokKey.slice(-4)}</strong></span>
                             </span>
                             <span className="text-[9px] text-white/35 font-sans">
                               Kereséskor a backendnek továbbítva, mentés nélkül.
@@ -751,7 +802,7 @@ export default function App() {
                   {isAiLoading && (
                     <div className="flex items-center justify-center gap-2 py-3 text-sky-400 text-xs font-mono animate-pulse">
                       <div className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
-                      <span>Gemini gondolkodik a kereséseden...</span>
+                      <span>{t("gemini_thinking")}</span>
                     </div>
                   )}
 
@@ -775,7 +826,7 @@ export default function App() {
 
                   {searchQuery && (
                     <div id="search-matches-badge" className="text-[10px] bg-sky-950/20 text-sky-300 px-3 py-1.5 rounded-full border border-sky-500/10 font-mono flex items-center justify-between animate-fade-in">
-                      <span>Találati lista:</span>
+                      <span>{t("search_results")}</span>
                       <span className="font-bold bg-sky-500/25 px-2 py-0.5 rounded-full text-white text-[11px]">{matchingCount} szó</span>
                     </div>
                   )}
@@ -808,7 +859,7 @@ export default function App() {
                                 className="text-[9px] uppercase tracking-wider px-1.5 py-px rounded bg-white/5 font-mono"
                                 style={{ color: fullNode.color }}
                               >
-                                {GROUPS[fullNode.group]?.name || fullNode.group}
+                                {groupsMap.get(fullNode.group)?.name || fullNode.group}
                               </span>
                             </div>
                             {match.matchReason && (
@@ -1186,8 +1237,8 @@ export default function App() {
       {/* Bottom Status Bar from the Design HTML */}
       <footer className="relative z-10 shrink-0 border-t border-white/5 bg-[#050508]/40 backdrop-blur-md px-8 py-4 flex flex-col md:flex-row justify-between items-center text-[10px] text-white/40 tracking-[0.22em] uppercase">
         <div className="flex space-x-8 mb-2 md:mb-0">
-          <span>Nodes: {nodes.length}</span>
-          <span>Relations: {links.length}</span>
+          <span>{t("nodes")}{nodes.length}</span>
+          <span>{t("relations")}{links.length}</span>
         </div>
         <div className="flex flex-wrap justify-center gap-4 text-[9px] tracking-widest">
           <span className="text-[#FF6B6B]">● Auth & Sec</span>
@@ -1244,17 +1295,17 @@ export default function App() {
                 <div className="space-y-4">
                   <div className="p-3.5 bg-white/3 border border-white/5 rounded-xl space-y-2">
                     <p className="text-xs leading-relaxed text-[#E0D8D0]/90">
-                      A <span className="text-white font-bold">Vibekóding Tudásgömb</span> egy interaktív, 3D-s hálózati elrendezésű intelligens tudástérkép, amely tartalmazza az AI fejlesztések, prompt engineering, dizájn elvek, UI/UX állapotok, backend, adatbázisok és biztonságtechnika alapvető fogalmait és JSON-alapú összefüggéseit.
+                      {t("explore_guide_welcome")}<span className="text-white font-bold">{t("app_title")}</span>{t("explore_guide_welcome_end")}
                     </p>
                   </div>
                   <div className="grid grid-cols-2 gap-3 text-[10px] font-mono tracking-wide">
                     <div className="bg-black/20 p-3 rounded-lg border border-white/5">
-                      <span className="text-white/40 block mb-1">PROGRAM NÉV</span>
-                      <span className="text-[#FD7E14] font-semibold">Vibekóding Tudásgömb</span>
+                      <span className="text-white/40 block mb-1">{t("program_name")}</span>
+                      <span className="text-[#FD7E14] font-semibold">{t("app_title")}</span>
                     </div>
                     <div className="bg-black/20 p-3 rounded-lg border border-white/5">
-                      <span className="text-white/40 block mb-1">ÖSSZES FOGALOM</span>
-                      <span className="text-sky-400 font-semibold">{nodes.length} Kulcsszó</span>
+                      <span className="text-white/40 block mb-1">{t("total_keywords")}</span>
+                      <span className="text-sky-400 font-semibold">{nodes.length}{t("keywords_count_unit")}</span>
                     </div>
                   </div>
                 </div>
@@ -1266,25 +1317,25 @@ export default function App() {
                     <div className="flex items-start gap-2">
                       <span className="text-[#FD7E14] font-bold">01.</span>
                       <p>
-                        <strong className="text-white">Gömb Forgatása:</strong> Fogd meg a gömböt a bal egérgombbal tetszőleges ponton, és húzd a kívánt irányba.
+                        <strong className="text-white">{t("modal_instruction_01_title")}</strong>{t("modal_instruction_01_desc")}
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-[#FD7E14] font-bold">02.</span>
                       <p>
-                        <strong className="text-white">Nagyítás (Zoom):</strong> Forgasd az egérgörgőt a szavak közti magassági szintekre való ráközelítéshez.
+                        <strong className="text-white">{t("modal_instruction_02_title")}</strong>{t("modal_instruction_02_desc")}
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-[#FD7E14] font-bold">03.</span>
                       <p>
-                        <strong className="text-white">Részletes Adatlap Lekérése:</strong> Kattints bármelyik szóra a gömbben! Ekkor a jobb oldalon megjelenik az adatlap.
+                        <strong className="text-white">{t("modal_instruction_03_title")}</strong>{t("modal_instruction_03_desc")}
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-[#FD7E14] font-bold">04.</span>
                       <p>
-                        <strong className="text-white">Kapcsolatok szűrése (LOD):</strong> Forgatás közben az FPS sebesség magasan tartása érdekében a gömb intelligens lazy load és Level of Detail (LOD) logikát alkalmaz. Amikor kiválasztasz egy szót, annak közvetlen és másodlagos (depth-2) kapcsolatai azonnal részletesen kirajzolódnak a képernyőn.
+                        <strong className="text-white">{t("modal_instruction_04_title")}</strong>{t("modal_instruction_04_desc")}
                       </p>
                     </div>
                   </div>
@@ -1309,7 +1360,7 @@ export default function App() {
                         Rózsavölgyi János
                       </h3>
                       <p className="text-[11px] font-mono text-white/40">
-                        Szoftverfejlesztő & AI Architekt
+                        {t("developer_title")}
                       </p>
 
                       <div className="flex items-center justify-center sm:justify-start gap-2 pt-2">
@@ -1320,7 +1371,7 @@ export default function App() {
                           className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 px-3.5 py-1.5 rounded-full text-[10px] font-mono text-[#E0D8D0] hover:text-white transition-all cursor-pointer"
                         >
                           <Github className="w-3.5 h-3.5 text-white" />
-                          <span>github.com/arlinamid</span>
+                          <span>{t("github_handle")}</span>
                         </a>
                       </div>
                     </div>
@@ -1328,10 +1379,10 @@ export default function App() {
 
                   <div className="p-4 bg-black/20 border border-white/5 rounded-xl space-y-2 text-[11px] leading-relaxed text-[#E0D8D0]/80">
                     <p>
-                      <strong>Főbb technológiák:</strong> React, Three.js, TypeScript, Vite, Tailwind CSS, high-fidelity WebGL interakciók és webes optimalizálások.
+                      <strong>{t("technologies_label")}</strong>{t("technologies_desc")}
                     </p>
                     <p>
-                      Ezt a 3D hálózatos tudástérképet kiegészítettük egy sávszélesség-takarékos és processzor-kímélő rendering pipeline-nal, így bármely laptopon tökéletesen folyékony animációkkal üzemel.
+                      {t("tech_pipeline_desc")}
                     </p>
                   </div>
                 </div>
@@ -1340,8 +1391,8 @@ export default function App() {
 
             {/* Modal system info footer note */}
             <div className="border-t border-white/5 pt-3 flex justify-between items-center text-[9px] font-mono text-white/30 tracking-widest">
-              <span>SYSTEM: ONLINE</span>
-              <span>EST. 2026</span>
+              <span>{t("system_online")}</span>
+              <span>{t("est_2026")}</span>
             </div>
           </div>
         </div>

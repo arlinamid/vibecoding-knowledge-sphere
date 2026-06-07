@@ -6,6 +6,13 @@
 import React, { useState, useEffect } from "react";
 import { Sparkles, ArrowRight, ArrowLeft, X, CheckCircle } from "lucide-react";
 
+const translations = new Map<string, string>([
+  ["back", "Vissza"],
+  ["next", "Tovább"],
+  ["start", "Indítás"]
+]);
+const t = (key: string) => translations.get(key) || key;
+
 interface Rect {
   x: number;
   y: number;
@@ -282,7 +289,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
                 <button
                   onClick={() => onSetStep(step - 1)}
                   className="p-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-white/70 hover:text-white transition-colors flex items-center justify-center cursor-pointer"
-                  title="Vissza"
+                  title={t("back")}
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                 </button>
@@ -293,7 +300,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
                   onClick={() => onSetStep(step + 1)}
                   className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-black font-sans font-bold text-[10px] rounded-lg tracking-wider uppercase flex items-center gap-1 transition-all cursor-pointer shadow-md shadow-amber-500/10"
                 >
-                  Tovább
+                  {t("next")}
                   <ArrowRight className="w-3 h-3" />
                 </button>
               ) : (
@@ -301,7 +308,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
                   onClick={onClose}
                   className="px-4 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-black font-sans font-bold text-[10px] rounded-lg tracking-wider uppercase transition-all cursor-pointer shadow-md shadow-emerald-500/10"
                 >
-                  Indítás
+                  {t("start")}
                 </button>
               )}
             </div>
