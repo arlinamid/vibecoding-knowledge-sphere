@@ -30,7 +30,12 @@ import {
   Calendar,
   Settings,
   Github,
-  Brain
+  Brain,
+  Key,
+  Save,
+  Check,
+  ExternalLink,
+  AlertTriangle
 } from "lucide-react";
 
 // Beginner Mode Problems config dataset
@@ -160,11 +165,59 @@ export default function App() {
   const [reducedMotion, setReducedMotion] = useState(false);
 
   // AI Semantic Search States
-  const [isAiSearch, setIsAiSearch] = useState(true);
+  const [hasSystemKey, setHasSystemKey] = useState<boolean | null>(null);
+  const [byokKey, setByokKey] = useState<string>(() => {
+    return localStorage.getItem("BYOK_GEMINI_API_KEY") || "";
+  });
+  const [tempKey, setTempKey] = useState("");
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [isAiSearch, setIsAiSearch] = useState<boolean>(() => {
+    return !!(localStorage.getItem("BYOK_GEMINI_API_KEY"));
+  });
   const [aiSearchMatches, setAiSearchMatches] = useState<{ id: string; matchReason: string }[] | null>(null);
   const [aiSearchSummary, setAiSearchSummary] = useState<string | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
+
+  // Check on mount if a system-level Gemini API key has already been configured on the backend
+  useEffect(() => {
+    fetch("/api/health")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && typeof data.hasSystemKey === "boolean") {
+          setHasSystemKey(data.hasSystemKey);
+          if (data.hasSystemKey) {
+            setIsAiSearch(true);
+          }
+        } else {
+          setHasSystemKey(false);
+        }
+      })
+      .catch((err) => {
+        console.error("Health check error:", err);
+        setHasSystemKey(false);
+      });
+  }, []);
+
+  // Validation function for BYOK key
+  const handleSaveKey = () => {
+    const trimmed = tempKey.trim();
+    if (!trimmed) {
+      setValidationError("A kulcs mező nem lehet üres.");
+      return;
+    }
+    if (!trimmed.startsWith("AIzaSy")) {
+      setValidationError("Nem megfelelő Gemini API kulcs formátum (a kulcsnak 'AIzaSy' előtaggal kell kezdődnie).");
+      return;
+    }
+    if (trimmed.length < 35) {
+      setValidationError("A megadott kulcs túl rövid (legalább 35 karakter hosszúságúnak kell lennie).");
+      return;
+    }
+    setValidationError(null);
+    localStorage.setItem("BYOK_GEMINI_API_KEY", trimmed);
+    setByokKey(trimmed);
+  };
 
   // Debounce and trigger server-side Gemini Intelligent Search with cancel request (AbortController) and length limitation
   useEffect(() => {
@@ -184,7 +237,8 @@ export default function App() {
       return;
     }
 
-    if (!isAiSearch) {
+    // Must be AI search mode, and either server has system key config, or custom user BYOK exists
+    if (!isAiSearch || !(hasSystemKey || byokKey.trim())) {
       setAiSearchMatches(null);
       setAiSearchSummary(null);
       setAiError(null);
@@ -200,12 +254,17 @@ export default function App() {
 
     const handler = setTimeout(async () => {
       try {
+        const headers: Record<string, string> = {
+          "Content-Type": "application/json",
+        };
+        if (byokKey.trim()) {
+          headers["x-api-key"] = byokKey.trim();
+        }
+
         const response = await fetch("/api/ai-search", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ q: searchQuery }),
+          headers,
+          body: JSON.stringify({ q: searchQuery, apiKey: byokKey.trim() || undefined }),
           signal,
         });
 
@@ -234,7 +293,7 @@ export default function App() {
       clearTimeout(handler);
       controller.abort();
     };
-  }, [searchQuery, isAiSearch]);
+  }, [searchQuery, isAiSearch, byokKey]);
 
   // New Beginner-Focused Interactive States
   const [sidebarTab, setSidebarTab] = useState<"explore" | "beginner" | "roadmap">("explore");
@@ -495,9 +554,12 @@ export default function App() {
                     </label>
                     <button
                       onClick={() => {
-                        setIsAiSearch(!isAiSearch);
-                        setAiSearchMatches(null);
-                        setAiSearchSummary(null);
+                        const nextVal = !isAiSearch;
+                        setIsAiSearch(nextVal);
+                        if (!nextVal) {
+                          setAiSearchMatches(null);
+                          setAiSearchSummary(null);
+                        }
                       }}
                       className={`px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider font-mono cursor-pointer transition-all flex items-center gap-1 ${
                         isAiSearch
@@ -510,15 +572,149 @@ export default function App() {
                     </button>
                   </div>
 
+                  {/* BYOK Configuration Form or Key Status Overlay */}
+                  {isAiSearch && (
+                    <div className="pb-2 border-b border-white/5 space-y-2">
+                      {/* 1. Show system key status if available */}
+                      {hasSystemKey && (
+                        <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 rounded-xl p-2.5 text-[11px] font-sans flex items-center justify-between">
+                          <span className="flex items-center gap-1.5 font-medium">
+                            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                            Rendszer AI kulcs elérhető és aktív!
+                          </span>
+                          {!byokKey && (
+                            <span className="text-[9px] text-emerald-400/70 font-mono bg-emerald-400/10 px-1.5 py-0.5 rounded">
+                              Auto-aktív
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {!byokKey ? (
+                        /* If we don't have a custom key, but if the system has no key or user wants custom entry */
+                        (!hasSystemKey || tempKey) ? (
+                          <div className="bg-amber-500/10 border border-amber-500/25 rounded-xl p-3 space-y-2.5 text-[11px] animate-fade-in">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-0.5">
+                                <p className="text-amber-200 font-sans font-semibold">
+                                  🔑 Gemini API Kulcs (BYOK)
+                                </p>
+                                <p className="text-[10px] text-white/50 leading-relaxed font-sans">
+                                  {hasSystemKey 
+                                    ? "Megadhatsz saját API kulcsot is az alapértelmezetten felül:" 
+                                    : "Adj meg egy saját kulcsot az intelligens AI keresés feloldásához:"}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* How-to helper prompt */}
+                            <div className="bg-black/40 border border-white/5 rounded-lg p-2.5 text-[10px] space-y-1.5 text-white/70">
+                              <div className="flex items-center justify-between font-bold text-white/90">
+                                <span>Hogyan szerezhetsz kulcsot?</span>
+                                <a
+                                  href="https://aistudio.google.com/"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-amber-400 hover:text-amber-300 font-bold flex items-center gap-0.5 underline cursor-pointer"
+                                >
+                                  Google AI Studio
+                                  <ExternalLink className="w-2.5 h-2.5" />
+                                </a>
+                              </div>
+                              <ol className="list-decimal pl-3.5 font-sans space-y-0.5 text-white/60">
+                                <li>Kattints a fenti Google AI Studio linkre (ingyenes)</li>
+                                <li>Nyomj a <strong className="text-white/85">"Get API key"</strong> gombra</li>
+                                <li>Másold ki a kulcsot (<code className="text-amber-300 font-mono">AIzaSy...</code>) és illeszd be ide:</li>
+                              </ol>
+                            </div>
+
+                            <div className="flex gap-1.5">
+                              <input
+                                type="password"
+                                placeholder="Kezdődjön ezzel: AIzaSy..."
+                                value={tempKey}
+                                onChange={(e) => {
+                                  setTempKey(e.target.value);
+                                  if (validationError) setValidationError(null);
+                                }}
+                                className="flex-1 bg-black/50 border border-amber-500/20 rounded-lg px-2.5 py-1 text-xs text-white placeholder-white/20 focus:outline-none focus:border-amber-400 font-mono"
+                              />
+                              <button
+                                onClick={handleSaveKey}
+                                className="bg-amber-400 hover:bg-amber-300 text-black font-extrabold font-sans text-[10px] uppercase tracking-wider px-3 py-1 rounded-lg active:scale-95 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1"
+                              >
+                                <Save className="w-2.5 h-2.5" />
+                                Mentés
+                              </button>
+                            </div>
+
+                            {/* Validation Error reporting block */}
+                            {validationError && (
+                              <div className="text-[10px] text-red-300 bg-red-950/25 border border-red-500/20 rounded-lg p-2.5 flex items-start gap-1.5 font-sans">
+                                <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0 mt-0.5" />
+                                <span>{validationError}</span>
+                              </div>
+                            )}
+
+                            <p className="text-[9px] text-white/30 font-mono italic">
+                              A kulcs biztonságban van, kizárólag a te böngésződben (localStorage) tárolódik.
+                            </p>
+                          </div>
+                        ) : (
+                          /* If has private server-side key but no custom user override entered yet, provide a toggle button to show form */
+                          <div className="bg-white/3 border border-white/5 rounded-xl p-2.5 text-[10px] flex items-center justify-between font-sans">
+                            <span className="text-white/45">Egyéni API kulcs felülbírálás megadása:</span>
+                            <button
+                              onClick={() => setTempKey("AIzaSy")}
+                              className="text-amber-400 hover:text-amber-300 font-bold underline cursor-pointer text-[10px]"
+                            >
+                              Kulcs beírása
+                            </button>
+                          </div>
+                        )
+                      ) : (
+                        /* If custom key is specified and validated */
+                        <div className="flex items-center justify-between text-[11px] bg-sky-950/20 border border-sky-500/15 rounded-xl px-3 py-2 font-mono">
+                          <span className="text-sky-300 flex items-center gap-1.5">
+                            <Key className="w-3.5 h-3.5 text-sky-400 font-normal" />
+                            <span>Egyedi kulcs: <strong className="text-white">••••••••{byokKey.slice(-4)}</strong></span>
+                          </span>
+                          <button
+                            onClick={() => {
+                              localStorage.removeItem("BYOK_GEMINI_API_KEY");
+                              setByokKey("");
+                              setTempKey("");
+                              setAiSearchMatches(null);
+                              setAiSearchSummary(null);
+                              setValidationError(null);
+                            }}
+                            className="text-white/40 hover:text-red-400 font-bold underline cursor-pointer transition-colors"
+                          >
+                            Törlés
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <div className="relative">
                     <Search className="w-3.5 h-3.5 text-white/30 absolute left-4 top-3.5" />
                     <input
                       id="search-input"
                       type="text"
-                      placeholder={isAiSearch ? "Próbáld: biztonság, gyors, animáció..." : "Search knowledge..."}
+                      placeholder={
+                        isAiSearch
+                          ? (hasSystemKey || byokKey)
+                            ? "Próbáld: biztonság, gyors, animáció..."
+                            : "Adjon meg egy API kulcsot feljebb..."
+                          : "Search knowledge..."
+                      }
+                      disabled={isAiSearch && !hasSystemKey && !byokKey}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full bg-black/40 border border-white/10 rounded-full pl-9 pr-9 py-2.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-all font-mono"
+                      className={`w-full bg-black/40 border border-white/10 rounded-full pl-9 pr-9 py-2.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-all font-mono ${
+                        isAiSearch && !hasSystemKey && !byokKey ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
                     />
                     {searchQuery && (
                       <button

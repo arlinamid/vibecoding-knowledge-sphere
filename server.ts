@@ -26,19 +26,24 @@ async function startServer() {
 
   // API Route - Health Check
   app.get("/api/health", (req, res) => {
-    res.json({ status: "ok", keywordsCount: keywords.length });
+    res.json({
+      status: "ok",
+      keywordsCount: keywords.length,
+      hasSystemKey: !!process.env.GEMINI_API_KEY
+    });
   });
 
   // API Route - Semantic/Intelligence AI Search
   app.post("/api/ai-search", async (req, res) => {
     try {
-      const { q } = req.body;
+      const { q, apiKey: bodyApiKey } = req.body;
       if (!q || typeof q !== "string") {
         return res.status(400).json({ error: "Missing query parameter 'q'" });
       }
 
-      if (!process.env.GEMINI_API_KEY) {
-        return res.status(500).json({ error: "GEMINI_API_KEY nincsen beállítva az alkalmazás titkaiban." });
+      const apiKey = (req.headers["x-api-key"] as string) || bodyApiKey || process.env.GEMINI_API_KEY;
+      if (!apiKey || typeof apiKey !== "string" || !apiKey.trim()) {
+        return res.status(400).json({ error: "Saját Gemini API kulcs (BYOK) megadása szükséges az AI kereséshez." });
       }
 
       // Compact payload to stay fast and cheap
@@ -50,7 +55,7 @@ async function startServer() {
       }));
 
       const ai = new GoogleGenAI({
-        apiKey: process.env.GEMINI_API_KEY,
+        apiKey: apiKey.trim(),
         httpOptions: {
           headers: {
             "User-Agent": "aistudio-build",
